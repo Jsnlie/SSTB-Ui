@@ -146,6 +146,123 @@ const dosenList: Dosen[] = [
     subjects: ["Dosen Konseling (Praktika)"],
     image: "/winarsih.png",
   },
+
+  {
+    id: 20,
+    name: "Viktor Pamusu",
+    position: "Dosen",
+    subjects: ["Dosen Sistematika"],
+    image: "/viktor.png",
+  },
+  {
+    id: 21,
+    name: "Yohanes Marsono",
+    position: "Dosen",
+    subjects: ["Dosen Biblika"],
+    image: "/yohanes.png",
+  },
+   {
+    id: 22,
+    name: "Desiana M, Nainggolan",
+    position: "Dosen",
+    subjects: ["Dosen Bahasa Yunani", "Misi"],
+    image: "/desiana.png",
+  },
+  {
+    id: 23,
+    name: "Noni Susilo",
+    position: "Dosen",
+    subjects: ["Dosen Biblika"],
+    image: "/noni.png",
+  },
+   {
+    id: 24,
+    name: "Santobi Ong",
+    position: "Dosen",
+    subjects: ["Dosen Biblika", "Praktika"],
+    image: "/santobi.png",
+  },
+
+   {
+    id: 25,
+    name: "Romy",
+    position: "Dosen",
+    subjects: ["Dosen Biblika", "Praktika"],
+    image: "/romy.png",
+  },
+  {
+    id: 26,
+    name: "Iwan Tanusaputra",
+    position: "Dosen",
+    subjects: ["Dosen Biblika"],
+    image: "/iwan.png",
+  },
+   {
+    id: 27,
+    name: "Paulina Widjaja",
+    position: "Dosen",
+    subjects: ["Dosen Pendidikan"],
+    image: "/paulina.png",
+  },
+  {
+    id: 28,
+    name: "Lin Yuan I",
+    position: "Dosen",
+    subjects: ["Dosen Sistematika"],
+    image: "/lin.png",
+  },
+   {
+    id: 29,
+    name: "Rico Christian Komala",
+    position: "Dosen",
+    subjects: ["Dosen Liturgika", "Musik Gereja"],
+    image: "/rico.png",
+  },
+
+
+   {
+    id: 30,
+    name: "Swati Suhaemi",
+    position: "Dosen",
+    subjects: ["Dosen Pendidikan"],
+    image: "/swati.png",
+  },
+
+   {
+    id: 31,
+    name: "Mario Saliutama",
+    position: "Dosen",
+    subjects: ["Dosen STTB"],
+    image: "/mario.png",
+  },
+  {
+    id: 32,
+    name: "I Gede Puji Arsantosa",
+    position: "Dosen",
+     subjects: ["Dosen STTB"],
+    image: "/igede.png",
+  },
+   {
+    id: 33,
+    name: "Johanes Kurniawan",
+    position: "Dosen",
+     subjects: ["Dosen STTB"],
+    image: "/johanes.png",
+  },
+  {
+    id: 34,
+    name: "Rebekah Earnshaw",
+    position: "Dosen",
+     subjects: ["Dosen STTB"],
+    image: "/rebekah.png",
+  },
+   {
+    id: 35,
+    name: "Tan Giok Sien",
+    position: "Dosen",
+     subjects: ["Dosen STTB"],
+    image: "/sien.png",
+  },
 ];
 
 function DosenCard({ dosen }: { dosen: Dosen }) {

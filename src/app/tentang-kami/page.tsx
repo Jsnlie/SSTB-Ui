@@ -1,6 +1,5 @@
 "use client";
 
-import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { useState } from "react";
 import Image from "next/image";
 import TimelineCarousel from "../../components/TimelineCarousel";
@@ -13,33 +12,6 @@ import DewanDosen from "../../components/DewanDosen";
 
 export default function TentangKami() {
   const [activeSection, setActiveSection] = useState("sejarah");
-
-  const faculty = [
-    {
-      id: 9,
-      name: "Drs. Peter Halim",
-      title: "Ketua Yayasan",
-      department: "yayasan",
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-    },
-    {
-      id: 10,
-      name: "Ibu Linda Susanto",
-      title: "Sekretaris Yayasan",
-      department: "yayasan",
-      image:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400",
-    },
-    {
-      id: 11,
-      name: "Bpk. Thomas Wijaya",
-      title: "Bendahara Yayasan",
-      department: "yayasan",
-      image:
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400",
-    },
-  ];
 
   return (
     <div>
@@ -175,31 +147,48 @@ export default function TentangKami() {
             <h2 className="text-3xl text-[#002366] mb-4">Pengurus Yayasan</h2>
             <div className="h-1 w-20 bg-[#C41E3A] mx-auto mb-4"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Dewan pengurus yayasan yang mengawasi dan mengelola STT
+              Dewan pengurus yayasan yang mengawasi dan mengelola STTB
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {faculty
-              .filter((f) => f.department === "yayasan")
-              .map((person) => (
-                <div
-                  key={person.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <ImageWithFallback
-                    src={person.image}
-                    alt={person.name}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="p-6">
-                    <h3 className="text-lg text-[#002366] mb-2">
-                      {person.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">{person.title}</p>
-                  </div>
-                </div>
-              ))}
+          <div className="max-w-3xl mx-auto grid md:grid-cols-3 gap-10">
+            {/* Dewan Pembina */}
+            <div>
+              <h3 className="text-lg font-bold text-[#002366] mb-1">Dewan Pembina</h3>
+              <div className="h-0.5 w-10 bg-[#C41E3A] mb-4"></div>
+              <ul className="space-y-2 text-gray-700">
+                <li>Pdt. Agus Gunawan, Ph.D.</li>
+                <li>Pnt. Subianto Tjandra</li>
+                <li>Pdt. Budiyanto Santosa, D.Min.</li>
+              </ul>
+            </div>
+
+            {/* Dewan Pengurus */}
+            <div>
+              <h3 className="text-lg font-bold text-[#002366] mb-1">Dewan Pengurus</h3>
+              <div className="h-0.5 w-10 bg-[#C41E3A] mb-4"></div>
+              <ul className="space-y-2 text-gray-700">
+                <li><span className="text-sm text-[#C41E3A] font-medium">Ketua:</span> Pnts. Benny Soenarjo</li>
+                <li><span className="text-sm text-[#C41E3A] font-medium">Wakil Ketua:</span> Pnts. Ginawan Chondro</li>
+                <li><span className="text-sm text-[#C41E3A] font-medium">Sekretaris:</span> Pnt. Arif Subagyo</li>
+                <li><span className="text-sm text-[#C41E3A] font-medium">Bendahara:</span> Pnt. Widianto Tjandradipura</li>
+              </ul>
+            </div>
+
+            {/* Anggota */}
+            <div>
+              <h3 className="text-lg font-bold text-[#002366] mb-1">Anggota</h3>
+              <div className="h-0.5 w-10 bg-[#C41E3A] mb-4"></div>
+              <ul className="space-y-2 text-gray-700">
+                <li>Pnts. Agus Tjandra</li>
+                <li>Ev. Doroti Tunggal Widjaja, M.Th.</li>
+                <li>Bp. Eddy Samuel Affendie</li>
+                <li>Pnts. Edi Sukamto Josana</li>
+                <li>Bp. Herjanto Gunawan</li>
+                <li>Pnts. Joseph Koshan</li>
+                <li>Pnt. Suwito Kwee</li>
+              </ul>
+            </div>
           </div>
         </section>
       )}
