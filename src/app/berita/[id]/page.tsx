@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../../../components/figma/ImageWithFallback";
 import { Calendar, User, Tag, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";

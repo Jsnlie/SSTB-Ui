@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { BookOpen, Heart, Users, Building, Lightbulb, Handshake } from "lucide-react";
 import { useState } from "react";
 import Masonry from "react-responsive-masonry";

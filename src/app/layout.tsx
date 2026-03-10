@@ -3,7 +3,7 @@ import "../styles/index.css";
 import "../styles/fonts.css";
 import "../styles/tailwind.css";
 import "../styles/theme.css";
-import Layout from "./components/Layout";
+import Layout from "../components/Layout";
 
 export const metadata: Metadata = {
   title: "STT Seminari Theologia",

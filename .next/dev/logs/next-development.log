@@ -1,6 +1,6 @@
-[00:00:00.695] Server  LOG     ✓ Ready in 459ms
-[00:00:02.734] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:02.863] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[00:00:00.732] Server  LOG     ✓ Ready in 492ms
+[00:00:08.823] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:08.975] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
 - A server/client branch `if (typeof window !== 'undefined')`.
 - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
@@ -28,11 +28,362 @@ It can also happen if the client has a browser extension installed which messes 
                       <link>
                       <script>
                       <script>
+                      <script>
                       <RootLayout>
                         <html lang="id">
                           <body
--                           __processed_74c64d38-f8e0-4b26-97be-d04f6d675626__="true"
+-                           __processed_ccd578fa-96db-416a-9466-278b7d6e03d1__="true"
 -                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
                           >
                   ...
 
+[00:00:08.975] Browser WARN    Image with src "http://localhost:3001/Sekolah%20Tinggi%20Teologi%20Bandung.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:55.875] Server  LOG     ✓ Compiled in 97ms
+[00:01:56.447] Server  LOG     ✓ Compiled in 41ms
+[00:01:57.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 13
+[00:01:57.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:01:58.876] Server  LOG     ✓ Compiled in 42ms
+[00:01:59.129] Server  LOG     ✓ Compiled in 44ms
+[00:01:59.301] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 1
+[00:01:59.301] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:01:59.301] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:02:00.959] Server  LOG     ✓ Compiled in 49ms
+[00:02:01.274] Server  LOG     ✓ Compiled in 36ms
+[00:02:01.305] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 1
+[00:02:07.874] Server  LOG     ✓ Compiled in 34ms
+[00:02:08.222] Server  LOG     ✓ Compiled in 35ms
+[00:02:09.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 13
+[00:02:09.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:02:10.991] Server  LOG     ✓ Compiled in 32ms
+[00:02:11.305] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 1
+[00:02:11.305] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:02:11.524] Server  LOG     ✓ Compiled in 41ms
+[00:02:12.307] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 14
+[00:02:13.774] Server  LOG     ✓ Compiled in 38ms
+[00:02:14.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 1
+[00:02:14.329] Server  LOG     ✓ Compiled in 40ms
+[00:02:33.744] Server  LOG     ✓ Compiled in 30ms
+[00:02:33.947] Server  LOG     ✓ Compiled in 41ms
+[00:02:35.053] Server  LOG     ✓ Compiled in 50ms
+[00:02:35.882] Server  LOG     ✓ Compiled in 41ms
+[00:02:36.084] Server  LOG     ✓ Compiled in 33ms
+[00:02:36.380] Server  LOG     ✓ Compiled in 39ms
+[00:02:36.582] Server  LOG     ✓ Compiled in 39ms
+[00:02:37.177] Server  LOG     ✓ Compiled in 32ms
+[00:02:37.303] Server  LOG     ✓ Compiled in 34ms
+[00:02:37.521] Server  LOG     ✓ Compiled in 33ms
+[00:02:37.725] Server  LOG     ✓ Compiled in 45ms
+[00:02:37.912] Server  LOG     ✓ Compiled in 34ms
+[00:02:38.523] Server  LOG     ✓ Compiled in 36ms
+[00:02:38.802] Server  LOG     ✓ Compiled in 37ms
+[00:02:38.990] Server  LOG     ✓ Compiled in 32ms
+[00:02:39.179] Server  LOG     ✓ Compiled in 39ms
+[00:02:39.397] Server  LOG     ✓ Compiled in 30ms
+[00:02:42.181] Server  LOG     ✓ Compiled in 40ms
+[00:02:42.340] Server  LOG     ✓ Compiled in 35ms
+[00:02:42.464] Server  LOG     ✓ Compiled in 36ms
+[00:02:42.620] Server  LOG     ✓ Compiled in 37ms
+[00:02:42.744] Server  LOG     ✓ Compiled in 32ms
+[00:02:42.916] Server  LOG     ✓ Compiled in 38ms
+[00:02:43.041] Server  LOG     ✓ Compiled in 40ms
+[00:02:43.309] Server  LOG     ✓ Compiled in 38ms
+[00:02:43.434] Server  LOG     ✓ Compiled in 30ms
+[00:02:43.938] Server  LOG     ✓ Compiled in 43ms
+[00:02:44.373] Server  LOG     ✓ Compiled in 38ms
+[00:02:44.544] Server  LOG     ✓ Compiled in 30ms
+[00:02:44.811] Server  LOG     ✓ Compiled in 29ms
+[00:02:46.343] Server  LOG     ✓ Compiled in 42ms
+[00:02:46.607] Server  LOG     ✓ Compiled in 40ms
+[00:02:46.811] Server  LOG     ✓ Compiled in 30ms
+[00:02:49.529] Server  LOG     ✓ Compiled in 43ms
+[00:02:52.250] Server  LOG     ✓ Compiled in 33ms
+[00:02:52.586] Server  LOG     ✓ Compiled in 218ms
+[00:02:52.744] Server  LOG     ✓ Compiled in 64ms
+[00:02:52.943] Server  LOG     ✓ Compiled in 72ms
+[00:02:53.039] Server  LOG     ✓ Compiled in 47ms
+[00:02:53.302] Browser ERROR   ./src/app/tentang-kami/page.tsx:168:7
+Parsing ecmascript source code failed
+  166 |       {/* Pengakuan Iman Section */}
+  167 |       {activeSection === "pengakuan-iman" && <PengakuanIman />
+> 168 |       {/* Dewan Dosen Section */}
+      |       ^
+  169 |       {activeSection === "dewan-dosen" && <DewanDosen />}
+  170 |
+  171 |       {/* Pengurus Yayasan Section */}
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[03:18:13.309] Server  LOG     ✓ Compiled in 1590ms
+[00:03:14.711] Server  LOG     ✓ Compiled in 47ms
+[00:03:14.823] Server  LOG     ✓ Compiled in 35ms
+[00:03:15.022] Server  LOG     ✓ Compiled in 45ms
+[00:03:15.446] Server  LOG     ✓ Compiled in 29ms
+[00:03:15.745] Server  LOG     ✓ Compiled in 32ms
+[00:03:15.931] Server  LOG     ✓ Compiled in 39ms
+[00:03:16.101] Server  LOG     ✓ Compiled in 29ms
+[00:03:16.335] Server  LOG     ✓ Compiled in 45ms
+[00:03:16.477] Server  LOG     ✓ Compiled in 30ms
+[00:03:30.199] Server  LOG     ✓ Compiled in 36ms
+[00:03:30.339] Server  LOG     ✓ Compiled in 28ms
+[00:03:31.235] Server  LOG     ✓ Compiled in 35ms
+[00:03:31.375] Server  LOG     ✓ Compiled in 33ms
+[00:03:31.718] Server  LOG     ✓ Compiled in 33ms
+[00:03:32.201] Server  LOG     ✓ Compiled in 30ms
+[00:03:32.388] Server  LOG     ✓ Compiled in 40ms
+[00:03:32.529] Server  LOG     ✓ Compiled in 28ms
+[00:03:32.809] Server  LOG     ✓ Compiled in 40ms
+[00:03:33.026] Server  LOG     ✓ Compiled in 49ms
+[00:03:33.135] Server  LOG     ✓ Compiled in 42ms
+[00:03:33.772] Server  LOG     ✓ Compiled in 28ms
+[00:03:34.194] Server  LOG     ✓ Compiled in 41ms
+[00:03:34.382] Server  LOG     ✓ Compiled in 40ms
+[00:03:34.508] Server  LOG     ✓ Compiled in 32ms
+[00:03:34.632] Server  LOG     ✓ Compiled in 37ms
+[00:03:34.775] Server  LOG     ✓ Compiled in 38ms
+[00:03:34.947] Server  LOG     ✓ Compiled in 34ms
+[00:03:35.323] Server  LOG     ✓ Compiled in 33ms
+[00:03:35.448] Server  LOG     ✓ Compiled in 44ms
+[00:03:35.666] Server  LOG     ✓ Compiled in 29ms
+[00:03:35.899] Server  LOG     ✓ Compiled in 38ms
+[00:03:36.086] Server  LOG     ✓ Compiled in 33ms
+[00:03:36.304] Server  LOG     ✓ Compiled in 43ms
+[00:03:39.546] Server  LOG     ✓ Compiled in 38ms
+[00:03:41.137] Server  LOG     ✓ Compiled in 31ms
+[00:03:41.310] Browser ERROR   ./src/components/DewanDosen.tsx:125:33
+Parsing ecmascript source code failed
+  123 |     name: "Doroti Tunggal Widjaja",
+  124 |     position: "Dosen",
+> 125 |     subjects: ["Dosen ", Biblika"],
+      |                                 ^^^
+  126 |     image: "/budiyanto.png",
+  127 |   },
+  128 |    {
+
+Unterminated string constant
+
+Import traces:
+  Client Component Browser:
+    ./src/components/DewanDosen.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/DewanDosen.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[00:03:41.468] Server  LOG     ✓ Compiled in 31ms
+[03:19:00.401] Server  LOG     ✓ Compiled in 65ms
+[00:03:42.300] Browser ERROR   ./src/components/DewanDosen.tsx:125:32
+Parsing ecmascript source code failed
+  123 |     name: "Doroti Tunggal Widjaja",
+  124 |     position: "Dosen",
+> 125 |     subjects: ["Dosen ",Biblika"],
+      |                                ^^^
+  126 |     image: "/budiyanto.png",
+  127 |   },
+  128 |    {
+
+Unterminated string constant
+
+Import traces:
+  Client Component Browser:
+    ./src/components/DewanDosen.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/DewanDosen.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[00:03:42.301] Browser ERROR   ./src/components/DewanDosen.tsx:125:24
+Parsing ecmascript source code failed
+  123 |     name: "Doroti Tunggal Widjaja",
+  124 |     position: "Dosen",
+> 125 |     subjects: ["Dosen "Biblika"],
+      |                        ^^^^^^^
+  126 |     image: "/budiyanto.png",
+  127 |   },
+  128 |    {
+
+Expected ',', got 'ident'
+
+Import traces:
+  Client Component Browser:
+    ./src/components/DewanDosen.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/DewanDosen.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[00:03:44.396] Server  LOG     ✓ Compiled in 51ms
+[00:03:44.535] Server  LOG     ✓ Compiled in 40ms
+[00:03:44.676] Server  LOG     ✓ Compiled in 41ms
+[00:03:44.816] Server  LOG     ✓ Compiled in 35ms
+[00:03:44.959] Server  LOG     ✓ Compiled in 44ms
+[00:03:45.052] Server  LOG     ✓ Compiled in 30ms
+[00:03:45.227] Server  LOG     ✓ Compiled in 32ms
+[00:03:45.350] Server  LOG     ✓ Compiled in 29ms
+[00:03:45.627] Server  LOG     ✓ Compiled in 43ms
+[00:03:45.987] Server  LOG     ✓ Compiled in 44ms
+[00:03:46.188] Server  LOG     ✓ Compiled in 42ms
+[00:03:46.405] Server  LOG     ✓ Compiled in 35ms
+[00:03:46.515] Server  LOG     ✓ Compiled in 43ms
+[00:03:46.841] Server  LOG     ✓ Compiled in 32ms
+[00:03:46.997] Server  LOG     ✓ Compiled in 41ms
+[00:03:47.247] Server  LOG     ✓ Compiled in 46ms
+[00:03:47.373] Server  LOG     ✓ Compiled in 38ms
+[00:03:47.436] Server  LOG     ✓ Compiled in 28ms
+[00:03:50.573] Server  LOG     ✓ Compiled in 33ms
+[00:03:50.791] Server  LOG     ✓ Compiled in 39ms
+[00:03:51.322] Server  LOG     ✓ Compiled in 32ms
+[00:03:51.604] Server  LOG     ✓ Compiled in 29ms
+[00:03:51.917] Server  LOG     ✓ Compiled in 40ms
+[00:03:52.591] Server  LOG     ✓ Compiled in 34ms
+[00:03:52.858] Server  LOG     ✓ Compiled in 29ms
+[00:03:52.998] Server  LOG     ✓ Compiled in 41ms
+[00:03:53.137] Server  LOG     ✓ Compiled in 32ms
+[00:03:55.915] Server  LOG     ✓ Compiled in 31ms
+[00:03:56.025] Server  LOG     ✓ Compiled in 38ms
+[00:03:56.481] Server  LOG     ✓ Compiled in 39ms
+[00:03:56.701] Server  LOG     ✓ Compiled in 34ms
+[00:03:56.825] Server  LOG     ✓ Compiled in 40ms
+[00:03:59.449] Server  LOG     ✓ Compiled in 42ms
+[00:04:02.559] Server  LOG     ✓ Compiled in 31ms
+[00:04:02.949] Server  LOG     ✓ Compiled in 46ms
+[00:04:03.009] Server  LOG     ✓ Compiled in 29ms
+[00:04:03.246] Server  LOG     ✓ Compiled in 38ms
+[00:04:07.087] Server  LOG     ✓ Compiled in 30ms
+[00:04:07.258] Server  LOG     ✓ Compiled in 39ms
+[00:04:07.431] Server  LOG     ✓ Compiled in 40ms
+[00:04:08.305] Browser ERROR   ./src/components/DewanDosen.tsx:137:11
+Parsing ecmascript source code failed
+  135 |   {
+  136 |     id: 18,
+> 137 |     name: ",
+      |           ^^
+  138 |     position: "Dosen",
+  139 |     subjects: ["Dosen Pendidikan", "Biblika"],
+  140 |     image: "/budiyanto.png",
+
+Unterminated string constant
+
+Import traces:
+  Client Component Browser:
+    ./src/components/DewanDosen.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/DewanDosen.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[03:19:27.177] Server  LOG     ✓ Compiled in 50ms
+[00:04:09.388] Server  LOG     ✓ Compiled in 27ms
+[00:04:10.292] Server  LOG     ✓ Compiled in 40ms
+[00:04:10.463] Server  LOG     ✓ Compiled in 33ms
+[00:04:10.726] Server  LOG     ✓ Compiled in 37ms
+[00:04:10.882] Server  LOG     ✓ Compiled in 29ms
+[00:04:11.352] Server  LOG     ✓ Compiled in 28ms
+[00:04:11.538] Server  LOG     ✓ Compiled in 41ms
+[00:04:11.866] Server  LOG     ✓ Compiled in 42ms
+[00:04:12.432] Server  LOG     ✓ Compiled in 29ms
+[00:04:12.618] Server  LOG     ✓ Compiled in 36ms
+[00:04:12.901] Server  LOG     ✓ Compiled in 36ms
+[00:04:13.151] Server  LOG     ✓ Compiled in 28ms
+[00:04:16.269] Server  LOG     ✓ Compiled in 38ms
+[00:04:16.457] Server  LOG     ✓ Compiled in 40ms
+[00:04:16.628] Server  LOG     ✓ Compiled in 30ms
+[00:04:17.161] Server  LOG     ✓ Compiled in 30ms
+[00:04:17.302] Server  LOG     ✓ Compiled in 30ms
+[00:04:17.661] Server  LOG     ✓ Compiled in 41ms
+[00:04:19.221] Server  LOG     ✓ Compiled in 36ms
+[00:04:19.722] Server  LOG     ✓ Compiled in 42ms
+[03:19:38.592] Server  LOG     ✓ Compiled in 67ms
+[00:04:20.300] Browser ERROR   ./src/components/DewanDosen.tsx:139:34
+Parsing ecmascript source code failed
+  137 |     name: "Grace Emilia",
+  138 |     position: "Dosen",
+> 139 |     subjects: ["Dosen Praktika", "],
+      |                                  ^^^
+  140 |     image: "/budiyanto.png",
+  141 |   },
+  142 | ];
+
+Unterminated string constant
+
+Import traces:
+  Client Component Browser:
+    ./src/components/DewanDosen.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Client Component Browser]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/DewanDosen.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Client Component SSR]
+    ./src/app/tentang-kami/page.tsx [Server Component]
+[00:04:21.946] Server  LOG     ✓ Compiled in 36ms
+[00:04:22.071] Server  LOG     ✓ Compiled in 42ms
+[00:04:22.195] Server  LOG     ✓ Compiled in 32ms
+[00:04:22.351] Server  LOG     ✓ Compiled in 42ms
+[00:04:22.447] Server  LOG     ✓ Compiled in 32ms
+[00:04:22.632] Server  LOG     ✓ Compiled in 41ms
+[00:04:22.772] Server  LOG     ✓ Compiled in 44ms
+[00:04:22.897] Server  LOG     ✓ Compiled in 43ms
+[00:04:23.071] Server  LOG     ✓ Compiled in 45ms
+[00:04:23.650] Server  LOG     ✓ Compiled in 31ms
+[00:04:23.915] Server  LOG     ✓ Compiled in 34ms
+[00:04:39.152] Server  LOG     ✓ Compiled in 38ms
+[00:04:39.387] Server  LOG     ✓ Compiled in 37ms
+[00:04:40.311] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 18
+[00:04:40.938] Server  LOG     ✓ Compiled in 45ms
+[00:04:41.298] Browser ERROR   Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 1
+[00:04:41.563] Server  LOG     ✓ Compiled in 31ms
+[00:04:44.338] Server  LOG     ✓ Compiled in 40ms
+[00:04:44.759] Server  LOG     ✓ Compiled in 36ms
+[00:04:45.008] Server  LOG     ✓ Compiled in 31ms
+[00:04:45.587] Server  LOG     ✓ Compiled in 43ms
+[00:04:45.697] Server  LOG     ✓ Compiled in 32ms
+[00:04:45.917] Server  LOG     ✓ Compiled in 37ms
+[00:04:46.816] Server  LOG     ✓ Compiled in 39ms
+[00:04:47.017] Server  LOG     ✓ Compiled in 62ms
+[00:04:47.143] Server  LOG     ✓ Compiled in 36ms
+[00:04:47.297] Server  LOG     ✓ Compiled in 32ms
+[00:04:47.407] Server  LOG     ✓ Compiled in 29ms
+[00:04:47.579] Server  LOG     ✓ Compiled in 41ms
+[00:04:47.704] Server  LOG     ✓ Compiled in 38ms
+[00:04:48.125] Server  LOG     ✓ Compiled in 41ms
+[00:04:48.297] Server  LOG     ✓ Compiled in 38ms
+[00:04:48.763] Server  LOG     ✓ Compiled in 28ms
+[00:04:52.536] Server  LOG     ✓ Compiled in 39ms
+[00:04:54.063] Server  LOG     ✓ Compiled in 35ms
+[00:04:54.751] Server  LOG     ✓ Compiled in 35ms
+[00:04:54.878] Server  LOG     ✓ Compiled in 39ms
+[00:04:55.127] Server  LOG     ✓ Compiled in 39ms
+[00:04:56.345] Server  LOG     ✓ Compiled in 28ms
+[00:04:56.642] Server  LOG     ✓ Compiled in 34ms
+[00:04:56.799] Server  LOG     ✓ Compiled in 29ms
+[00:04:57.064] Server  LOG     ✓ Compiled in 31ms
+[00:04:57.393] Server  LOG     ✓ Compiled in 39ms
+[00:04:58.187] Server  LOG     ✓ Compiled in 41ms
+[00:05:00.276] Server  LOG     ✓ Compiled in 33ms
+[00:05:02.139] Server  LOG     ✓ Compiled in 31ms
+[00:05:02.263] Server  LOG     ✓ Compiled in 31ms
+[00:05:02.482] Server  LOG     ✓ Compiled in 43ms
+[00:05:02.575] Server  LOG     ✓ Compiled in 28ms
+[00:05:02.873] Server  LOG     ✓ Compiled in 32ms
+[00:05:03.249] Server  LOG     ✓ Compiled in 44ms
+[00:05:03.372] Server  LOG     ✓ Compiled in 29ms
+[00:05:03.592] Server  LOG     ✓ Compiled in 46ms
+[00:05:03.703] Server  LOG     ✓ Compiled in 39ms
+[00:05:03.937] Server  LOG     ✓ Compiled in 31ms
+[00:05:04.107] Server  LOG     ✓ Compiled in 32ms

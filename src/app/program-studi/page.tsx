@@ -1,4 +1,4 @@
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { Clock, Award, BookOpen, GraduationCap, ArrowRight } from "lucide-react";
 import Link from "next/link";
 

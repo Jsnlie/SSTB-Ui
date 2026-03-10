@@ -1,8 +1,5 @@
 {
-  "/admisi/page": "app/admisi/page.js",
-  "/berita/page": "app/berita/page.js",
-  "/kehidupan-kampus/page": "app/kehidupan-kampus/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/program-studi/page": "app/program-studi/page.js",
   "/tentang-kami/page": "app/tentang-kami/page.js"
 }

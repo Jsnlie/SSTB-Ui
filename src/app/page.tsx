@@ -1,45 +1,26 @@
-import { ImageWithFallback } from "./components/figma/ImageWithFallback";
-import { Target, Heart, Book, Users, Calendar, ArrowRight, ChevronRight } from "lucide-react";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { Calendar, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import VisiMisi from "../components/VisiMisi";
+import CoreValues from "../components/CoreValues";
 
 export default function Home() {
-  const coreValues = [
-    {
-      icon: Heart,
-      title: "Kasih",
-      description: "Mengasihi Tuhan dan sesama sebagai fondasi pelayanan",
-    },
-    {
-      icon: Book,
-      title: "Kebenaran",
-      description: "Berpegang teguh pada kebenaran Firman Tuhan",
-    },
-    {
-      icon: Users,
-      title: "Komunitas",
-      description: "Membangun komunitas yang saling mendukung",
-    },
-  ];
-
   const testimonials = [
     {
-      name: "Pdt. David Hartono",
-      role: "Alumni 2020, Gembala Sidang di Surabaya",
-      text: "STT Seminari Theologia tidak hanya memberi saya pengetahuan teologi yang mendalam, tetapi juga membentuk karakter saya sebagai pelayan Tuhan. Pengalaman studi di sini sangat mempengaruhi pelayanan saya hingga hari ini.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+      name: "Maria Elsa",
+      role: "S.Pd. 2014",
+      text: "Menjadi guru Kristen adalah sebuah panggilan Allah untuk mewujudkan misi-Nya dalam dunia pendidikan. Saya bersyukur bisa bergabung dan diperlengkapi dalam program studi Sarjana Pendidikan Kristen di STT Bandung. Saya tidak hanya diajar secara kognitif melainkan juga belajar melalui pengalaman orang lain. Selain itu, di STT Bandung juga saya tidak hanya bertumbuh secara pemikiran tetapi juga bertumbuh dalam spiritualitas. Benar-benar menjadi jawaban dalam kebutuhan pelayanan saya. Saya berharap 30 tahun STT Bandung kiranya semakin maju, berkembang, dan terus mempersiapkan pelayan Tuhan yang menjadi berkat di manapun mereka ditempatkan.",
     },
     {
-      name: "Rev. Ruth Susanto",
-      role: "Alumni 2019, Misionaris di Papua",
-      text: "Kombinasi antara pembelajaran akademis yang ketat dan praktik pelayanan langsung mempersiapkan saya dengan baik untuk ladang misi. Saya sangat bersyukur untuk mentor-mentor rohani yang membimbing saya selama di STT.",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+      name: "Yogi Fitra Firdaus",
+      role: "STh., 2015",
+      text: "STT Bandung sebagai seminari yang multikultur telah mempersiapkan saya sebagai hamba Tuhan yang mampu beradaptasi dalam berbagai konteks budaya yang ada di tengah gereja urban. Dengan visi menghasilkan pastor-scholar, diskusi teologis mengenai isu-isu di tengah masyarakat seperti kemiskinan, hak-hak anak dan ekologi memperlengkapi saya dengan satu pemahaman misi gereja yang holistik bahwa umat Allah tidak hanya dipanggil mewartakan Injil keselamatan tetapi juga hadir untuk menjadi agen transformasi sosial. STT Bandung juga memberikan ruang diseminasi ilmiah terhadap hasil-hasil riset yang dilakukan oleh dosen, mahasiswa dan alumni sehingga seluruh civitas academica dapat memberikan kontribusi strategis bagi gereja dan masyarakat.",
     },
     {
-      name: "Maria Liem, M.Th",
-      role: "Alumni 2021, Dosen Teologi di Kalimantan",
-      text: "Program Magister Teologi di STT memberikan fondasi penelitian yang kuat. Kini saya dapat melayani sebagai dosen dan peneliti yang berkontribusi untuk perkembangan teologi Indonesia.",
-      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400",
-    },
+      name: "Samuel Wiratama",
+      role: "MTh., 2018",
+      text: "Bagi saya, STT Bandung telah menghadirkan berkat besar dalam kehidupan pelayanan. Dengan menekankan keseimbangan dalam karakter, akademik, dan praktik, menolong saya untuk menjadi seorang gembala yang mahir dalam pelayanan praktis gereja dengan berlandaskan akademik kuat dan kehidupan etis yang dapat menjadi teladan. Tidak ketinggalan, para dosen yang sangat peduli dalam membimbing dan memperhatikan para mahasiswa menjadi nilai tambah yang amat bermanfaat untuk membekali mahasiswa dalam pelayanan. Saya berharap STT Bandung terus bertumbuh dalam hal-hal ini sehingga dapat menjadi berkat bagi kekristenan di Indonesia.",
+    }
   ];
 
   const upcomingEvents = [
@@ -97,10 +78,10 @@ export default function Home() {
         <div className="relative h-full flex items-center">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white">
             <h1 className="text-5xl md:text-6xl mb-6">
-              STT Seminari Theologia
+              Sekolah Tinggi Teologi Bandung
             </h1>
             <p className="text-2xl md:text-3xl mb-4 text-gray-200">
-              Membentuk Pemimpin Rohani yang Berkarakter Kristus
+              Membentuk Pastor yang Berkarakter Kristus
             </p>
             <p className="text-lg md:text-xl mb-8 text-gray-300 max-w-3xl mx-auto">
               Institusi pendidikan teologi terakreditasi A yang berkomitmen untuk keunggulan akademik dan pembentukan karakter
@@ -124,85 +105,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Vision & Mission Section */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl text-[#002366] mb-4">Visi & Misi Kami</h2>
-            <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="flex items-center mb-6">
-                <Target className="text-[#C41E3A] mr-3" size={32} />
-                <h3 className="text-2xl text-[#002366]">Visi</h3>
-              </div>
-              <p className="text-gray-700 text-lg leading-relaxed">
-                Menjadi institusi pendidikan teologi terkemuka di Indonesia yang
-                menghasilkan pemimpin rohani yang berkarakter Kristus, memiliki
-                pengetahuan teologi yang mendalam, dan berkomitmen untuk
-                melayani gereja dan masyarakat dengan keunggulan.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-8 rounded-lg">
-              <div className="flex items-center mb-6">
-                <Users className="text-[#C41E3A] mr-3" size={32} />
-                <h3 className="text-2xl text-[#002366]">Misi</h3>
-              </div>
-              <ul className="text-gray-700 space-y-3">
-                <li className="flex items-start">
-                  <span className="text-[#C41E3A] mr-2">•</span>
-                  <span>Menyediakan pendidikan teologi yang berpusat pada Alkitab</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-[#C41E3A] mr-2">•</span>
-                  <span>Membentuk karakter mahasiswa melalui pengajaran dan teladan</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-[#C41E3A] mr-2">•</span>
-                  <span>Melengkapi mahasiswa dengan keterampilan pelayanan praktis</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-[#C41E3A] mr-2">•</span>
-                  <span>Mengembangkan penelitian teologi yang berkualitas</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="bg-gray-50 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl text-[#002366] mb-4">Nilai-Nilai Inti</h2>
-            <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {coreValues.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-white p-8 rounded-lg border-2 border-[#002366] hover:border-[#C41E3A] hover:shadow-lg transition-all"
-                >
-                  <div className="flex justify-center mb-6">
-                    <Icon className="text-[#002366]" size={48} strokeWidth={1.5} />
-                  </div>
-                  <h3 className="text-xl text-[#002366] text-center mb-4">
-                    {value.title}
-                  </h3>
-                  <p className="text-gray-600 text-center">{value.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <VisiMisi />
+      <CoreValues />
 
       {/* Testimonials */}
       <section className="py-16 bg-white">
@@ -222,11 +126,6 @@ export default function Home() {
                 className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center mb-4">
-                  <ImageWithFallback
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
                   <div>
                     <h3 className="text-[#002366]">{testimonial.name}</h3>
                     <p className="text-sm text-gray-600">{testimonial.role}</p>

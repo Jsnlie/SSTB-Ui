@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { Clock, Award, BookOpen, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
