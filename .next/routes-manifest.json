@@ -1,0 +1,107 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/berita/[id]",
+      "regex": "^/berita/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/berita/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admisi",
+      "regex": "^/admisi(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admisi(?:/)?$"
+    },
+    {
+      "page": "/berita",
+      "regex": "^/berita(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/berita(?:/)?$"
+    },
+    {
+      "page": "/kehidupan-kampus",
+      "regex": "^/kehidupan\\-kampus(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kehidupan\\-kampus(?:/)?$"
+    },
+    {
+      "page": "/program-akademik",
+      "regex": "^/program\\-akademik(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/program\\-akademik(?:/)?$"
+    },
+    {
+      "page": "/program-studi",
+      "regex": "^/program\\-studi(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/program\\-studi(?:/)?$"
+    },
+    {
+      "page": "/tentang-kami",
+      "regex": "^/tentang\\-kami(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tentang\\-kami(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

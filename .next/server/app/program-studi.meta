@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/program-studi/layout,_N_T_/program-studi/page,_N_T_/program-studi"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/program-studi/__PAGE__",
+    "/program-studi",
+    "/_index",
+    "/_head"
+  ]
+}
