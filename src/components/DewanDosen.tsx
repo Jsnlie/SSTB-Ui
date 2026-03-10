@@ -144,7 +144,7 @@ const dosenList: Dosen[] = [
     name: "Winarish",
     position: "Dosen",
     subjects: ["Dosen Konseling (Praktika)"],
-    image: "/winarasih.png",
+    image: "/winarsih.png",
   },
 ];
 

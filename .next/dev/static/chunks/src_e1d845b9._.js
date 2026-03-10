@@ -1613,7 +1613,7 @@ const dosenList = [
         subjects: [
             "Dosen Konseling (Praktika)"
         ],
-        image: "/winarasih.png"
+        image: "/winarsih.png"
     }
 ];
 function DosenCard({ dosen }) {
