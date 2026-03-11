@@ -37,7 +37,7 @@ const dosenList: Dosen[] = [
   {
     id: 4,
     name: "Johan Setiawan",
-    position: "Wakil Ketua II Akademik",
+    position: "Wakil Ketua III Akademik",
     subjects: ["Dosen Biblika", "Praktika"],
     image: "/johan.png",
   },

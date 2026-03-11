@@ -6,8 +6,8 @@ import "../styles/theme.css";
 import Layout from "../components/Layout";
 
 export const metadata: Metadata = {
-  title: "STT Seminari Theologia",
-  description: "Institusi pendidikan teologi yang berkomitmen untuk membentuk pemimpin rohani yang berkualitas",
+  title: "Sekolah TInggi Teologi Bandung",
+  icons: "/Sekolah Tinggi Teologi Bandung.png"
 };
 
 export default function RootLayout({

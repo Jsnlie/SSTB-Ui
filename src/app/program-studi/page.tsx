@@ -6,10 +6,11 @@ export default function ProgramStudi() {
   const programs = [
     {
       id: 1,
+      slug: "sarjana-teologi",
       level: "Sarjana",
       name: "Sarjana Teologi (S.Th)",
-      duration: "4 Tahun (8 Semester)",
-      credits: "144 SKS",
+      duration: "4 Tahun (3 tahun kuliah + 1 tahun praktik pelayanan)",
+      credits: "145 SKS",
       description:
         "Program sarjana yang memberikan fondasi teologi yang kuat dengan penekanan pada studi Alkitab, teologi sistematika, dan pelayanan praktis.",
       image: "https://images.unsplash.com/photo-1547817651-7fb0cc360536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2FtcHVzfGVufDF8fHx8MTc3Mjk2NDcyN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
@@ -22,45 +23,31 @@ export default function ProgramStudi() {
     },
     {
       id: 2,
-      level: "Magister",
-      name: "Magister Teologi (M.Th)",
-      duration: "2 Tahun (4 Semester)",
-      credits: "54 SKS",
+      slug: "sarjana-pendidikan-kristen",
+      level: "Sarjana",
+      name: "Sarjana Pendidikan Kristen (S.Pd)",
+      duration: "4 Tahun (3 tahun kuliah + 1 tahun praktik pelayanan)",
+      credits: "145 SKS",
       description:
-        "Program pascasarjana untuk memperdalam pengetahuan teologi dengan fokus pada penelitian dan pengajaran tingkat lanjut.",
+        "Program ini mempersiapkan mahasiswa menjadi pendidik Kristen yang kompeten, berkarakter, dan mampu mengajar berdasarkan nilai-nilai Alkitab.",
       image: "https://images.unsplash.com/photo-1653933606308-26e3aade9bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhY2FkZW1pYyUyMHByb2Zlc3NvciUyMHRlYWNoaW5nfGVufDF8fHx8MTc3MzA1MDQwM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       highlights: [
-        "Penelitian teologi mendalam",
-        "Eksegesis tingkat lanjut",
-        "Thesis akademis",
-        "Konsentrasi spesialisasi",
+        "Praktik Lapangan Intensif",
+        "Beragam Lingkup Pelayanan",
+        "Integrasi Teori & Praktik",
+        "Supervisi & Evaluasi Konstruktif",
       ],
     },
     {
       id: 3,
-      level: "Diploma",
-      name: "Diploma Teologi (Dip.Th)",
-      duration: "2 Tahun (4 Semester)",
-      credits: "72 SKS",
-      description:
-        "Program diploma yang mempersiapkan pelayan gereja dengan pengetahuan teologi praktis dan keterampilan pelayanan.",
-      image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tJTIwbGVjdHVyZXxlbnwxfHx8fDE3NzI5NjQxNDh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      highlights: [
-        "Teologi praktis",
-        "Khotbah & pengajaran",
-        "Kepemimpinan gereja lokal",
-        "Pelayanan pastoral",
-      ],
-    },
-    {
-      id: 4,
+      slug: "magister-teologi",
       level: "Magister",
-      name: "Magister Pelayanan (M.Div)",
-      duration: "3 Tahun (6 Semester)",
-      credits: "90 SKS",
+      name: "Magister Teologi Pelayanan Pastoral Gereja Urban (M.Th)",
+      duration: "2 Tahun",
+      credits: "56 SKS",
       description:
-        "Program profesional yang mempersiapkan pemimpin gereja dengan keseimbangan antara teologi akademis dan pelayanan praktis.",
-      image: "https://images.unsplash.com/photo-1583062434105-9bef71509685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwYXVkaXRvcml1bSUyMGNvbmZlcmVuY2V8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "Program Magister Teologi Pelayanan Gereja Urban mempersiapkan pemimpin dan pelayan gereja yang mampu memahami serta melayani kebutuhan masyarakat perkotaan secara kontekstual dan relevan.",
+      image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tJTIwbGVjdHVyZXxlbnwxfHx8fDE3NzI5NjQxNDh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       highlights: [
         "Kepemimpinan pelayanan",
         "Konseling pastoral",
@@ -69,35 +56,88 @@ export default function ProgramStudi() {
       ],
     },
     {
-      id: 5,
-      level: "Sertifikat",
-      name: "Sertifikat Pelayanan Kristen",
-      duration: "1 Tahun (2 Semester)",
-      credits: "36 SKS",
+      id: 4,
+      slug: "magister-budaya",
+      level: "Magister",
+      name: "Magister Teologi Transformasi Budaya & Masyarakat (M.Th)",
+      duration: "2 Tahun",
+      credits: "56 SKS",
       description:
-        "Program singkat untuk pembekalan dasar bagi pelayan awam dan mereka yang ingin melayani di gereja lokal.",
+        "Program profesional yang mempersiapkan pemimpin gereja dengan keseimbangan antara teologi akademis dan Transformasi Budaya & Masyarakat.",
+      image: "https://images.unsplash.com/photo-1583062434105-9bef71509685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwYXVkaXRvcml1bSUyMGNvbmZlcmVuY2V8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      highlights: [
+        "Teologi Kontekstual",
+        "Pendekatan Interdisipliner",
+        "Dampak Sosial Nyata",
+        "Pengembangan Pemimpin Transformasional",
+      ],
+    },
+    {
+      id: 5,
+      slug: "magister-pendidikan",
+      level: "Magister",
+      name: "Magister Pendidikan Kristen (M.Pd)",
+      duration: "2 Tahun",
+      credits: "80 SKS",
+      description:
+        "Program magister yang mempersiapkan mahasiswa menjadi pendidik Kristen yang kompeten, berkarakter, dan mampu mengajar berdasarkan nilai-nilai Alkitab lebih dalam.",
       image: "https://images.unsplash.com/photo-1637455587265-2a3c2cbbcc84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwbGlicmFyeSUyMGludGVyaW9yfGVufDF8fHx8MTc3Mjk0MzY2M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       highlights: [
-        "Dasar-dasar iman Kristen",
-        "Metode pengajaran Sekolah Minggu",
-        "Musik & ibadah",
-        "Evangelisme praktis",
+        "Integrasi Iman & Pendidikan",
+        "Pengembangan Profesional Pendidik",
+        "Kurikulum Kontekstual",
+        "Berorientasi pada Pembentukan Karakter",
       ],
     },
     {
       id: 6,
+      slug: "magister-ministri",
       level: "Magister",
-      name: "Magister Misiologi (M.Miss)",
+      name: "Magister Ministri in Marketplace (M.Min)",
       duration: "2 Tahun (4 Semester)",
       credits: "54 SKS",
       description:
-        "Program khusus untuk mempersiapkan misionaris dan pemimpin gerakan misi dengan fokus pada strategi penginjilan lintas budaya.",
+        "Program magister yang mempersiapkan pemimpin Kristen untuk melayani dan memberi dampak di dunia kerja dengan mengintegrasikan iman, nilai-nilai Kristen, dan praktik profesional di lingkungan marketplace.",
       image: "https://images.unsplash.com/photo-1600903308878-bf5e554ab841?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYW1wdXMlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       highlights: [
-        "Antropologi & budaya",
-        "Strategi penginjilan",
-        "Penanaman gereja",
-        "Misi lintas budaya",
+        "Integrasi Iman & Dunia Kerja",
+        "Kepemimpinan Marketplace",
+        "Pelayanan Kontekstual",
+        "Relevan dengan Tantangan Profesional",
+      ],
+    },
+    {
+      id: 7,
+      slug: "magister-pastoral",
+      level: "Magister",
+      name: "Magister Ministri Kepemimpinan Pastoral (M.Min)",
+      duration: "2 Tahun",
+      credits: "45 SKS",
+      description:
+        "Program akademik yang mempersiapkan pemimpin gereja dengan kemampuan kepemimpinan pastoral yang kuat, melalui pendalaman teologi dan pengembangan keterampilan pelayanan untuk menggembalakan jemaat secara efektif.",
+      image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmFkdWF0aW9uJTIwY2VyZW1vbnl8ZW58MXx8fHwxNzcyOTY0NzI3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      highlights: [
+        "Pembentukan Kepemimpinan Pastoral",
+        "Pendalaman Teologi Pastoral",
+        "Pengembangan Pelayanan Gereja",
+        "Pembinaan Karakter Pemimpin",
+      ],
+    },
+    {
+      id: 8,
+      slug: "magister-gerejawi",
+      level: "Magister",
+      name: "Magister Ministri Teologi Pelayanan Gerejawi (M.Min)",
+      duration: "2,5 Tahun",
+      credits: "65 SKS",
+      description:
+        "Program magister yang mempersiapkan pemimpin dan pelayan gereja dengan pemahaman teologi yang mendalam serta keterampilan praktis untuk mengembangkan pelayanan gerejawi yang efektif dan relevan.",
+      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwY2xhc3Nyb29tfGVufDF8fHx8MTc3Mjk2NDcyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      highlights: [
+        "Pendalaman Teologi Pelayanan",
+        "Pengembangan Kepemimpinan Gereja",
+        "Integrasi Teori & Praktik",
+        "Pelayanan yang Relevan",
       ],
     },
   ];
@@ -185,7 +225,7 @@ export default function ProgramStudi() {
 
                   <div className="flex gap-4">
                     <Link
-                      href="/program-akademik"
+                      href={`/program-akademik/${program.slug}`}
                       className="inline-flex items-center bg-[#C41E3A] text-white px-6 py-2 rounded hover:bg-[#A01829] transition-colors"
                     >
                       Lihat Detail
