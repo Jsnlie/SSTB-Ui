@@ -1,30 +1,81 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
-const placeholderData = [
-  { id: 1, nama: "Sarjana Teologi (S.Th.)", jenjang: "S1", akreditasi: "A", kuota: 80, mahasiswa: 65 },
-  { id: 2, nama: "Sarjana Pendidikan Kristen (S.Pd.)", jenjang: "S1", akreditasi: "A", kuota: 60, mahasiswa: 48 },
-  { id: 3, nama: "Magister Teologi (M.Th.)", jenjang: "S2", akreditasi: "B", kuota: 40, mahasiswa: 28 },
-  { id: 4, nama: "Magister Divinitas (M.Div.)", jenjang: "S2", akreditasi: "B", kuota: 35, mahasiswa: 22 },
-  { id: 5, nama: "Doktor Teologi (D.Th.)", jenjang: "S3", akreditasi: "B", kuota: 20, mahasiswa: 12 },
-  { id: 6, nama: "Diploma Pelayanan Gereja", jenjang: "D3", akreditasi: "B", kuota: 50, mahasiswa: 35 },
-  { id: 7, nama: "Sarjana Musik Gerejawi (S.Sn.)", jenjang: "S1", akreditasi: "B", kuota: 30, mahasiswa: 18 },
-  { id: 8, nama: "Magister Pendidikan Kristen (M.Pd.)", jenjang: "S2", akreditasi: "B", kuota: 30, mahasiswa: 15 },
-];
+interface ProgramStudiItem {
+  id: number;
+  slug: string;
+  name: string;
+  level: string;
+  duration: string;
+  totalCredits: number;
+  description: string;
+  image: string;
+  highlights: string[];
+}
 
 export default function ProgramStudiPage() {
   const [search, setSearch] = useState("");
   const [filterJenjang, setFilterJenjang] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [data, setData] = useState<ProgramStudiItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
-  const filtered = placeholderData.filter((item) => {
-    const matchSearch = item.nama.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = !filterJenjang || item.jenjang === filterJenjang;
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("https://localhost:7013/api/program-studi", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Gagal memuat data");
+      const json = await res.json();
+      setData(Array.isArray(json) ? json : json.data ?? []);
+    } catch {
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`https://localhost:7013/api/program-studi/${deleteId}`, {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Gagal menghapus data");
+      await fetchData();
+    } catch {
+      // silent
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
+
+  const filtered = data.filter((item) => {
+    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    const matchFilter = !filterJenjang || item.level === filterJenjang;
     return matchSearch && matchFilter;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -47,10 +98,8 @@ export default function ProgramStudiPage() {
             className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
           >
             <option value="">Semua Jenjang</option>
-            <option value="D3">D3</option>
-            <option value="S1">S1</option>
-            <option value="S2">S2</option>
-            <option value="S3">S3</option>
+            <option value="Sarjana">Sarjana</option>
+            <option value="Magister">Magister</option>
           </select>
         </div>
         <Link
@@ -71,9 +120,8 @@ export default function ProgramStudiPage() {
                 <th className="text-left px-6 py-4 font-medium text-gray-600">No</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Nama Program</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Jenjang</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Akreditasi</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Kuota</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Mahasiswa</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Durasi</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Total SKS</th>
                 <th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
               </tr>
             </thead>
@@ -81,25 +129,14 @@ export default function ProgramStudiPage() {
               {filtered.map((item, idx) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
-                  <td className="px-6 py-4 font-medium text-gray-800">{item.nama}</td>
+                  <td className="px-6 py-4 font-medium text-gray-800">{item.name}</td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                      {item.jenjang}
+                      {item.level}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        item.akreditasi === "A"
-                          ? "bg-green-50 text-green-700"
-                          : "bg-yellow-50 text-yellow-700"
-                      }`}
-                    >
-                      {item.akreditasi}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{item.kuota}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.mahasiswa}</td>
+                  <td className="px-6 py-4 text-gray-600">{item.duration}</td>
+                  <td className="px-6 py-4 text-gray-600">{item.totalCredits} SKS</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1">
                       <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
@@ -121,7 +158,7 @@ export default function ProgramStudiPage() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
@@ -133,7 +170,7 @@ export default function ProgramStudiPage() {
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Menampilkan {filtered.length} dari {placeholderData.length} data
+            Menampilkan {filtered.length} dari {data.length} data
           </p>
           <div className="flex items-center gap-2">
             <button className="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
@@ -163,10 +200,11 @@ export default function ProgramStudiPage() {
                 Batal
               </button>
               <button
-                onClick={() => setDeleteId(null)}
-                className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-70"
               >
-                Hapus
+                {deleting ? "Menghapus..." : "Hapus"}
               </button>
             </div>
           </div>
