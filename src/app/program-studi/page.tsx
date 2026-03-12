@@ -169,7 +169,7 @@ export default function ProgramStudi() {
             Program yang Kami Tawarkan
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            STT Seminari Theologia menyediakan berbagai program pendidikan teologi
+            STTB menyediakan berbagai program pendidikan teologi
             untuk memenuhi kebutuhan pelayanan yang beragam
           </p>
         </div>
