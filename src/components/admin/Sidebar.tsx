@@ -9,6 +9,7 @@ import {
   BookOpen,
   Newspaper,
   CalendarDays,
+  FileText,
   LogOut,
 } from "lucide-react";
 
@@ -18,6 +19,7 @@ const menuItems = [
   { name: "Mata Kuliah", href: "/admin/mata-kuliah", icon: BookOpen },
   { name: "Berita", href: "/admin/berita", icon: Newspaper },
   { name: "Kegiatan", href: "/admin/kegiatan", icon: CalendarDays },
+  { name: "Overview About", href: "/admin/overview-about", icon: FileText },
 ];
 
 export default function Sidebar() {

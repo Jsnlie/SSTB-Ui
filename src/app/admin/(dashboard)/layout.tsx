@@ -10,6 +10,7 @@ const pageTitles: Record<string, string> = {
   "/admin/mata-kuliah": "Mata Kuliah",
   "/admin/berita": "Berita",
   "/admin/kegiatan": "Kegiatan",
+  "/admin/overview-about": "Overview About",
 };
 
 function getPageTitle(pathname: string): string {

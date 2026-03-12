@@ -2,11 +2,36 @@
 
 import { ImageWithFallback } from "../../../components/figma/ImageWithFallback";
 import { Clock, Award, BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import * as Tabs from "@radix-ui/react-tabs";
 import Link from "next/link";
 import { getProgramBySlug } from "../data";
+
+interface OverviewAbout {
+  id: number;
+  text: string;
+  programStudiId: number;
+}
+
+interface OverviewRequirement {
+  id: number;
+  text: string;
+  programStudiId: number;
+}
+
+interface ProgramStudiApi {
+  id: number;
+  slug: string;
+  name: string;
+  level: string;
+  duration: string;
+  totalCredits: number;
+  description: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  degree: string;
+}
 
 export default function ProgramDetail() {
   const params = useParams();
@@ -14,7 +39,51 @@ export default function ProgramDetail() {
   const program = getProgramBySlug(slug);
   const [activeTab, setActiveTab] = useState("overview");
 
-  if (!program) {
+  const [programApi, setProgramApi] = useState<ProgramStudiApi | null>(null);
+  const [abouts, setAbouts] = useState<OverviewAbout[]>([]);
+  const [requirements, setRequirements] = useState<OverviewRequirement[]>([]);
+  const [loadingOverview, setLoadingOverview] = useState(true);
+
+  useEffect(() => {
+    const fetchOverview = async () => {
+      try {
+        const res = await fetch(`https://localhost:7013/api/program-studi/${slug}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const item = data.data ?? data;
+        setProgramApi(item);
+
+        const programStudiId = item.id;
+        const [aboutRes, reqRes] = await Promise.all([
+          fetch(`https://localhost:7013/api/OverviewAbout/programstudi/${programStudiId}`),
+          fetch(`https://localhost:7013/api/OverviewRequirement/programstudi/${programStudiId}`),
+        ]);
+
+        if (aboutRes.ok) {
+          const aboutData = await aboutRes.json();
+          setAbouts(Array.isArray(aboutData) ? aboutData : aboutData.data ?? []);
+        }
+        if (reqRes.ok) {
+          const reqData = await reqRes.json();
+          setRequirements(Array.isArray(reqData) ? reqData : reqData.data ?? []);
+        }
+      } catch {
+        // fallback to hardcoded data
+      } finally {
+        setLoadingOverview(false);
+      }
+    };
+    fetchOverview();
+  }, [slug]);
+
+  // Use API data for hero/quick-facts if available, otherwise fallback to hardcoded
+  const heroTitle = programApi?.heroTitle || program?.heroTitle;
+  const heroSubtitle = programApi?.heroSubtitle || program?.heroSubtitle;
+  const duration = programApi?.duration || program?.duration;
+  const totalCredits = programApi ? `${programApi.totalCredits} SKS` : program?.totalCredits;
+  const degree = programApi?.degree || program?.degree;
+
+  if (!program && !programApi && !loadingOverview) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -33,13 +102,21 @@ export default function ProgramDetail() {
     );
   }
 
+  if (!program && loadingOverview) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-[#002366] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Hero Header */}
       <div className="bg-[#002366] text-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl mb-4">{program.heroTitle}</h1>
-          <p className="text-xl text-gray-200">{program.heroSubtitle}</p>
+          <h1 className="text-4xl md:text-5xl mb-4">{heroTitle}</h1>
+          <p className="text-xl text-gray-200">{heroSubtitle}</p>
         </div>
       </div>
 
@@ -53,7 +130,7 @@ export default function ProgramDetail() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Durasi</p>
-                <p className="text-[#002366]">{program.duration}</p>
+                <p className="text-[#002366]">{duration}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -62,7 +139,7 @@ export default function ProgramDetail() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total SKS</p>
-                <p className="text-[#002366]">{program.totalCredits}</p>
+                <p className="text-[#002366]">{totalCredits}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -71,7 +148,7 @@ export default function ProgramDetail() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Gelar</p>
-                <p className="text-[#002366]">{program.degree}</p>
+                <p className="text-[#002366]">{degree}</p>
               </div>
             </div>
           </div>
@@ -111,13 +188,39 @@ export default function ProgramDetail() {
                   <h2 className="text-2xl text-[#002366] mb-4">
                     Tentang Program
                   </h2>
-                  {program.overview.about.map((paragraph, idx) => (
-                    <p key={idx} className="text-gray-700 mb-4">
-                      {paragraph}
-                    </p>
-                  ))}
+                  {loadingOverview ? (
+                    <div className="flex justify-center py-8">
+                      <div className="w-6 h-6 border-3 border-[#002366] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : abouts.length > 0 ? (
+                    abouts.map((item) => (
+                      <p key={item.id} className="text-gray-700 mb-4">
+                        {item.text}
+                      </p>
+                    ))
+                  ) : (
+                    program?.overview.about.map((paragraph, idx) => (
+                      <p key={idx} className="text-gray-700 mb-4">
+                        {paragraph}
+                      </p>
+                    ))
+                  )}
 
-                  {program.overview.requirements && (
+                  {loadingOverview ? null : requirements.length > 0 ? (
+                    <>
+                      <h3 className="text-xl text-[#002366] mt-8 mb-4">
+                        Requirements:
+                      </h3>
+                      <ul className="space-y-2 text-gray-700">
+                        {requirements.map((item) => (
+                          <li key={item.id} className="flex items-start">
+                            <span className="text-[#C41E3A] mr-2">•</span>
+                            <span>{item.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : program?.overview.requirements ? (
                     <>
                       <h3 className="text-xl text-[#002366] mt-8 mb-4">
                         Requirements:
@@ -131,7 +234,7 @@ export default function ProgramDetail() {
                         ))}
                       </ul>
                     </>
-                  )}
+                  ) : null}
                 </div>
               </Tabs.Content>
 
@@ -142,7 +245,7 @@ export default function ProgramDetail() {
                 </h2>
 
                 <div className="space-y-8">
-                  {program.curriculum.map((semester, sIdx) => (
+                  {(program?.curriculum ?? []).map((semester, sIdx) => (
                     <div key={sIdx}>
                       <h3 className="text-xl text-[#002366] mb-4">
                         {semester.label}
@@ -194,7 +297,7 @@ export default function ProgramDetail() {
                 </h2>
 
                 <div className="space-y-6">
-                  {program.competencies.map((group, gIdx) => (
+                  {(program?.competencies ?? []).map((group, gIdx) => (
                     <div key={gIdx} className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="text-lg text-[#002366] mb-3">
                         {group.title}
@@ -221,7 +324,7 @@ export default function ProgramDetail() {
                 Tertarik dengan Program Ini?
               </h3>
               <p className="text-gray-600 mb-6 text-sm">
-                Dapatkan informasi lebih lanjut tentang program {program.heroTitle}
+                Dapatkan informasi lebih lanjut tentang program {heroTitle}
               </p>
 
               <form className="space-y-4">

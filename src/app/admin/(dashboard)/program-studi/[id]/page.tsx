@@ -12,6 +12,7 @@ export default function EditProgramStudiPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState("");
+  const [realId, setRealId] = useState<number | null>(null);
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -34,8 +35,10 @@ export default function EditProgramStudiPage() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         if (!res.ok) throw new Error("Gagal memuat data");
-        const data = await res.json();
-        const item = data.data ?? data;
+        const json = await res.json();
+        const item = json.data ?? json;
+        // Store the real ID for PUT request
+        setRealId(item.id);
         setForm({
           name: item.name || "",
           slug: item.slug || "",
@@ -70,13 +73,14 @@ export default function EditProgramStudiPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/program-studi/${id}`, {
+      const res = await fetch(`https://localhost:7013/api/program-studi/${realId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
+          id: realId,
           name: form.name,
           slug: form.slug,
           level: form.level,
@@ -92,8 +96,15 @@ export default function EditProgramStudiPage() {
       });
 
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.message || "Gagal memperbarui program studi");
+        const text = await res.text().catch(() => "");
+        let msg = "Gagal memperbarui program studi";
+        try {
+          const data = JSON.parse(text);
+          msg = data?.message || data?.title || data?.errors ? JSON.stringify(data.errors) : msg;
+        } catch {
+          if (text) msg = text;
+        }
+        throw new Error(msg);
       }
 
       router.push("/admin/program-studi");

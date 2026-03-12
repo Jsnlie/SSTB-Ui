@@ -2,37 +2,46 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProgramStudiItem {
   id: number;
   slug: string;
   name: string;
   level: string;
-  duration: string;
-  totalCredits: number;
-  description: string;
-  image: string;
-  highlights: string[];
 }
 
-export default function ProgramStudiPage() {
+interface OverviewAboutItem {
+  id: number;
+  text: string;
+  programStudiId: number;
+}
+
+export default function OverviewAboutPage() {
   const [search, setSearch] = useState("");
-  const [filterJenjang, setFilterJenjang] = useState("");
+  const [filterProdi, setFilterProdi] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [data, setData] = useState<ProgramStudiItem[]>([]);
+  const [data, setData] = useState<OverviewAboutItem[]>([]);
+  const [prodiList, setProdiList] = useState<ProgramStudiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/program-studi", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error("Gagal memuat data");
-      const json = await res.json();
-      setData(Array.isArray(json) ? json : json.data ?? []);
+      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      const [aboutRes, prodiRes] = await Promise.all([
+        fetch("https://localhost:7013/api/OverviewAbout", { headers }),
+        fetch("https://localhost:7013/api/program-studi", { headers }),
+      ]);
+      if (aboutRes.ok) {
+        const json = await aboutRes.json();
+        setData(Array.isArray(json) ? json : json.data ?? []);
+      }
+      if (prodiRes.ok) {
+        const json = await prodiRes.json();
+        setProdiList(Array.isArray(json) ? json : json.data ?? []);
+      }
     } catch {
       setData([]);
     } finally {
@@ -49,7 +58,7 @@ export default function ProgramStudiPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/program-studi/${deleteId}`, {
+      const res = await fetch(`https://localhost:7013/api/OverviewAbout/${deleteId}`, {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -63,9 +72,13 @@ export default function ProgramStudiPage() {
     }
   };
 
+  const getProdiName = (programStudiId: number) => {
+    return prodiList.find((p) => p.id === programStudiId)?.name ?? `ID: ${programStudiId}`;
+  };
+
   const filtered = data.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = !filterJenjang || item.level === filterJenjang;
+    const matchSearch = item.text.toLowerCase().includes(search.toLowerCase());
+    const matchFilter = !filterProdi || item.programStudiId === Number(filterProdi);
     return matchSearch && matchFilter;
   });
 
@@ -86,28 +99,31 @@ export default function ProgramStudiPage() {
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Cari program studi..."
+              placeholder="Cari overview about..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
             />
           </div>
           <select
-            value={filterJenjang}
-            onChange={(e) => setFilterJenjang(e.target.value)}
+            value={filterProdi}
+            onChange={(e) => setFilterProdi(e.target.value)}
             className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
           >
-            <option value="">Semua Jenjang</option>
-            <option value="Sarjana">Sarjana</option>
-            <option value="Magister">Magister</option>
+            <option value="">Semua Program Studi</option>
+            {prodiList.map((p) => (
+              <option key={p.id} value={String(p.id)}>
+                {p.name}
+              </option>
+            ))}
           </select>
         </div>
         <Link
-          href="/admin/program-studi/tambah"
+          href="/admin/overview-about/tambah"
           className="inline-flex items-center gap-2 bg-[#1E3A8A] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1e3a8a]/90 transition-colors"
         >
           <Plus size={18} />
-          Tambah Program Studi
+          Tambah Overview About
         </Link>
       </div>
 
@@ -118,10 +134,8 @@ export default function ProgramStudiPage() {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="text-left px-6 py-4 font-medium text-gray-600">No</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Nama Program</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Jenjang</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Durasi</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Total SKS</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Text</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Program Studi</th>
                 <th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
               </tr>
             </thead>
@@ -129,20 +143,21 @@ export default function ProgramStudiPage() {
               {filtered.map((item, idx) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
-                  <td className="px-6 py-4 font-medium text-gray-800">{item.name}</td>
+                  <td className="px-6 py-4 text-gray-800 max-w-md">
+                    <p className="line-clamp-2">{item.text}</p>
+                  </td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                      {item.level}
+                      {getProdiName(item.programStudiId)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{item.duration}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.totalCredits} SKS</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
-                        <Eye size={16} />
-                      </button>
-                      <Link href={`/admin/program-studi/${item.slug}`} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                      <Link
+                        href={`/admin/overview-about/${item.id}`}
+                        className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                        title="Edit"
+                      >
                         <Pencil size={16} />
                       </Link>
                       <button
@@ -158,7 +173,7 @@ export default function ProgramStudiPage() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
@@ -188,7 +203,7 @@ export default function ProgramStudiPage() {
       {deleteId !== null && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
-            <h3 className="text-lg font-semibold text-gray-800">Hapus Program Studi</h3>
+            <h3 className="text-lg font-semibold text-gray-800">Hapus Overview About</h3>
             <p className="text-sm text-gray-500 mt-2">
               Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
             </p>
