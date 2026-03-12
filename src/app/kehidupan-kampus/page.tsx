@@ -168,7 +168,7 @@ export default function KehidupanKampus() {
       {/* Sub Navigation */}
       <div className="bg-white shadow-md sticky top-16 z-40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex overflow-x-auto">
+          <div className="flex overflow-x-auto justify-center">
             {[
               { id: "fasilitas", label: "Fasilitas Kampus" },
               { id: "pembinaan", label: "Pembinaan" },

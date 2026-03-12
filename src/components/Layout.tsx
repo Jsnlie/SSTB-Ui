@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, Mail, MapPin, Smartphone } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, Smartphone, LogIn } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -17,6 +17,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { name: "Berita", href: "/berita" },
     { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
   ];
+
+  // Skip public layout for admin routes
+  const isAdmin = pathname?.startsWith("/admin");
+  if (isAdmin) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex md:gap-x-6">
+            <div className="hidden md:flex md:items-center md:gap-x-6">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -52,6 +56,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   {item.name}
                 </Link>
               ))}
+              <Link
+                href="/admin/login"
+                className="inline-flex items-center gap-2 bg-[#002366] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#001a4d] transition-colors"
+              >
+                <LogIn size={16} />
+                Login
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -84,6 +95,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {item.name}
                   </Link>
                 ))}
+                <Link
+                  href="/admin/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-base bg-[#002366] text-white mt-2"
+                >
+                  <LogIn size={16} />
+                  Login
+                </Link>
               </div>
             </div>
           )}

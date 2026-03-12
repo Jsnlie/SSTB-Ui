@@ -31,34 +31,70 @@ export default function Admisi() {
   const tuitionFees = [
     {
       program: "Sarjana Teologi (S.Th)",
-      uangPendaftaran: "Rp 500.000",
-      uangPangkal: "Rp 5.000.000",
-      sppPerSemester: "Rp 4.000.000",
-      totalPerTahun: "Rp 13.000.000",
+      pendaftaranTes: "Rp 500.000",
+      administrasiPerSemester: "Rp 500.000",
+      biayaKuliahPerSemester: "Rp 9.000.000",
+      bimbinganTA: "Rp 1.500.000",
+      wisuda: "Rp 2.000.000",
+      cutiAkademik: "Rp 500.000",
+      total: "Rp 14.000.000",
+    },
+    {
+      program: "Sarjana Teologi (S.Pd)",
+      pendaftaranTes: "Rp 500.000",
+      administrasiPerSemester: "Rp 500.000",
+      biayaKuliahPerSemester: "Rp 9.000.000",
+      bimbinganTA: "Rp 1.500.000",
+      wisuda: "Rp 2.000.000",
+      cutiAkademik: "Rp 500.000",
+      total: "Rp 14.000.000",
     },
     {
       program: "Magister Teologi (M.Th)",
-      uangPendaftaran: "Rp 750.000",
-      uangPangkal: "Rp 7.500.000",
-      sppPerSemester: "Rp 6.000.000",
-      totalPerTahun: "Rp 19.500.000",
+      pendaftaranTes: "Rp 500.000",
+      administrasiPerSemester: "Rp 500.000",
+      biayaKuliahPerSemester: "Rp 1.500.000",
+      bimbinganTA: "Rp 7.000.000",
+      wisuda: "Rp 2.500.000",
+      cutiAkademik: "Rp 500.000",
+      total: "Rp 12.500.000",
+    },
+    {
+      program: "Magister Pendidikan (M.Pd)",
+      pendaftaranTes: "Rp 500.000",
+      administrasiPerSemester: "Rp 500.000",
+      biayaKuliahPerSemester: "Rp 1.500.000",
+      bimbinganTA: "Rp 7.000.000",
+      wisuda: "Rp 2.500.000",
+      cutiAkademik: "Rp 500.000",
+      total: "Rp 12.500.000",
+    },
+    {
+      program: "Magister Pelayanan (M.Min)",
+      pendaftaranTes: "Rp 500.000",
+      administrasiPerSemester: "Rp 500.000",
+      biayaKuliahPerSemester: "Rp 1.500.000",
+      bimbinganTA: "Rp 2.500.000",
+      wisuda: "Rp 2.500.000",
+      cutiAkademik: "Rp 500.000",
+      total: "Rp 8.000.000",
     },
   ];
 
   const scholarships = [
     {
-      name: "Beasiswa Prestasi Akademik",
+      name: "Beasiswa Pastor Scholar",
       description:
         "Diberikan kepada mahasiswa dengan prestasi akademik outstanding",
       coverage: "50% - 100% SPP",
     },
     {
-      name: "Beasiswa Pelayanan",
+      name: "Beasiswa Formatio",
       description: "Untuk mereka yang telah melayani di gereja minimal 2 tahun",
       coverage: "30% - 50% SPP",
     },
     {
-      name: "Beasiswa Keluarga",
+      name: "Beasiswa Transformative Leadership",
       description:
         "Diskon khusus untuk keluarga yang memiliki lebih dari 1 mahasiswa",
       coverage: "20% SPP",
@@ -137,42 +173,47 @@ export default function Admisi() {
             </p>
           </div>
 
-          <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-            <table className="w-full">
-              <thead className="bg-[#002366] text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left">Program Studi</th>
-                  <th className="px-6 py-4 text-right">Uang Pendaftaran</th>
-                  <th className="px-6 py-4 text-right">Uang Pangkal</th>
-                  <th className="px-6 py-4 text-right">SPP/Semester</th>
-                  <th className="px-6 py-4 text-right">Total/Tahun</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tuitionFees.map((fee, idx) => (
-                  <tr
-                    key={idx}
-                    className={`border-b ${
-                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
-                  >
-                    <td className="px-6 py-4 text-[#002366]">{fee.program}</td>
-                    <td className="px-6 py-4 text-right text-gray-700">
-                      {fee.uangPendaftaran}
-                    </td>
-                    <td className="px-6 py-4 text-right text-gray-700">
-                      {fee.uangPangkal}
-                    </td>
-                    <td className="px-6 py-4 text-right text-gray-700">
-                      {fee.sppPerSemester}
-                    </td>
-                    <td className="px-6 py-4 text-right text-[#002366]">
-                      {fee.totalPerTahun}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {tuitionFees.map((fee, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                <div className="bg-[#002366] px-4 py-3">
+                  <h3 className="text-white font-medium text-sm">{fee.program}</h3>
+                </div>
+                <div className="px-4 py-3 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Pendaftaran & Tes</span>
+                    <span className="text-gray-800">{fee.pendaftaranTes}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Administrasi/Smt</span>
+                    <span className="text-gray-800">{fee.administrasiPerSemester}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Biaya Kuliah/Smt</span>
+                    <span className="text-gray-800">{fee.biayaKuliahPerSemester}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Bimbingan TA</span>
+                    <span className="text-gray-800">{fee.bimbinganTA}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Wisuda</span>
+                    <span className="text-gray-800">{fee.wisuda}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cuti Akademik/Smt</span>
+                    <span className="text-gray-800">{fee.cutiAkademik}</span>
+                  </div>
+                </div>
+                <div className="bg-[#C41E3A]/10 border-t-2 border-[#C41E3A] px-4 py-3 flex justify-between items-center">
+                  <span className="text-[#002366] font-bold text-sm">Total</span>
+                  <span className="text-[#C41E3A] font-bold">{fee.total}</span>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="mt-6 text-center text-sm text-gray-600">
