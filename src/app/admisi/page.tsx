@@ -1,10 +1,14 @@
 "use client";
 
-import { ChevronDown, DollarSign, GraduationCap, FileText, CheckCircle2 } from "lucide-react";
+import { ChevronDown, DollarSign, GraduationCap, FileText, CheckCircle2, X } from "lucide-react";
 import { useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
+import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 
 export default function Admisi() {
+  const [showForm, setShowForm] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ nama: "", email: "", telp: "", prodi: "" });
   const steps = [
     {
       number: 1,
@@ -132,8 +136,13 @@ export default function Admisi() {
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-64 bg-[#002366] flex items-center justify-center">
+      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
         <h1 className="text-4xl md:text-5xl text-white">Admisi & Keuangan</h1>
+        <ImageWithFallback
+          src="https://plus.unsplash.com/premium_photo-1661634003229-975f2828c45a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="admisi"
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
       </div>
 
       {/* Registration Procedure Timeline */}
@@ -306,7 +315,10 @@ export default function Admisi() {
             Bergabunglah dengan ribuan alumni kami yang telah melayani di berbagai
             belahan dunia
           </p>
-          <button className="bg-white text-[#C41E3A] px-12 py-4 rounded-lg text-lg hover:bg-gray-100 transition-colors shadow-lg">
+          <button
+            onClick={() => { setShowForm(true); setSubmitted(false); setForm({ nama: "", email: "", telp: "", prodi: "" }); }}
+            className="bg-white text-[#C41E3A] px-12 py-4 rounded-lg text-lg hover:bg-gray-100 transition-colors shadow-lg"
+          >
             Daftar Online Sekarang
           </button>
           <p className="text-white/80 mt-6 text-sm">
@@ -314,6 +326,103 @@ export default function Admisi() {
           </p>
         </div>
       </section>
+
+      {/* Registration Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md relative">
+            <button
+              onClick={() => setShowForm(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X size={24} />
+            </button>
+
+            {submitted ? (
+              <div className="p-8 text-center">
+                <CheckCircle2 className="mx-auto text-green-500 mb-4" size={64} />
+                <h3 className="text-2xl text-[#002366] mb-2">Pendaftaran Berhasil!</h3>
+                <p className="text-gray-600 mb-6">
+                  Terima kasih, <strong>{form.nama}</strong>. Data pendaftaran Anda telah kami terima. Tim admisi akan menghubungi Anda melalui email.
+                </p>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="bg-[#002366] text-white px-8 py-2 rounded-lg hover:bg-[#001a4d] transition-colors"
+                >
+                  Tutup
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+                className="p-8"
+              >
+                <h3 className="text-2xl text-[#002366] mb-6 text-center">Formulir Pendaftaran</h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.nama}
+                      onChange={(e) => setForm({ ...form, nama: e.target.value })}
+                      placeholder="Masukkan nama lengkap"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="contoh@email.com"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
+                    <input
+                      type="tel"
+                      required
+                      value={form.telp}
+                      onChange={(e) => setForm({ ...form, telp: e.target.value })}
+                      placeholder="08xxxxxxxxxx"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                    <select
+                      required
+                      value={form.prodi}
+                      onChange={(e) => setForm({ ...form, prodi: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
+                    >
+                      <option value="">Pilih Program Studi</option>
+                      {tuitionFees.map((fee, idx) => (
+                        <option key={idx} value={fee.program}>{fee.program}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full mt-6 bg-[#C41E3A] text-white py-3 rounded-lg text-lg hover:bg-[#a31830] transition-colors"
+                >
+                  Kirim Pendaftaran
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

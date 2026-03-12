@@ -3,6 +3,7 @@
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { BookOpen, Heart, Users, Building, Lightbulb, Handshake } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 import Masonry from "react-responsive-masonry";
 
 export default function KehidupanKampus() {
@@ -11,33 +12,33 @@ export default function KehidupanKampus() {
   const facilityImages = [
     {
       id: 1,
-      url: "https://images.unsplash.com/photo-1637455587265-2a3c2cbbcc84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwbGlicmFyeSUyMGludGVyaW9yfGVufDF8fHx8MTc3Mjk0MzY2M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      url: "/perpustakaan.png",
       title: "Perpustakaan",
     },
     {
       id: 2,
-      url: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tJTIwbGVjdHVyZXxlbnwxfHx8fDE3NzI5NjQxNDh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      url: "/ruang kelas.png",
       title: "Ruang Kelas",
     },
     {
       id: 3,
-      url: "https://images.unsplash.com/photo-1583062434105-9bef71509685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwYXVkaXRvcml1bSUyMGNvbmZlcmVuY2V8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      title: "Auditorium",
+      url: "/gereja.png",
+      title: "Kapel",
     },
     {
       id: 4,
-      url: "https://images.unsplash.com/photo-1547817651-7fb0cc360536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2FtcHVzfGVufDF8fHx8MTc3Mjk2NDcyN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      title: "Area Studi",
+      url: "/dorm.png",
+      title: "Dorm",
     },
     {
       id: 5,
-      url: "https://images.unsplash.com/photo-1600903308878-bf5e554ab841?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYW1wdXMlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      url: "gedung sttb.jpg",
       title: "Gedung Kampus",
     },
     {
       id: 6,
-      url: "https://images.unsplash.com/photo-1763890498955-13f109b2fbd7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYW1wdXMlMjBvdXRkb29yJTIwc3R1ZGVudHMlMjB3YWxraW5nfGVufDF8fHx8MTc3MzA1MDQwNXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      title: "Area Kampus",
+      url: "/lobby.png",
+      title: "Lobby Kampus",
     },
   ];
 
@@ -82,87 +83,125 @@ export default function KehidupanKampus() {
 
   const pembinaanPrograms = [
     {
-      title: "Pembinaan Spiritual Harian",
+      title: "Kehidupan Komunitas",
       description:
-        "Kebaktian pagi setiap hari untuk membangun kebiasaan ibadah dan pendalaman Firman Tuhan bersama civitas akademika.",
-      schedule: "Senin - Jumat, 06:30 - 07:30",
-      image: "https://images.unsplash.com/photo-1583062434105-9bef71509685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwYXVkaXRvcml1bSUyMGNvbmZlcmVuY2V8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "Kehidupan Komunitas di STTB dirancang agar mahasiswa dapat hidup, belajar, dan bertumbuh bersama dalam lingkungan asrama yang kondusif. Melalui pendampingan dari mentor, konselor, hingga pengurus asrama, setiap mahasiswa didukung untuk menjalani keseharian yang disiplin dan suportif demi pembentukan karakter yang utuh.",
+      image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
-      title: "Kelompok Sel Mahasiswa",
+      title: "Kapel & Forum Pembinaan",
       description:
-        "Kelompok kecil untuk persekutuan, saling mendoakan, dan accountability dalam perjalanan iman dan studi.",
-      schedule: "Setiap Rabu, 19:00 - 21:00",
-      image: "https://images.unsplash.com/photo-1547817651-7fb0cc360536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2FtcHVzfGVufDF8fHx8MTc3Mjk2NDcyN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "Sebuah program bagi mahasiswa yang bertujuan membentuk kerohanian dan karakter melalui ibadah komunitas serta pembinaan intensif. Berfokus pada empat pilar utama—Pengajaran, Spiritual, Karakter, dan Pelayanan—program ini mempersiapkan mahasiswa untuk memiliki pengenalan akan Tuhan yang mendalam, karakter serupa Kristus, serta kesiapan melayani di tengah dunia.",
+      image: "https://images.unsplash.com/photo-1437603568260-1950d3ca6eab?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
-      title: "Mentoring Personal",
+      title: "Kelompok Pastoral",
       description:
-        "Setiap mahasiswa mendapat mentor spiritual yang membimbing secara personal dalam aspek rohani dan akademis.",
-      schedule: "Jadwal fleksibel sesuai kesepakatan",
-      image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2xhc3Nyb29tJTIwbGVjdHVyZXxlbnwxfHx8fDE3NzI5NjQxNDh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "Kelompok Pastoral merupakan sarana pendampingan bagi mahasiswa dalam aspek akademik, kerohanian, dan pelayanan melalui bimbingan seorang orang tua rohani. Setiap kelompok bertemu dua minggu sekali untuk mendapatkan arahan serta dukungan pribadi, termasuk penanganan kondisi khusus seperti kesehatan, pengembangan karakter, hingga konsultasi psikologis",
+      image: "https://plus.unsplash.com/premium_photo-1681491022899-410970110095?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      title: "Kelompok Pemuridan",
+      description:
+        "Merupakan sarana untuk menolong mahasiswa belajar dan bertumbuh bersama mengenai dasar-dasar pertumbuhan iman Kristen untuk menjadi murid Kristus dan menjadikan orang lain Murid Kristus, Dimana pun berada dan diutus",
+      image: "https://plus.unsplash.com/premium_photo-1663126706587-a91ed8a6982b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      title: "Formasi Spiritual",
+      description:
+        "Berfokus pada kedalaman hubungan pribadi mahasiswa dengan Tuhan melalui disiplin waktu teduh harian dan doa yang terjadwal secara teratur. Pertumbuhan rohani ini diperkuat dengan serangkaian program retreat yang diikuti sepanjang masa studi, mulai dari awal perkuliahan hingga persiapan akhir sebelum terjun ke dalam praktik pelayanan.",
+      image: "https://plus.unsplash.com/premium_photo-1770559520599-881a099cc6e9?q=80&w=388&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      title: "Mission Education & Exposure",
+      description:
+        "bertujuan membekali mahasiswa dengan wawasan dan keterampilan praktis untuk melayani di ladang misi serta membentuk gaya hidup misioner. Melalui program khusus seperti Mission Education & Exposure Training (MEET) selama satu bulan penuh, mahasiswa mendapatkan pengalaman langsung di lapangan untuk mempersiapkan mereka menjadi pelayan yang berdampak bagi dunia.",
+      image: "https://plus.unsplash.com/premium_photo-1681995466835-df504dba5269?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       title: "Praktik Pelayanan",
       description:
-        "Program magang di gereja-gereja mitra untuk pengalaman pelayanan langsung di bawah bimbingan gembala berpengalaman.",
-      schedule: "Semester 5-8 (S.Th), Semester 3-4 (M.Th)",
-      image: "https://images.unsplash.com/photo-1660485345088-c398363c1f45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmFkdWF0aW9uJTIwY2VyZW1vbnklMjBjZWxlYnJhdGlvbnxlbnwxfHx8fDE3NzMwNDEwMjl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      title: "Retreat Rohani",
-      description:
-        "Retreat semesteran untuk refreshing spiritual, evaluasi diri, dan pemulihan dari kesibukan akademik.",
-      schedule: "2x per tahun (setiap semester)",
-      image: "https://images.unsplash.com/photo-1600903308878-bf5e554ab841?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYW1wdXMlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      title: "Seminar & Workshop",
-      description:
-        "Seminar dan workshop berkala tentang topik-topik praktis untuk pengembangan keterampilan pelayanan.",
-      schedule: "Bulanan",
-      image: "https://images.unsplash.com/photo-1653933606308-26e3aade9bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhY2FkZW1pYyUyMHByb2Zlc3NvciUyMHRlYWNoaW5nfGVufDF8fHx8MTc3MzA1MDQwM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "bertujuan agar mahasiswa semakin diperlengkapi dalam wawasan dan keterampilan serta semakin di asah dalam hati dan keterbebanan untuk dapat melayani dengan efektif melalui pengalaman melayani secara langsung di gereja.",
+      image: "https://images.unsplash.com/photo-1609234656381-73e732808098?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ];
 
   const senatActivities = [
     {
-      title: "Organisasi Kemahasiswaan",
-      description:
-        "Senat Mahasiswa yang mengkoordinir berbagai kegiatan kampus, advokasi mahasiswa, dan pengembangan leadership.",
+      title: "Training Group",
+      description:[
+        "Training Group Media & AU-VI", 
+        "Training Group Panggung Boneka", 
+        "Training Group Musik Ibadah",
+      ]
+        
     },
     {
-      title: "Tim Pujian & Penyembahan",
-      description:
-        "Tim worship yang melayani di kebaktian kampus dan melatih mahasiswa dalam pelayanan musik gereja.",
+      title: "Pembinaan & Pelayanan",
+      description:[
+        "Pameran Buku", 
+        "Pelatihan/Lokakarya", 
+        "Pelayanan Gereja",
+        "Pelayanan Masyarakate"
+      ]
     },
     {
-      title: "Tim Olahraga",
-      description:
-        "Berbagai cabang olahraga seperti futsal, basket, voli untuk menjaga kesehatan dan membangun teamwork.",
+      title: "Perayaan & Peringatan",
+      description:[
+        "Upacara Hut RI", 
+        "Malam Budaya", 
+        "Hari Reformasi",
+        "Hari Natal/Paskah"
+      ]
     },
     {
-      title: "Kelompok Studi Alkitab",
-      description:
-        "Berbagai kelompok studi yang fokus pada topik-topik teologi tertentu untuk pendalaman bersama.",
+      title: "Kehidupan Kampus",
+      description:[
+        "Orientasi Mahasiswa Baru", 
+        "Pemilihan Senat", 
+        "Wisuda & Dies Natalis STTB",
+        "Game/Sport Day"
+      ]
+    }
+  ];
+
+  const senatGallery = [
+    {
+      id: 1,
+      url: "/kehidupan.png",
     },
     {
-      title: "Tim Pelayanan Sosial",
-      description:
-        "Tim yang mengorganisir kegiatan sosial seperti mengunjungi panti asuhan, pelayanan di daerah terpencil.",
+      id: 2,
+      url: "/kehidupan2.png",
     },
     {
-      title: "Majalah & Publikasi",
-      description:
-        "Tim redaksi yang menerbitkan majalah kampus, newsletter, dan mengelola media sosial STT.",
+      id: 3,
+      url: "/pembinaan.png",
+    },
+    {
+      id: 4,
+      url: "/pembinaan2.png",
+    },
+    {
+      id: 5,
+      url: "/perayaan.png",
+    },
+    {
+      id: 6,
+      url: "/training.png",
     },
   ];
 
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-64 bg-[#002366] flex items-center justify-center">
+      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
         <h1 className="text-4xl md:text-5xl text-white">Kehidupan Kampus</h1>
+         <ImageWithFallback
+          src="https://images.unsplash.com/photo-1577985043696-8bd54d9f093f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Berita"
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
       </div>
 
       {/* Sub Navigation */}
@@ -172,7 +211,7 @@ export default function KehidupanKampus() {
             {[
               { id: "fasilitas", label: "Fasilitas Kampus" },
               { id: "pembinaan", label: "Pembinaan" },
-              { id: "senat", label: "Senat & Organisasi" },
+              { id: "senat", label: "Senat" },
             ].map((section) => (
               <button
                 key={section.id}
@@ -208,9 +247,11 @@ export default function KehidupanKampus() {
                   key={image.id}
                   className="relative group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer"
                 >
-                  <ImageWithFallback
+                  <Image
                     src={image.url}
-                    alt={image.title}
+                    width={40}
+                    height={40}
+                    alt="fasilitas kampus"
                     className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -273,7 +314,7 @@ export default function KehidupanKampus() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {pembinaanPrograms.map((program, idx) => (
               <div
                 key={idx}
@@ -289,10 +330,6 @@ export default function KehidupanKampus() {
                     {program.title}
                   </h3>
                   <p className="text-gray-700 mb-4">{program.description}</p>
-                  <div className="flex items-center text-sm text-[#C41E3A]">
-                    <Heart size={16} className="mr-2" />
-                    <span>{program.schedule}</span>
-                  </div>
                 </div>
               </div>
             ))}
@@ -338,15 +375,15 @@ export default function KehidupanKampus() {
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">
-              Senat & Organisasi Mahasiswa
+              Kegiatan Senat
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Berbagai organisasi dan kegiatan mahasiswa untuk mengembangkan
+              Berbagai kegiatan mahasiswa untuk mengembangkan
               talenta, leadership, dan pelayanan
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="grid md:grid-cols-4 gap-6 mb-12">
             {senatActivities.map((activity, idx) => (
               <div
                 key={idx}
@@ -356,59 +393,32 @@ export default function KehidupanKampus() {
                   <Users className="text-[#C41E3A] mr-3" size={24} />
                   <h3 className="text-lg text-[#002366]">{activity.title}</h3>
                 </div>
-                <p className="text-sm text-gray-600">{activity.description}</p>
+                <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                  {activity.description.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
 
           <div className="bg-gray-50 p-8 rounded-lg">
             <h3 className="text-2xl text-[#002366] mb-6 text-center">
-              Struktur Senat Mahasiswa
+              Galeri Kegiatan Senat
             </h3>
-            <div className="max-w-3xl mx-auto">
-              <div className="bg-white p-6 rounded-lg shadow-md mb-4">
-                <h4 className="text-lg text-[#002366] mb-2">
-                  Ketua Senat Mahasiswa
-                </h4>
-                <p className="text-sm text-gray-600">
-                  Memimpin dan mengkoordinir seluruh kegiatan organisasi
-                  kemahasiswaan
-                </p>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h4 className="text-lg text-[#002366] mb-2">
-                    Divisi Kerohanian
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Mengkoordinir kegiatan spiritual dan pembinaan mahasiswa
-                  </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {senatGallery.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="group relative overflow-hidden rounded-lg aspect-square"
+                >
+                  <ImageWithFallback
+                    src={photo.url}
+                    alt="senat galeri"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h4 className="text-lg text-[#002366] mb-2">
-                    Divisi Akademik
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Mendukung kegiatan akademik dan penelitian mahasiswa
-                  </p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h4 className="text-lg text-[#002366] mb-2">
-                    Divisi Sosial
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Mengorganisir kegiatan pelayanan sosial dan outreach
-                  </p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h4 className="text-lg text-[#002366] mb-2">
-                    Divisi Multimedia
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Mengelola publikasi, dokumentasi, dan media sosial
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>

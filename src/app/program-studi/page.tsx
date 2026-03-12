@@ -153,6 +153,11 @@ export default function ProgramStudi() {
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
               Temukan program yang sesuai dengan panggilan pelayanan Anda
             </p>
+            <ImageWithFallback
+              src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1373&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="STT Campus"
+              className="absolute inset-0 w-full h-full object-cover opacity-20"
+            />
           </div>
         </div>
       </div>

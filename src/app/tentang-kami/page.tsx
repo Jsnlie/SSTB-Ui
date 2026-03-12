@@ -9,6 +9,7 @@ import VisiMisi from "../../components/VisiMisi";
 import CoreValues from "../../components/CoreValues";
 import PengakuanIman from "../../components/PengakuanIman";
 import DewanDosen from "../../components/DewanDosen";
+import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 
 export default function TentangKami() {
   const [activeSection, setActiveSection] = useState("sejarah");
@@ -16,8 +17,13 @@ export default function TentangKami() {
   return (
     <div>
       {/* Hero Banner */}
-      <div className="relative h-64 bg-[#002366] flex items-center justify-center">
+      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
         <h1 className="text-4xl md:text-5xl text-white">Tentang Kami</h1>
+        <ImageWithFallback
+          src="https://ayokuliah.id/wp-content/uploads/2015/09/Sekolah-Tinggi-Teologi-Bandung.jpg"
+          alt="about us pics"
+          className="absolute inset-1 w-full h-full opacity-20"
+        />
       </div>
 
       {/* Sub Navigation */}

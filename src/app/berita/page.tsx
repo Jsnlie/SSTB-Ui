@@ -121,8 +121,13 @@ export default function Berita() {
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-64 bg-[#002366] flex items-center justify-center">
+      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
         <h1 className="text-4xl md:text-5xl text-white">Berita & Kegiatan</h1>
+        <ImageWithFallback
+          src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Berita"
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
       </div>
 
       {/* Featured Article Banner */}
