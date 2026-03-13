@@ -1,33 +1,127 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
+import {
+  BeritaItem,
+  formatBeritaDate,
+  parseBeritaListResponse,
+} from "../../../../lib/berita";
 
-const placeholderData = [
-  { id: 1, judul: "STT Bandung Meraih Akreditasi A dari BAN-PT", kategori: "Akademik", tanggal: "5 Mar 2026", status: "Published" },
-  { id: 2, judul: "Perpustakaan Digital Diluncurkan dengan 10,000+ Koleksi", kategori: "Fasilitas", tanggal: "15 Feb 2026", status: "Published" },
-  { id: 3, judul: "Kerjasama Internasional dengan Trinity Theological Seminary", kategori: "Kerjasama", tanggal: "10 Feb 2026", status: "Draft" },
-  { id: 4, judul: "Wisuda Angkatan 2025: 120 Lulusan Siap Melayani", kategori: "Akademik", tanggal: "1 Feb 2026", status: "Published" },
-  { id: 5, judul: "Workshop Penulisan Jurnal Ilmiah untuk Dosen", kategori: "Akademik", tanggal: "20 Jan 2026", status: "Published" },
-  { id: 6, judul: "Program Beasiswa Penuh untuk Mahasiswa Berprestasi", kategori: "Beasiswa", tanggal: "15 Jan 2026", status: "Published" },
-  { id: 7, judul: "Renovasi Gedung Perkuliahan Selesai", kategori: "Fasilitas", tanggal: "10 Jan 2026", status: "Draft" },
-  { id: 8, judul: "Dosen STT Bandung Raih Penghargaan Peneliti Terbaik", kategori: "Prestasi", tanggal: "5 Jan 2026", status: "Published" },
-];
+function getErrorMessage(text: string, fallback: string) {
+  if (!text) return fallback;
+  try {
+    const parsed = JSON.parse(text);
+    return parsed?.message || parsed?.title || fallback;
+  } catch {
+    return text;
+  }
+}
 
 export default function BeritaPage() {
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [data, setData] = useState<BeritaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
-  const filtered = placeholderData.filter((item) => {
-    const matchSearch = item.judul.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = !filterStatus || item.status === filterStatus;
+  const fetchData = async () => {
+    try {
+      setError("");
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl("/api/berita"), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal memuat data berita"));
+      }
+
+      const json = await res.json();
+      setData(parseBeritaListResponse(json));
+    } catch (err: unknown) {
+      setData([]);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat memuat data berita");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDelete = async () => {
+    if (deleteId === null) return;
+
+    setDeleting(true);
+    try {
+      setError("");
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl(`/api/berita/${deleteId}`), {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal menghapus berita"));
+      }
+
+      await fetchData();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat menghapus berita");
+      }
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
+
+  const categories = useMemo(() => {
+    return Array.from(
+      new Set(data.map((item) => item.category).filter((item) => Boolean(item)))
+    ).sort((a, b) => a.localeCompare(b));
+  }, [data]);
+
+  const filtered = data.filter((item) => {
+    const keyword = search.toLowerCase();
+    const matchSearch =
+      item.title.toLowerCase().includes(keyword) ||
+      item.author.toLowerCase().includes(keyword) ||
+      item.category.toLowerCase().includes(keyword);
+    const matchFilter = !filterCategory || item.category === filterCategory;
     return matchSearch && matchFilter;
   });
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       {/* Actions bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex gap-3 flex-1 w-full sm:w-auto">
@@ -42,13 +136,16 @@ export default function BeritaPage() {
             />
           </div>
           <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
             className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
           >
-            <option value="">Semua Status</option>
-            <option value="Published">Published</option>
-            <option value="Draft">Draft</option>
+            <option value="">Semua Kategori</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
         </div>
         <Link
@@ -69,8 +166,8 @@ export default function BeritaPage() {
                 <th className="text-left px-6 py-4 font-medium text-gray-600">No</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Judul</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Kategori</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Penulis</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Tanggal</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Status</th>
                 <th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
               </tr>
             </thead>
@@ -78,29 +175,16 @@ export default function BeritaPage() {
               {filtered.map((item, idx) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
-                  <td className="px-6 py-4 font-medium text-gray-800 max-w-xs truncate">{item.judul}</td>
+                  <td className="px-6 py-4 font-medium text-gray-800 max-w-xs truncate">{item.title}</td>
                   <td className="px-6 py-4">
-                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
-                      {item.kategori}
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                      {item.category || "Tanpa kategori"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{item.tanggal}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        item.status === "Published"
-                          ? "bg-green-50 text-green-700"
-                          : "bg-yellow-50 text-yellow-700"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
+                  <td className="px-6 py-4 text-gray-600">{item.author || "-"}</td>
+                  <td className="px-6 py-4 text-gray-600">{formatBeritaDate(item.date)}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
-                        <Eye size={16} />
-                      </button>
                       <Link href={`/admin/berita/${item.id}`} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
                         <Pencil size={16} />
                       </Link>
@@ -129,7 +213,7 @@ export default function BeritaPage() {
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Menampilkan {filtered.length} dari {placeholderData.length} data
+            Menampilkan {filtered.length} dari {data.length} data
           </p>
           <div className="flex items-center gap-2">
             <button className="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
@@ -159,10 +243,11 @@ export default function BeritaPage() {
                 Batal
               </button>
               <button
-                onClick={() => setDeleteId(null)}
+                onClick={handleDelete}
+                disabled={deleting}
                 className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
               >
-                Hapus
+                {deleting ? "Menghapus..." : "Hapus"}
               </button>
             </div>
           </div>

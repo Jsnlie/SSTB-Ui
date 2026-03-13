@@ -1,12 +1,10 @@
 "use client";
 
-import { ImageWithFallback } from "../../../components/figma/ImageWithFallback";
 import { Clock, Award, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import * as Tabs from "@radix-ui/react-tabs";
 import Link from "next/link";
-import { getProgramBySlug } from "../data";
 import { apiUrl } from "../../../lib/api";
 
 interface OverviewAbout {
@@ -61,10 +59,16 @@ interface CompetencyGroupApi {
   items?: CompetencyItemApi[];
 }
 
+function normalizeArray<T>(payload: any): T[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  return [];
+}
+
 export default function ProgramDetail() {
   const params = useParams();
   const slug = params.slug as string;
-  const program = getProgramBySlug(slug);
   const [activeTab, setActiveTab] = useState("overview");
 
   const [programApi, setProgramApi] = useState<ProgramStudiApi | null>(null);
@@ -84,9 +88,19 @@ export default function ProgramDetail() {
 
       try {
         const res = await fetch(apiUrl(`/api/program-studi/${slug}`));
-        if (!res.ok) return;
+        if (!res.ok) {
+          setProgramApi(null);
+          return;
+        }
+
         const data = await res.json();
         const item = data.data ?? data;
+
+        if (!item || typeof item !== "object") {
+          setProgramApi(null);
+          return;
+        }
+
         setProgramApi(item);
 
         const programStudiId = item.id;
@@ -100,22 +114,27 @@ export default function ProgramDetail() {
 
         if (aboutRes.ok) {
           const aboutData = await aboutRes.json();
-          setAbouts(Array.isArray(aboutData) ? aboutData : aboutData.data ?? []);
+          setAbouts(normalizeArray<OverviewAbout>(aboutData));
+        } else {
+          setAbouts([]);
         }
+
         if (reqRes.ok) {
           const reqData = await reqRes.json();
-          setRequirements(Array.isArray(reqData) ? reqData : reqData.data ?? []);
+          setRequirements(normalizeArray<OverviewRequirement>(reqData));
+        } else {
+          setRequirements([]);
         }
 
         let allCourses: CourseApi[] = [];
         if (courseRes.ok) {
           const courseData = await courseRes.json();
-          allCourses = Array.isArray(courseData) ? courseData : courseData.data ?? [];
+          allCourses = normalizeArray<CourseApi>(courseData);
         }
 
         if (groupRes.ok) {
           const groupData = await groupRes.json();
-          const allGroups: CurriculumGroupApi[] = Array.isArray(groupData) ? groupData : groupData.data ?? [];
+          const allGroups = normalizeArray<CurriculumGroupApi>(groupData);
 
           const filteredGroups = allGroups
             .filter((group) => group.programStudiId === programStudiId)
@@ -127,16 +146,15 @@ export default function ProgramDetail() {
             }));
 
           setCurriculumGroups(filteredGroups);
+        } else {
+          setCurriculumGroups([]);
         }
 
         if (competencyRes.ok) {
           const competencyData = await competencyRes.json();
-          const competencyPayload = competencyData.data ?? competencyData;
-          const allCompetencyGroups: CompetencyGroupApi[] = Array.isArray(competencyPayload)
-            ? competencyPayload
-            : competencyPayload
-              ? [competencyPayload]
-              : [];
+          const allCompetencyGroups = normalizeArray<CompetencyGroupApi>(
+            competencyData
+          );
 
           setCompetencyGroups(
             allCompetencyGroups.map((group) => ({
@@ -148,7 +166,9 @@ export default function ProgramDetail() {
           setCompetencyGroups([]);
         }
       } catch {
-        // fallback to hardcoded data
+        setProgramApi(null);
+        setAbouts([]);
+        setRequirements([]);
         setCurriculumGroups([]);
         setCompetencyGroups([]);
       } finally {
@@ -160,37 +180,31 @@ export default function ProgramDetail() {
     fetchOverview();
   }, [slug]);
 
-  // Use API data for hero/quick-facts if available, otherwise fallback to hardcoded
-  const heroTitle = programApi?.heroTitle || program?.heroTitle;
-  const heroSubtitle = programApi?.heroSubtitle || program?.heroSubtitle;
-  const duration = programApi?.duration || program?.duration;
-  const totalCredits = programApi ? `${programApi.totalCredits} SKS` : program?.totalCredits;
-  const degree = programApi?.degree || program?.degree;
+  const heroTitle = programApi?.heroTitle || programApi?.name || "Program Akademik";
+  const heroSubtitle =
+    programApi?.heroSubtitle || programApi?.description || "Detail program studi";
+  const duration = programApi?.duration || "-";
+  const totalCredits = programApi ? `${programApi.totalCredits} SKS` : "-";
+  const degree = programApi?.degree || "-";
+  const aboutParagraphs =
+    abouts.length > 0
+      ? abouts.map((item) => item.text).filter(Boolean)
+      : (programApi?.description ? [programApi.description] : []);
   const apiRequirementItems = requirements
     .flatMap((item) => item.text.split(/\r?\n/))
     .map((item) => item.trim())
     .filter(Boolean);
-  const curriculumItems =
-    curriculumGroups.length > 0
-      ? curriculumGroups.map((group) => ({
-          label: group.label,
-          courses: group.courses ?? [],
-        }))
-      : program?.curriculum ?? [];
-  const competencyItems =
-    competencyGroups.length > 0
-      ? competencyGroups.map((group) => ({
-          id: group.id,
-          title: group.title,
-          items: (group.items ?? []).map((item) => item.text).filter(Boolean),
-        }))
-      : (program?.competencies ?? []).map((group, index) => ({
-          id: index,
-          title: group.title,
-          items: group.items,
-        }));
+  const curriculumItems = curriculumGroups.map((group) => ({
+    label: group.label,
+    courses: group.courses ?? [],
+  }));
+  const competencyItems = competencyGroups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    items: (group.items ?? []).map((item) => item.text).filter(Boolean),
+  }));
 
-  if (!program && !programApi && !loadingOverview) {
+  if (!programApi && !loadingOverview) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -209,7 +223,7 @@ export default function ProgramDetail() {
     );
   }
 
-  if (!program && loadingOverview) {
+  if (!programApi && loadingOverview) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-8 h-8 border-4 border-[#002366] border-t-transparent rounded-full animate-spin" />
@@ -299,18 +313,14 @@ export default function ProgramDetail() {
                     <div className="flex justify-center py-8">
                       <div className="w-6 h-6 border-3 border-[#002366] border-t-transparent rounded-full animate-spin" />
                     </div>
-                  ) : abouts.length > 0 ? (
-                    abouts.map((item) => (
-                      <p key={item.id} className="text-gray-700 mb-4">
-                        {item.text}
-                      </p>
-                    ))
-                  ) : (
-                    program?.overview.about.map((paragraph, idx) => (
+                  ) : aboutParagraphs.length > 0 ? (
+                    aboutParagraphs.map((paragraph, idx) => (
                       <p key={idx} className="text-gray-700 mb-4">
                         {paragraph}
                       </p>
                     ))
+                  ) : (
+                    <p className="text-gray-600">Overview belum tersedia.</p>
                   )}
 
                   {loadingOverview ? null : apiRequirementItems.length > 0 ? (
@@ -327,21 +337,9 @@ export default function ProgramDetail() {
                         ))}
                       </ul>
                     </>
-                  ) : program?.overview.requirements ? (
-                    <>
-                      <h3 className="text-xl text-[#002366] mt-8 mb-4">
-                        Requirements:
-                      </h3>
-                      <ul className="space-y-2 text-gray-700">
-                        {program.overview.requirements.map((item, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <span className="text-[#C41E3A] mr-2">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : null}
+                  ) : (
+                    <p className="text-gray-600 mt-6">Requirements belum tersedia.</p>
+                  )}
                 </div>
               </Tabs.Content>
 

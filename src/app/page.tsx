@@ -3,6 +3,7 @@ import { Calendar, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import VisiMisi from "../components/VisiMisi";
 import CoreValues from "../components/CoreValues";
+import LatestNewsSection from "../components/home/LatestNewsSection";
 
 export default function Home() {
   const testimonials = [
@@ -38,30 +39,6 @@ export default function Home() {
       title: "Open House Program Magister",
       date: "25 Maret 2026",
       image: "https://images.unsplash.com/photo-1547817651-7fb0cc360536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2FtcHVzfGVufDF8fHx8MTc3Mjk2NDcyN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-  ];
-
-  const latestNews = [
-    {
-      id: 1,
-      title: "STT Seminari Theologia Meraih Akreditasi A dari BAN-PT",
-      excerpt: "Pencapaian membanggakan sebagai hasil komitmen terhadap keunggulan akademik",
-      date: "5 Maret 2026",
-      image: "https://images.unsplash.com/photo-1660485345088-c398363c1f45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmFkdWF0aW9uJTIwY2VyZW1vbnklMjBjZWxlYnJhdGlvbnxlbnwxfHx8fDE3NzMwNDEwMjl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      id: 2,
-      title: "Perpustakaan Digital Diluncurkan dengan 10,000+ Koleksi",
-      excerpt: "Akses mudah ke ribuan buku dan jurnal teologi untuk mahasiswa",
-      date: "15 Februari 2026",
-      image: "https://images.unsplash.com/photo-1566314748815-2ff5db8edf2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhY2FkZW1pYyUyMGJvb2tzJTIwbGlicmFyeSUyMHNoZWx2ZXN8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      id: 3,
-      title: "Kerjasama Internasional dengan Trinity Theological Seminary",
-      excerpt: "Program pertukaran mahasiswa dan dosen dengan seminari di USA",
-      date: "10 Februari 2026",
-      image: "https://images.unsplash.com/photo-1600903308878-bf5e554ab841?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjYW1wdXMlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzczMDUwNDA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
     },
   ];
 
@@ -182,51 +159,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest News */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl text-[#002366] mb-4">Berita Terbaru</h2>
-            <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {latestNews.map((news) => (
-              <Link
-                key={news.id}
-                href={`/berita/${news.id}`}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
-              >
-                <ImageWithFallback
-                  src={news.image}
-                  alt={news.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="p-6">
-                  <h3 className="text-[#002366] mb-2 group-hover:text-[#C41E3A] transition-colors">
-                    {news.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3">{news.excerpt}</p>
-                  <div className="flex items-center text-xs text-gray-500">
-                    <Calendar size={12} className="mr-1" />
-                    {news.date}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center mt-8">
-            <Link
-              href="/berita"
-              className="inline-flex items-center text-[#002366] hover:text-[#C41E3A] transition-colors"
-            >
-              Baca Semua Berita
-              <ArrowRight className="ml-2" size={20} />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <LatestNewsSection />
 
       {/* CTA Section */}
       <section className="bg-[#002366] py-16">

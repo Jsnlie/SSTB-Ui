@@ -25,11 +25,12 @@ const mainMenuItems = [
 
 const academicMenuItems = [
   { name: "Program Studi", href: "/admin/program-studi", icon: GraduationCap },
+  { name: "Overview About", href: "/admin/overview-about", icon: FileText },
+  { name: "Overview Requirement", href: "/admin/overview-requirement", icon: FileText },
   { name: "Jenis Mata Kuliah", href: "/admin/jenis-matkul", icon: Layers },
   { name: "Mata Kuliah", href: "/admin/mata-kuliah", icon: BookOpen },
   { name: "Kompetensi", href: "/admin/kompetensi", icon: Target },
-  { name: "Overview About", href: "/admin/overview-about", icon: FileText },
-  { name: "Overview Requirement", href: "/admin/overview-requirement", icon: FileText },
+ 
 ];
 
 export default function Sidebar() {
