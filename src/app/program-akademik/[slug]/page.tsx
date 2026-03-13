@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import * as Tabs from "@radix-ui/react-tabs";
 import Link from "next/link";
 import { getProgramBySlug } from "../data";
+import { apiUrl } from "../../../lib/api";
 
 interface OverviewAbout {
   id: number;
@@ -33,6 +34,33 @@ interface ProgramStudiApi {
   degree: string;
 }
 
+interface CourseApi {
+  id: number;
+  name: string;
+  credits: number;
+  curriculumGroupId: number;
+}
+
+interface CurriculumGroupApi {
+  id: number;
+  label: string;
+  programStudiId: number;
+  courses?: CourseApi[];
+}
+
+interface CompetencyItemApi {
+  id: number;
+  text: string;
+  competencyGroupId: number;
+}
+
+interface CompetencyGroupApi {
+  id: number;
+  title: string;
+  programStudiId: number;
+  items?: CompetencyItemApi[];
+}
+
 export default function ProgramDetail() {
   const params = useParams();
   const slug = params.slug as string;
@@ -42,21 +70,32 @@ export default function ProgramDetail() {
   const [programApi, setProgramApi] = useState<ProgramStudiApi | null>(null);
   const [abouts, setAbouts] = useState<OverviewAbout[]>([]);
   const [requirements, setRequirements] = useState<OverviewRequirement[]>([]);
+  const [curriculumGroups, setCurriculumGroups] = useState<CurriculumGroupApi[]>([]);
+  const [competencyGroups, setCompetencyGroups] = useState<CompetencyGroupApi[]>([]);
   const [loadingOverview, setLoadingOverview] = useState(true);
+  const [loadingCurriculum, setLoadingCurriculum] = useState(true);
+  const [loadingCompetencies, setLoadingCompetencies] = useState(true);
 
   useEffect(() => {
     const fetchOverview = async () => {
+      setLoadingOverview(true);
+      setLoadingCurriculum(true);
+      setLoadingCompetencies(true);
+
       try {
-        const res = await fetch(`https://localhost:7013/api/program-studi/${slug}`);
+        const res = await fetch(apiUrl(`/api/program-studi/${slug}`));
         if (!res.ok) return;
         const data = await res.json();
         const item = data.data ?? data;
         setProgramApi(item);
 
         const programStudiId = item.id;
-        const [aboutRes, reqRes] = await Promise.all([
-          fetch(`https://localhost:7013/api/OverviewAbout/programstudi/${programStudiId}`),
-          fetch(`https://localhost:7013/api/OverviewRequirement/programstudi/${programStudiId}`),
+        const [aboutRes, reqRes, groupRes, courseRes, competencyRes] = await Promise.all([
+          fetch(apiUrl(`/api/OverviewAbout/programstudi/${programStudiId}`)),
+          fetch(apiUrl(`/api/OverviewRequirement/programstudi/${programStudiId}`)),
+          fetch(apiUrl("/api/jenis-matkul")),
+          fetch(apiUrl("/api/mata-kuliah")),
+          fetch(apiUrl(`/api/kompetensi/program/${programStudiId}`)),
         ]);
 
         if (aboutRes.ok) {
@@ -67,10 +106,55 @@ export default function ProgramDetail() {
           const reqData = await reqRes.json();
           setRequirements(Array.isArray(reqData) ? reqData : reqData.data ?? []);
         }
+
+        let allCourses: CourseApi[] = [];
+        if (courseRes.ok) {
+          const courseData = await courseRes.json();
+          allCourses = Array.isArray(courseData) ? courseData : courseData.data ?? [];
+        }
+
+        if (groupRes.ok) {
+          const groupData = await groupRes.json();
+          const allGroups: CurriculumGroupApi[] = Array.isArray(groupData) ? groupData : groupData.data ?? [];
+
+          const filteredGroups = allGroups
+            .filter((group) => group.programStudiId === programStudiId)
+            .map((group) => ({
+              ...group,
+              courses: Array.isArray(group.courses)
+                ? group.courses
+                : allCourses.filter((course) => course.curriculumGroupId === group.id),
+            }));
+
+          setCurriculumGroups(filteredGroups);
+        }
+
+        if (competencyRes.ok) {
+          const competencyData = await competencyRes.json();
+          const competencyPayload = competencyData.data ?? competencyData;
+          const allCompetencyGroups: CompetencyGroupApi[] = Array.isArray(competencyPayload)
+            ? competencyPayload
+            : competencyPayload
+              ? [competencyPayload]
+              : [];
+
+          setCompetencyGroups(
+            allCompetencyGroups.map((group) => ({
+              ...group,
+              items: Array.isArray(group.items) ? group.items : [],
+            }))
+          );
+        } else {
+          setCompetencyGroups([]);
+        }
       } catch {
         // fallback to hardcoded data
+        setCurriculumGroups([]);
+        setCompetencyGroups([]);
       } finally {
         setLoadingOverview(false);
+        setLoadingCurriculum(false);
+        setLoadingCompetencies(false);
       }
     };
     fetchOverview();
@@ -86,6 +170,25 @@ export default function ProgramDetail() {
     .flatMap((item) => item.text.split(/\r?\n/))
     .map((item) => item.trim())
     .filter(Boolean);
+  const curriculumItems =
+    curriculumGroups.length > 0
+      ? curriculumGroups.map((group) => ({
+          label: group.label,
+          courses: group.courses ?? [],
+        }))
+      : program?.curriculum ?? [];
+  const competencyItems =
+    competencyGroups.length > 0
+      ? competencyGroups.map((group) => ({
+          id: group.id,
+          title: group.title,
+          items: (group.items ?? []).map((item) => item.text).filter(Boolean),
+        }))
+      : (program?.competencies ?? []).map((group, index) => ({
+          id: index,
+          title: group.title,
+          items: group.items,
+        }));
 
   if (!program && !programApi && !loadingOverview) {
     return (
@@ -248,50 +351,58 @@ export default function ProgramDetail() {
                   Daftar Mata Kuliah
                 </h2>
 
-                <div className="space-y-8">
-                  {(program?.curriculum ?? []).map((semester, sIdx) => (
-                    <div key={sIdx}>
-                      <h3 className="text-xl text-[#002366] mb-4">
-                        {semester.label}
-                      </h3>
-                      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <table className="w-full">
-                          <thead className="bg-[#002366] text-white">
-                            <tr>
-                              <th className="px-4 py-3 text-left">Mata Kuliah</th>
-                              <th className="px-4 py-3 text-center w-20 bg-[#C41E3A]">SKS</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {semester.courses.map((course, cIdx) => (
-                              <tr
-                                key={cIdx}
-                                className="border-b border-gray-200 hover:bg-gray-50"
-                              >
-                                <td className="px-4 py-3 text-gray-800">
-                                  {course.name}
+                {loadingCurriculum && curriculumItems.length === 0 ? (
+                  <div className="flex justify-center py-8">
+                    <div className="w-6 h-6 border-3 border-[#002366] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : curriculumItems.length === 0 ? (
+                  <p className="text-gray-600">Kurikulum belum tersedia.</p>
+                ) : (
+                  <div className="space-y-8">
+                    {curriculumItems.map((semester, sIdx) => (
+                      <div key={sIdx}>
+                        <h3 className="text-xl text-[#002366] mb-4">
+                          {semester.label}
+                        </h3>
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                          <table className="w-full">
+                            <thead className="bg-[#002366] text-white">
+                              <tr>
+                                <th className="px-4 py-3 text-left">Mata Kuliah</th>
+                                <th className="px-4 py-3 text-center w-20 bg-[#C41E3A]">SKS</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {semester.courses.map((course, cIdx) => (
+                                <tr
+                                  key={cIdx}
+                                  className="border-b border-gray-200 hover:bg-gray-50"
+                                >
+                                  <td className="px-4 py-3 text-gray-800">
+                                    {course.name}
+                                  </td>
+                                  <td className="px-4 py-3 text-center text-[#002366] font-semibold bg-gray-50 border-l border-gray-200">
+                                    {course.credits}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot>
+                              <tr className="bg-[#002366]/5 border-t-2 border-[#002366]">
+                                <td className="px-4 py-3 text-[#002366] font-bold">
+                                  Total SKS
                                 </td>
-                                <td className="px-4 py-3 text-center text-[#002366] font-semibold bg-gray-50 border-l border-gray-200">
-                                  {course.credits}
+                                <td className="px-4 py-3 text-center text-[#C41E3A] font-bold bg-[#C41E3A]/10 border-l border-gray-200">
+                                  {semester.courses.reduce((sum, c) => sum + c.credits, 0)}
                                 </td>
                               </tr>
-                            ))}
-                          </tbody>
-                          <tfoot>
-                            <tr className="bg-[#002366]/5 border-t-2 border-[#002366]">
-                              <td className="px-4 py-3 text-[#002366] font-bold">
-                                Total SKS
-                              </td>
-                              <td className="px-4 py-3 text-center text-[#C41E3A] font-bold bg-[#C41E3A]/10 border-l border-gray-200">
-                                {semester.courses.reduce((sum, c) => sum + c.credits, 0)}
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </table>
+                            </tfoot>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </Tabs.Content>
 
               {/* Competencies Tab */}
@@ -300,23 +411,31 @@ export default function ProgramDetail() {
                   Kompetensi Lulusan
                 </h2>
 
-                <div className="space-y-6">
-                  {(program?.competencies ?? []).map((group, gIdx) => (
-                    <div key={gIdx} className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="text-lg text-[#002366] mb-3">
-                        {group.title}
-                      </h3>
-                      <ul className="space-y-2 text-gray-700">
-                        {group.items.map((item, iIdx) => (
-                          <li key={iIdx} className="flex items-start">
-                            <span className="text-[#C41E3A] mr-2">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+                {loadingCompetencies && competencyItems.length === 0 ? (
+                  <div className="flex justify-center py-8">
+                    <div className="w-6 h-6 border-3 border-[#002366] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : competencyItems.length === 0 ? (
+                  <p className="text-gray-600">Kompetensi belum tersedia.</p>
+                ) : (
+                  <div className="space-y-6">
+                    {competencyItems.map((group) => (
+                      <div key={group.id} className="bg-gray-50 p-6 rounded-lg">
+                        <h3 className="text-lg text-[#002366] mb-3">
+                          {group.title}
+                        </h3>
+                        <ul className="space-y-2 text-gray-700">
+                          {group.items.map((item, iIdx) => (
+                            <li key={iIdx} className="flex items-start">
+                              <span className="text-[#C41E3A] mr-2">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Tabs.Content>
             </Tabs.Root>
           </div>

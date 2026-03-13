@@ -7,7 +7,9 @@ import AdminNavbar from "../../../components/admin/AdminNavbar";
 const pageTitles: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/program-studi": "Program Studi",
+  "/admin/jenis-matkul": "Jenis Mata Kuliah",
   "/admin/mata-kuliah": "Mata Kuliah",
+  "/admin/kompetensi": "Kompetensi",
   "/admin/berita": "Berita",
   "/admin/kegiatan": "Kegiatan",
   "/admin/overview-about": "Overview About",
