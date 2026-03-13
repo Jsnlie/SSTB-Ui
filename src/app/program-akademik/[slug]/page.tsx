@@ -82,6 +82,10 @@ export default function ProgramDetail() {
   const duration = programApi?.duration || program?.duration;
   const totalCredits = programApi ? `${programApi.totalCredits} SKS` : program?.totalCredits;
   const degree = programApi?.degree || program?.degree;
+  const apiRequirementItems = requirements
+    .flatMap((item) => item.text.split(/\r?\n/))
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   if (!program && !programApi && !loadingOverview) {
     return (
@@ -206,16 +210,16 @@ export default function ProgramDetail() {
                     ))
                   )}
 
-                  {loadingOverview ? null : requirements.length > 0 ? (
+                  {loadingOverview ? null : apiRequirementItems.length > 0 ? (
                     <>
                       <h3 className="text-xl text-[#002366] mt-8 mb-4">
                         Requirements:
                       </h3>
                       <ul className="space-y-2 text-gray-700">
-                        {requirements.map((item) => (
-                          <li key={item.id} className="flex items-start">
+                        {apiRequirementItems.map((item, idx) => (
+                          <li key={idx} className="flex items-start">
                             <span className="text-[#C41E3A] mr-2">•</span>
-                            <span>{item.text}</span>
+                            <span>{item}</span>
                           </li>
                         ))}
                       </ul>

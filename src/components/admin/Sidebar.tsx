@@ -20,6 +20,7 @@ const menuItems = [
   { name: "Berita", href: "/admin/berita", icon: Newspaper },
   { name: "Kegiatan", href: "/admin/kegiatan", icon: CalendarDays },
   { name: "Overview About", href: "/admin/overview-about", icon: FileText },
+  { name: "Overview Requirement", href: "/admin/overview-requirement", icon: FileText },
 ];
 
 export default function Sidebar() {
@@ -70,7 +71,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="p-4 border-t border-white/10">
         <Link
-          href="/admin/login"
+          href="/"
           className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/80 hover:bg-white/10 transition-colors"
         >
           <LogOut size={18} />
