@@ -1,32 +1,203 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
 
-const placeholderData = [
-  { id: 1, judul: "Kebaktian Kebangunan Rohani Kampus", lokasi: "Auditorium Utama", tanggalMulai: "15 Mar 2026", tanggalSelesai: "15 Mar 2026", status: "Upcoming" },
-  { id: 2, judul: "Seminar Nasional Teologi Kontemporer", lokasi: "Aula Serbaguna", tanggalMulai: "22 Mar 2026", tanggalSelesai: "23 Mar 2026", status: "Upcoming" },
-  { id: 3, judul: "Open House Program Magister", lokasi: "Gedung A", tanggalMulai: "25 Mar 2026", tanggalSelesai: "25 Mar 2026", status: "Upcoming" },
-  { id: 4, judul: "Retreat Mahasiswa Semester Genap", lokasi: "Lembang", tanggalMulai: "5 Apr 2026", tanggalSelesai: "7 Apr 2026", status: "Upcoming" },
-  { id: 5, judul: "Konser Musik Gerejawi", lokasi: "Auditorium Utama", tanggalMulai: "10 Feb 2026", tanggalSelesai: "10 Feb 2026", status: "Selesai" },
-  { id: 6, judul: "Workshop Penulisan Karya Ilmiah", lokasi: "Ruang Seminar", tanggalMulai: "1 Feb 2026", tanggalSelesai: "2 Feb 2026", status: "Selesai" },
-  { id: 7, judul: "Bakti Sosial Bersama Jemaat", lokasi: "Bandung Selatan", tanggalMulai: "20 Jan 2026", tanggalSelesai: "20 Jan 2026", status: "Selesai" },
-];
+interface AcaraItem {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+}
+
+function toStringSafe(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "";
+  return String(value);
+}
+
+function toNumberSafe(value: unknown) {
+  if (typeof value === "number") return value;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseAcaraListResponse(payload: any): AcaraItem[] {
+  const source = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.data)
+    ? payload.data
+    : Array.isArray(payload?.items)
+    ? payload.items
+    : [];
+
+  return source.map((item: any) => ({
+    id: toNumberSafe(item?.id),
+    title: toStringSafe(item?.title),
+    date: toStringSafe(item?.date),
+    time: toStringSafe(item?.time),
+  }));
+}
+
+function getErrorMessage(text: string, fallback: string) {
+  if (!text) return fallback;
+  try {
+    const parsed = JSON.parse(text);
+    return parsed?.message || parsed?.title || fallback;
+  } catch {
+    return text;
+  }
+}
+
+function toDateOnly(value: string): Date | null {
+  if (!value) return null;
+  const parsed = new Date(value.includes("T") ? value : `${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
+function formatAcaraDate(value: string) {
+  const parsed = toDateOnly(value);
+  if (!parsed) return value || "-";
+
+  return parsed.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatAcaraTime(value: string) {
+  if (!value) return "-";
+
+  const normalized = value.trim();
+  const match = normalized.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+
+  if (!match) return normalized;
+
+  const hours = match[1].padStart(2, "0");
+  const minutes = match[2];
+  return `${hours}.${minutes}`;
+}
+
+function getStatusByDate(value: string): "Upcoming" | "Selesai" {
+  const parsed = toDateOnly(value);
+  if (!parsed) return "Upcoming";
+
+  const today = new Date();
+  const todayDateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+
+  return parsed.getTime() < todayDateOnly.getTime() ? "Selesai" : "Upcoming";
+}
 
 export default function KegiatanPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [data, setData] = useState<AcaraItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
-  const filtered = placeholderData.filter((item) => {
-    const matchSearch = item.judul.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = !filterStatus || item.status === filterStatus;
-    return matchSearch && matchFilter;
-  });
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      setError("");
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl("/api/Acara"), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal memuat data kegiatan"));
+      }
+
+      const json = await res.json();
+      setData(parseAcaraListResponse(json));
+    } catch (err: unknown) {
+      setData([]);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat memuat data kegiatan");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const keyword = search.toLowerCase();
+
+    return data.filter((item) => {
+      const status = getStatusByDate(item.date);
+      const matchSearch =
+        item.title.toLowerCase().includes(keyword) ||
+        formatAcaraDate(item.date).toLowerCase().includes(keyword) ||
+        formatAcaraTime(item.time).toLowerCase().includes(keyword);
+      const matchFilter = !filterStatus || status === filterStatus;
+
+      return matchSearch && matchFilter;
+    });
+  }, [data, filterStatus, search]);
+
+  const handleDelete = async () => {
+    if (deleteId === null) return;
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl(`/api/Acara/${deleteId}`), {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal menghapus kegiatan"));
+      }
+
+      await fetchData();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat menghapus kegiatan");
+      }
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       {/* Actions bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex gap-3 flex-1 w-full sm:w-auto">
@@ -67,57 +238,63 @@ export default function KegiatanPage() {
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="text-left px-6 py-4 font-medium text-gray-600">No</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Judul Kegiatan</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Lokasi</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Tanggal Mulai</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Tanggal Selesai</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Tanggal</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Waktu</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Status</th>
                 <th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
-                  <td className="px-6 py-4 font-medium text-gray-800">{item.judul}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.lokasi}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.tanggalMulai}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.tanggalSelesai}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        item.status === "Upcoming"
-                          ? "bg-blue-50 text-blue-700"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center gap-1">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
-                        <Eye size={16} />
-                      </button>
-                      <Link href={`/admin/kegiatan/${item.id}`} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
-                        <Pencil size={16} />
-                      </Link>
-                      <button
-                        onClick={() => setDeleteId(item.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Hapus"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                    <div className="inline-block w-6 h-6 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
                   </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
+              ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
+              ) : (
+                filtered.map((item, idx) => {
+                  const status = getStatusByDate(item.date);
+
+                  return (
+                    <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
+                      <td className="px-6 py-4 font-medium text-gray-800">{item.title}</td>
+                      <td className="px-6 py-4 text-gray-600">{formatAcaraDate(item.date)}</td>
+                      <td className="px-6 py-4 text-gray-600">{formatAcaraTime(item.time)}</td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                            status === "Upcoming"
+                              ? "bg-blue-50 text-blue-700"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-1">
+                          <Link href={`/admin/kegiatan/${item.id}`} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                            <Pencil size={16} />
+                          </Link>
+                          <button
+                            onClick={() => setDeleteId(item.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -126,7 +303,7 @@ export default function KegiatanPage() {
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Menampilkan {filtered.length} dari {placeholderData.length} data
+            Menampilkan {filtered.length} dari {data.length} data
           </p>
           <div className="flex items-center gap-2">
             <button className="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
@@ -156,10 +333,11 @@ export default function KegiatanPage() {
                 Batal
               </button>
               <button
-                onClick={() => setDeleteId(null)}
+                onClick={handleDelete}
+                disabled={deleting}
                 className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
               >
-                Hapus
+                {deleting ? "Menghapus..." : "Hapus"}
               </button>
             </div>
           </div>

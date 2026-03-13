@@ -15,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { name: "Program Studi", href: "/program-studi" },
     { name: "Admisi", href: "/admisi" },
     { name: "Berita", href: "/berita" },
+    { name: "Kegiatan", href: "/kegiatan" },
     { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
   ];
 

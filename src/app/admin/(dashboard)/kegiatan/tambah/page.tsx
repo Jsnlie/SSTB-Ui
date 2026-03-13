@@ -3,19 +3,75 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
+
+function getErrorMessage(text: string, fallback: string) {
+  if (!text) return fallback;
+  try {
+    const parsed = JSON.parse(text);
+    return parsed?.message || parsed?.title || fallback;
+  } catch {
+    return text;
+  }
+}
 
 export default function TambahKegiatanPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [imageName, setImageName] = useState("");
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    title: "",
+    date: new Date().toISOString().slice(0, 10),
+    time: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.title.trim() || !form.date.trim() || !form.time.trim()) {
+      setError("Judul, tanggal, dan jam wajib diisi");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl("/api/Acara"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          id: 0,
+          title: form.title.trim(),
+          date: form.date.trim(),
+          time: form.time.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal menambahkan kegiatan"));
+      }
+
       router.push("/admin/kegiatan");
-    }, 600);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat menambahkan kegiatan");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,22 +87,21 @@ export default function TambahKegiatanPage() {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-6">Tambah Kegiatan Baru</h2>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Judul Kegiatan</label>
             <input
               type="text"
+              name="title"
               placeholder="Masukkan judul kegiatan"
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Lokasi</label>
-            <input
-              type="text"
-              placeholder="Contoh: Auditorium Utama"
+              value={form.title}
+              onChange={handleChange}
               required
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
             />
@@ -54,60 +109,27 @@ export default function TambahKegiatanPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Mulai</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Tanggal</label>
               <input
                 type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
                 required
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Selesai</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Jam</label>
               <input
-                type="date"
+                type="time"
+                name="time"
+                value={form.time}
+                onChange={handleChange}
                 required
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Gambar</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#1E3A8A] transition-colors">
-              {imageName ? (
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-sm text-gray-700">{imageName}</span>
-                  <button type="button" onClick={() => setImageName("")} className="text-red-500 hover:text-red-700">
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <label className="cursor-pointer">
-                  <Upload size={24} className="mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-500">Klik untuk upload gambar</p>
-                  <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP (max 2MB)</p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) setImageName(file.name);
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
-            <textarea
-              rows={5}
-              placeholder="Deskripsi kegiatan..."
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none resize-none"
-            />
           </div>
 
           <div className="flex gap-3 pt-4">
