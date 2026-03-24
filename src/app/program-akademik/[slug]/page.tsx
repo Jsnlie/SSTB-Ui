@@ -71,25 +71,39 @@ export default function ProgramDetail() {
   const slug = params.slug as string;
   const [activeTab, setActiveTab] = useState("overview");
 
+  const [programStudiId, setProgramStudiId] = useState<number | null>(null);
   const [programApi, setProgramApi] = useState<ProgramStudiApi | null>(null);
   const [abouts, setAbouts] = useState<OverviewAbout[]>([]);
   const [requirements, setRequirements] = useState<OverviewRequirement[]>([]);
   const [curriculumGroups, setCurriculumGroups] = useState<CurriculumGroupApi[]>([]);
   const [competencyGroups, setCompetencyGroups] = useState<CompetencyGroupApi[]>([]);
   const [loadingOverview, setLoadingOverview] = useState(true);
-  const [loadingCurriculum, setLoadingCurriculum] = useState(true);
-  const [loadingCompetencies, setLoadingCompetencies] = useState(true);
+  const [loadingCurriculum, setLoadingCurriculum] = useState(false);
+  const [loadingCompetencies, setLoadingCompetencies] = useState(false);
+  const [curriculumLoaded, setCurriculumLoaded] = useState(false);
+  const [competenciesLoaded, setCompetenciesLoaded] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchOverview = async () => {
       setLoadingOverview(true);
-      setLoadingCurriculum(true);
-      setLoadingCompetencies(true);
+      setLoadingCurriculum(false);
+      setLoadingCompetencies(false);
+      setActiveTab("overview");
+      setProgramApi(null);
+      setProgramStudiId(null);
+      setAbouts([]);
+      setRequirements([]);
+      setCurriculumGroups([]);
+      setCompetencyGroups([]);
+      setCurriculumLoaded(false);
+      setCompetenciesLoaded(false);
 
       try {
         const res = await fetch(apiUrl(`/api/program-studi/${slug}`));
         if (!res.ok) {
-          setProgramApi(null);
+          if (!cancelled) setProgramApi(null);
           return;
         }
 
@@ -97,20 +111,26 @@ export default function ProgramDetail() {
         const item = data.data ?? data;
 
         if (!item || typeof item !== "object") {
-          setProgramApi(null);
+          if (!cancelled) setProgramApi(null);
           return;
         }
 
-        setProgramApi(item);
+        const resolvedProgramStudiId = Number(item.id);
+        if (!resolvedProgramStudiId) {
+          if (!cancelled) setProgramApi(null);
+          return;
+        }
 
-        const programStudiId = item.id;
-        const [aboutRes, reqRes, groupRes, courseRes, competencyRes] = await Promise.all([
-          fetch(apiUrl(`/api/OverviewAbout/programstudi/${programStudiId}`)),
-          fetch(apiUrl(`/api/OverviewRequirement/programstudi/${programStudiId}`)),
-          fetch(apiUrl("/api/jenis-matkul")),
-          fetch(apiUrl("/api/mata-kuliah")),
-          fetch(apiUrl(`/api/kompetensi/program/${programStudiId}`)),
+        if (cancelled) return;
+        setProgramApi(item);
+        setProgramStudiId(resolvedProgramStudiId);
+
+        const [aboutRes, reqRes] = await Promise.all([
+          fetch(apiUrl(`/api/OverviewAbout/programstudi/${resolvedProgramStudiId}`)),
+          fetch(apiUrl(`/api/OverviewRequirement/programstudi/${resolvedProgramStudiId}`)),
         ]);
+
+        if (cancelled) return;
 
         if (aboutRes.ok) {
           const aboutData = await aboutRes.json();
@@ -125,6 +145,40 @@ export default function ProgramDetail() {
         } else {
           setRequirements([]);
         }
+      } catch {
+        if (cancelled) return;
+        setProgramApi(null);
+        setProgramStudiId(null);
+        setAbouts([]);
+        setRequirements([]);
+        setCurriculumGroups([]);
+        setCompetencyGroups([]);
+      } finally {
+        if (!cancelled) {
+          setLoadingOverview(false);
+        }
+      }
+    };
+
+    fetchOverview();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    if (activeTab !== "curriculum" || !programStudiId || curriculumLoaded) return;
+
+    let cancelled = false;
+
+    const fetchCurriculum = async () => {
+      setLoadingCurriculum(true);
+      try {
+        const [groupRes, courseRes] = await Promise.all([
+          fetch(apiUrl("/api/jenis-matkul")),
+          fetch(apiUrl("/api/mata-kuliah")),
+        ]);
 
         let allCourses: CourseApi[] = [];
         if (courseRes.ok) {
@@ -145,40 +199,75 @@ export default function ProgramDetail() {
                 : allCourses.filter((course) => course.curriculumGroupId === group.id),
             }));
 
-          setCurriculumGroups(filteredGroups);
-        } else {
+          if (!cancelled) {
+            setCurriculumGroups(filteredGroups);
+            setCurriculumLoaded(true);
+          }
+        } else if (!cancelled) {
           setCurriculumGroups([]);
-        }
-
-        if (competencyRes.ok) {
-          const competencyData = await competencyRes.json();
-          const allCompetencyGroups = normalizeArray<CompetencyGroupApi>(
-            competencyData
-          );
-
-          setCompetencyGroups(
-            allCompetencyGroups.map((group) => ({
-              ...group,
-              items: Array.isArray(group.items) ? group.items : [],
-            }))
-          );
-        } else {
-          setCompetencyGroups([]);
+          setCurriculumLoaded(true);
         }
       } catch {
-        setProgramApi(null);
-        setAbouts([]);
-        setRequirements([]);
-        setCurriculumGroups([]);
-        setCompetencyGroups([]);
+        if (!cancelled) {
+          setCurriculumGroups([]);
+        }
       } finally {
-        setLoadingOverview(false);
-        setLoadingCurriculum(false);
-        setLoadingCompetencies(false);
+        if (!cancelled) {
+          setLoadingCurriculum(false);
+        }
       }
     };
-    fetchOverview();
-  }, [slug]);
+
+    fetchCurriculum();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, programStudiId, curriculumLoaded]);
+
+  useEffect(() => {
+    if (activeTab !== "competencies" || !programStudiId || competenciesLoaded) return;
+
+    let cancelled = false;
+
+    const fetchCompetencies = async () => {
+      setLoadingCompetencies(true);
+      try {
+        const competencyRes = await fetch(apiUrl(`/api/kompetensi/program/${programStudiId}`));
+        if (competencyRes.ok) {
+          const competencyData = await competencyRes.json();
+          const allCompetencyGroups = normalizeArray<CompetencyGroupApi>(competencyData);
+
+          if (!cancelled) {
+            setCompetencyGroups(
+              allCompetencyGroups.map((group) => ({
+                ...group,
+                items: Array.isArray(group.items) ? group.items : [],
+              }))
+            );
+            setCompetenciesLoaded(true);
+          }
+        } else if (!cancelled) {
+          setCompetencyGroups([]);
+          setCompetenciesLoaded(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setCompetencyGroups([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingCompetencies(false);
+        }
+      }
+    };
+
+    fetchCompetencies();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, programStudiId, competenciesLoaded]);
 
   const heroTitle = programApi?.heroTitle || programApi?.name || "Program Akademik";
   const heroSubtitle =

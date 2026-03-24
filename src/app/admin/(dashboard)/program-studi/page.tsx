@@ -139,9 +139,6 @@ export default function ProgramStudiPage() {
                   <td className="px-6 py-4 text-gray-600">{item.totalCredits} SKS</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
-                        <Eye size={16} />
-                      </button>
                       <Link href={`/admin/program-studi/${item.slug}`} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
                         <Pencil size={16} />
                       </Link>

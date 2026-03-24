@@ -180,9 +180,6 @@ export default function TambahBeritaPage() {
               onChange={(value) => setForm({ ...form, excerpt: value })}
               placeholder="Tulis konten berita dan gunakan toolbar untuk bold, italic, list, link, dan lainnya..."
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Konten ini akan disimpan ke field excerpt pada API Berita.
-            </p>
           </div>
 
           <div className="flex gap-3 pt-4">

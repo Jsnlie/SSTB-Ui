@@ -3,12 +3,61 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Upload, X } from "lucide-react";
+
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+
+function generateSlug(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      const maxWidth = 1280;
+      const scale = Math.min(1, maxWidth / img.width);
+      const width = Math.max(1, Math.round(img.width * scale));
+      const height = Math.max(1, Math.round(img.height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Gagal memproses gambar"));
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL("image/webp", 0.82);
+      URL.revokeObjectURL(objectUrl);
+      resolve(dataUrl);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Gagal membaca file gambar"));
+    };
+
+    img.src = objectUrl;
+  });
+}
 
 export default function TambahProgramStudiPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -16,7 +65,6 @@ export default function TambahProgramStudiPage() {
     duration: "",
     totalCredits: "",
     description: "",
-    image: "",
     heroTitle: "",
     heroSubtitle: "",
     degree: "",
@@ -24,7 +72,24 @@ export default function TambahProgramStudiPage() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === "name") {
+        next.slug = generateSlug(value);
+      }
+      return next;
+    });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file && file.size > MAX_IMAGE_SIZE) {
+      setError("Ukuran foto maksimal 2MB");
+      return;
+    }
+    setError("");
+    setImageFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,6 +98,12 @@ export default function TambahProgramStudiPage() {
     setError("");
 
     try {
+      const slug = form.slug || generateSlug(form.name);
+      if (!slug) {
+        throw new Error("Slug otomatis tidak dapat dibuat. Cek nama program studi.");
+      }
+
+      const imageDataUrl = imageFile ? await fileToDataUrl(imageFile) : "";
       const token = localStorage.getItem("token");
       const res = await fetch("https://localhost:7013/api/program-studi", {
         method: "POST",
@@ -42,12 +113,12 @@ export default function TambahProgramStudiPage() {
         },
         body: JSON.stringify({
           name: form.name,
-          slug: form.slug,
+          slug,
           level: form.level,
           duration: form.duration,
           totalCredits: Number(form.totalCredits),
           description: form.description,
-          image: form.image,
+          ...(imageDataUrl ? { image: imageDataUrl } : {}),
           heroTitle: form.heroTitle,
           heroSubtitle: form.heroSubtitle,
           degree: form.degree,
@@ -106,18 +177,6 @@ export default function TambahProgramStudiPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Slug</label>
-              <input
-                type="text"
-                name="slug"
-                value={form.slug}
-                onChange={handleChange}
-                placeholder="Contoh: sarjana-teologi"
-                required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
-              />
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Jenjang (Level)</label>
               <select
@@ -187,15 +246,36 @@ export default function TambahProgramStudiPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">URL Gambar</label>
-            <input
-              type="text"
-              name="image"
-              value={form.image}
-              onChange={handleChange}
-              placeholder="https://..."
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Foto Program Studi</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors w-fit">
+                <Upload size={16} />
+                Pilih File
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+
+              {imageFile ? (
+                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 text-sm text-gray-700 border border-gray-200">
+                  <span>{imageFile.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setImageFile(null)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Hapus file"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Belum ada file dipilih.</p>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-gray-500">Format: JPG, PNG, WEBP. Maksimal 2MB.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

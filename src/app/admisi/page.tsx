@@ -12,23 +12,28 @@ export default function Admisi() {
   const steps = [
     {
       number: 1,
-      title: "Pendaftaran Online",
-      description: "Lengkapi formulir pendaftaran online dan upload dokumen",
+      title: "Memperoleh Form",
+      description: "Melakukan pendaftaran awal ke admisi online melalui sis.sttb.ac.id/pmb",
     },
     {
       number: 2,
-      title: "Tes Masuk",
-      description: "Ikuti tes tertulis dan wawancara",
+      title: "Mengirim Form & Berkas",
+      description: "Mengirimkan Form dan Berkas yang di perlukan sesuai ketentuan.",
     },
     {
       number: 3,
-      title: "Pengumuman",
-      description: "Hasil seleksi akan diumumkan via email",
+      title: "Membayar Biaya Daftar & Tes",
+      description: "Pembayaran biaya formulir pendaftaran Rp500.000 ke rekening BCA a.n. Yayasan STT Bandung (2823005555).Kirim bukti transfer melalui sttb.ac.id/konfirmasi atau WA 0815-7336-0009.",
     },
     {
       number: 4,
-      title: "Registrasi",
-      description: "Pembayaran dan registrasi ulang",
+      title: "Mengikuti Tes Masuk Secara Online",
+      description: "Mengikuti Psikotes, Pengetahuan Teologi, Bahasa Indonesia & Inggris, Wawancara dengan dosen STTB.",
+    },
+    {
+      number: 5,
+      title: "Pengumuman & Konfirmasi",
+      description: "Dalam jangka waktu 2-3 minggu setelah tes, pendaftar akan menerima pemberitahuan hasil penerimaan.",
     },
   ];
 
@@ -89,19 +94,43 @@ export default function Admisi() {
     {
       name: "Beasiswa Pastor Scholar",
       description:
-        "Diberikan kepada mahasiswa dengan prestasi akademik outstanding",
-      coverage: "50% - 100% SPP",
+        "Beasiswa S1",
+      coverage: [
+        "Diperuntukkan bagi mahasiswa S1 dan menjadikan STTB sebagai pilihan pertama",
+        "Beasiswa meliputi biaya pendidikan dari semester 1.",
+        "Memiliki prestasi yang menonjol di SMA (rata-rata rapor minimal 8.0)",
+        "Memiliki panggilan yang jelas",
+        "Memiliki rekomendasi yang kuat",
+        "Minimal IPK 2.75 pada semester 1 dan minimal IPK 3,0 pada semester 2-4",
+        "Bersedia mengalokasikan waktu 15 jam/bulan untuk membantu kegiatan administrasi/akademik di STTB",
+        "Kelanjutan beasiswa akan dievaluasi per semester",
+        "Bersedia memenuhi ikatan dinas 0.5 N (setara 2 tahun) setelah mahasiswa lulus"
+      ],
     },
     {
       name: "Beasiswa Formatio",
-      description: "Untuk mereka yang telah melayani di gereja minimal 2 tahun",
-      coverage: "30% - 50% SPP",
+      description: "Beasiswa S1",
+        coverage: [
+        "Beasiswa meliputi biaya pendidikan S1 dari tahun kedua atau telah menempuh semester 2",
+        "Memiliki prestasi belajar yang baik serta lolos seleksi dan wawancara",
+        "Memiliki prestasi yang menonjol di SMA (rata-rata rapor minimal 8.0)",
+        "Kelanjutan beasiswa akan dievaluasi per semester",
+        "Bersedia mengalokasikan waktu 15 jam/bulan untuk membantu kegiatan administrasi/akademik di STTB",
+        "Bersedia memenuhi ikatan dinas 0.5 N"
+      ],
     },
     {
       name: "Beasiswa Transformative Leadership",
       description:
-        "Diskon khusus untuk keluarga yang memiliki lebih dari 1 mahasiswa",
-      coverage: "20% SPP",
+        "Beasiswa S1-S2",
+        coverage: [
+        "Diperuntukkan bagi mahasiswa S2 dengan prestasi akademik maupun non akademik yang menonjol",
+        "Memiliki integritas dan panggilan yang jelas",
+        "Meliputi maksimal 50% dari total biaya pendidikan",
+        "Memberikan surat keterangan yang menyatakan telah melakukan pelayanan sebanyak 10 jam di pelayanan di lembaga pelayanan atau lembaga domisili setempat",
+        "Bersedia menjadi bagian kepanitiaan acara event STTB dan bersedia menjadi ketua & koordinator kelas.",
+        "Tidak diberlakukan ikatan dinas"
+      ],
     },
   ];
 
@@ -150,11 +179,11 @@ export default function Admisi() {
         <div className="text-center mb-12">
           <h2 className="text-3xl text-[#002366] mb-4">Prosedur Pendaftaran</h2>
           <p className="text-gray-600">
-            Ikuti 4 langkah mudah untuk menjadi mahasiswa STT Seminari Theologia
+            Ikuti 5 langkah mudah untuk menjadi mahasiswa STTB
           </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-8 relative">
+        <div className="grid md:grid-cols-5 gap-8 relative">
           {/* Connection line for desktop */}
           <div className="hidden md:block absolute top-8 left-0 right-0 h-0.5 bg-gray-300 -z-10"></div>
 
@@ -189,7 +218,9 @@ export default function Admisi() {
                 className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <div className="bg-[#002366] px-4 py-3">
-                  <h3 className="text-white font-medium text-sm">{fee.program}</h3>
+                  <h3 className="text-white font-medium text-sm">
+                    {fee.program}
+                  </h3>
                 </div>
                 <div className="px-4 py-3 space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -198,11 +229,15 @@ export default function Admisi() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Administrasi/Smt</span>
-                    <span className="text-gray-800">{fee.administrasiPerSemester}</span>
+                    <span className="text-gray-800">
+                      {fee.administrasiPerSemester}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Biaya Kuliah/Smt</span>
-                    <span className="text-gray-800">{fee.biayaKuliahPerSemester}</span>
+                    <span className="text-gray-800">
+                      {fee.biayaKuliahPerSemester}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Bimbingan TA</span>
@@ -218,7 +253,9 @@ export default function Admisi() {
                   </div>
                 </div>
                 <div className="bg-[#C41E3A]/10 border-t-2 border-[#C41E3A] px-4 py-3 flex justify-between items-center">
-                  <span className="text-[#002366] font-bold text-sm">Total</span>
+                  <span className="text-[#002366] font-bold text-sm">
+                    Total
+                  </span>
                   <span className="text-[#C41E3A] font-bold">{fee.total}</span>
                 </div>
               </div>
@@ -235,13 +272,13 @@ export default function Admisi() {
         </div>
       </section>
 
-      {/* Scholarships */}
+      {/* Scholarships
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl text-[#002366] mb-4">Program Beasiswa</h2>
           <p className="text-gray-600">
-            Kami menyediakan berbagai program beasiswa untuk mendukung pendidikan
-            Anda
+            Kami menyediakan berbagai program beasiswa untuk mendukung
+            pendidikan Anda
           </p>
         </div>
 
@@ -261,10 +298,103 @@ export default function Admisi() {
                 {scholarship.description}
               </p>
               <div className="bg-[#002366]/5 rounded py-2 text-center">
-                <span className="text-[#002366]">{scholarship.coverage}</span>
+                <ul className="text-[#002366] text-sm list-disc list-inside text-left px-3">
+                  {scholarship.coverage.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           ))}
+        </div>
+      </section> */}
+
+      {/* Scholarships */}
+      <section className="bg-[#EEF2F7] py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#002366] mb-3">
+              Program Beasiswa Unggulan
+            </h2>
+            <p className="text-gray-500 max-w-lg mx-auto text-sm leading-relaxed">
+              Kami berkomitmen mendukung putra-putri terbaik bangsa melalui
+              berbagai program bantuan pendidikan untuk mewujudkan pemimpin masa
+              depan yang kompeten.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {scholarships.map((scholarship, idx) => {
+              const levels = ["Beasiswa S1", "Beasiswa S1", "Beasiswa S1-S2"];
+
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl p-6 shadow-md flex flex-col ease-in-out hover:-translate-y-2 transition-shadow"
+                >
+                  {/* Icon */}
+                  <div className="flex justify-center mb-4 mt-2">
+                    <GraduationCap className="text-[#C41E3A]" size={48} />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-[#002366] text-center mb-4 leading-snug">
+                    {scholarship.name}
+                  </h3>
+
+                  {/* Level Badge */}
+                  <div className="flex justify-center mb-5">
+                    <span className="text-xs font-semibold text-[#C41E3A] border border-[#C41E3A] rounded-full px-3 py-0.5">
+                      {levels[idx % 3]}
+                    </span>
+                  </div>
+
+                  {/* Checklist Items */}
+                  <ul className="flex-1 space-y-2 mb-6">
+                    {scholarship.coverage.map((item, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 text-sm text-gray-600"
+                      >
+                        <span className="mt-0.5 flex-shrink-0">
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                          >
+                            <circle
+                              cx="8"
+                              cy="8"
+                              r="7.5"
+                              stroke="#C41E3A"
+                              strokeWidth="1"
+                            />
+                            <path
+                              d="M4.5 8l2.5 2.5 4-4"
+                              stroke="#C41E3A"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA Button */}
+                  <button 
+                    onClick={() => window.open("https://sis.sttb.ac.id/pmb", "_blank")}
+                    className="w-full bg-[#002366] hover:bg-[#001a4d] text-white text-sm font-semibold py-3 rounded-lg transition-colors"
+                  >
+                    Daftar Sekarang
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -312,14 +442,14 @@ export default function Admisi() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl text-white mb-6">Siap untuk Mendaftar?</h2>
           <p className="text-xl text-white/90 mb-8">
-            Bergabunglah dengan ribuan alumni kami yang telah melayani di berbagai
-            belahan dunia
+            Bergabunglah dengan ribuan alumni kami yang telah melayani di
+            berbagai belahan dunia
           </p>
           <button
-            onClick={() => { setShowForm(true); setSubmitted(false); setForm({ nama: "", email: "", telp: "", prodi: "" }); }}
+            onClick={() => window.open("https://sis.sttb.ac.id/pmb", "_blank")}
             className="bg-white text-[#C41E3A] px-12 py-4 rounded-lg text-lg hover:bg-gray-100 transition-colors shadow-lg"
           >
-            Daftar Online Sekarang
+            Daftar Sekarang
           </button>
           <p className="text-white/80 mt-6 text-sm">
             Pendaftaran dibuka untuk semester September 2026
@@ -340,10 +470,17 @@ export default function Admisi() {
 
             {submitted ? (
               <div className="p-8 text-center">
-                <CheckCircle2 className="mx-auto text-green-500 mb-4" size={64} />
-                <h3 className="text-2xl text-[#002366] mb-2">Pendaftaran Berhasil!</h3>
+                <CheckCircle2
+                  className="mx-auto text-green-500 mb-4"
+                  size={64}
+                />
+                <h3 className="text-2xl text-[#002366] mb-2">
+                  Pendaftaran Berhasil!
+                </h3>
                 <p className="text-gray-600 mb-6">
-                  Terima kasih, <strong>{form.nama}</strong>. Data pendaftaran Anda telah kami terima. Tim admisi akan menghubungi Anda melalui email.
+                  Terima kasih, <strong>{form.nama}</strong>. Data pendaftaran
+                  Anda telah kami terima. Tim admisi akan menghubungi Anda
+                  melalui email.
                 </p>
                 <button
                   onClick={() => setShowForm(false)}
@@ -354,59 +491,82 @@ export default function Admisi() {
               </div>
             ) : (
               <form
-                onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSubmitted(true);
+                }}
                 className="p-8"
               >
-                <h3 className="text-2xl text-[#002366] mb-6 text-center">Formulir Pendaftaran</h3>
+                <h3 className="text-2xl text-[#002366] mb-6 text-center">
+                  Formulir Pendaftaran
+                </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama Lengkap
+                    </label>
                     <input
                       type="text"
                       required
                       value={form.nama}
-                      onChange={(e) => setForm({ ...form, nama: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, nama: e.target.value })
+                      }
                       placeholder="Masukkan nama lengkap"
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
                     <input
                       type="email"
                       required
                       value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
                       placeholder="contoh@email.com"
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No. Telepon
+                    </label>
                     <input
                       type="tel"
                       required
                       value={form.telp}
-                      onChange={(e) => setForm({ ...form, telp: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, telp: e.target.value })
+                      }
                       placeholder="08xxxxxxxxxx"
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Program Studi
+                    </label>
                     <select
                       required
                       value={form.prodi}
-                      onChange={(e) => setForm({ ...form, prodi: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, prodi: e.target.value })
+                      }
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
                     >
                       <option value="">Pilih Program Studi</option>
                       {tuitionFees.map((fee, idx) => (
-                        <option key={idx} value={fee.program}>{fee.program}</option>
+                        <option key={idx} value={fee.program}>
+                          {fee.program}
+                        </option>
                       ))}
                     </select>
                   </div>
