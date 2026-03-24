@@ -196,7 +196,13 @@ export default function KehidupanKampus() {
     <div>
       {/* Hero */}
       <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl text-white">Kehidupan Kampus</h1>
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl text-white">Kehidupan Kampus</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
+          <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
+            Kenali suasana belajar, pembinaan, dan aktivitas mahasiswa di lingkungan STTB.
+          </p>
+        </div>
          <ImageWithFallback
           src="https://images.unsplash.com/photo-1577985043696-8bd54d9f093f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Berita"

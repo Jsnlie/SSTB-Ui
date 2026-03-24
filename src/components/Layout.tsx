@@ -17,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { name: "Berita", href: "/berita" },
     { name: "Kegiatan", href: "/kegiatan" },
     { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
+    { name: "Kontak Kami", href: "/kontak-kami" },
   ];
 
   // Skip public layout for admin routes
@@ -120,13 +121,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <h3 className="font-bold mb-4">Sekolah Tinggi Teologi Bandung</h3>
               <p className="text-sm text-gray-300">
-                Institusi pendidikan teologi yang berkomitmen untuk membentuk
-                pemimpin rohani yang berkualitas.
+               Sekolah Tinggi Teologi Bandung membentuk pemimpin rohani yang berintegritas dan berkarakter melalui pendidikan teologi yang berkualitas, pembinaan iman yang mendalam, serta komitmen untuk melayani gereja dan masyarakat secara luas.
               </p>
             </div>
-            <div>
+            <div className="px-16">
               <h3 className="font-bold mb-4">Tautan Cepat</h3>
               <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Home
+                  </Link>
+                </li>
                 <li>
                   <Link
                     href="/tentang-kami"
@@ -151,9 +159,43 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     Admisi
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/berita"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Berita
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/kegiatan"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Kegiatan
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/kehidupan-kampus"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Kehidupan Kampus
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/kontak-kami"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Kontak Kami
+                  </Link>
+                </li>
+                
               </ul>
             </div>
               <div className="text-sm text-gray-300 space-y-3">
+                <h3 className="font-bold mb-4">Contact Us</h3>
                 <div className="flex items-start gap-3">
                   <MapPin size={16} />
                   <span>

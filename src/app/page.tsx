@@ -28,11 +28,11 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-[600px] bg-gradient-to-r from-[#002366] to-[#003080]">
+      <section className="relative h-[730px] bg-gradient-to-r from-[#002366] to-[#003080]">
         <div className="absolute inset-0 bg-black/30"></div>
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1637455587265-2a3c2cbbcc84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwbGlicmFyeSUyMGludGVyaW9yfGVufDF8fHx8MTc3Mjk0MzY2M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-          alt="STT Campus"
+          alt="STTB Campus"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
         <div className="relative h-full flex items-center">

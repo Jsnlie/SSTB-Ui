@@ -166,7 +166,13 @@ export default function Admisi() {
     <div>
       {/* Hero */}
       <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl text-white">Admisi & Keuangan</h1>
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl text-white">Admisi & Keuangan</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
+          <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
+            Informasi lengkap pendaftaran, persyaratan, dan rincian biaya studi di STTB.
+          </p>
+        </div>
         <ImageWithFallback
           src="https://plus.unsplash.com/premium_photo-1661634003229-975f2828c45a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="admisi"

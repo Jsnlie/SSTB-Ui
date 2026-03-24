@@ -175,7 +175,13 @@ export default function KegiatanPublicPage() {
   return (
     <div>
       <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl text-white">Kegiatan Acara Kampus</h1>
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl text-white">Kegiatan Acara Kampus</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
+          <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
+            Lihat jadwal dan informasi acara kampus untuk mahasiswa dan civitas STTB.
+          </p>
+        </div>
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1470&auto=format&fit=crop"
           alt="Acara Kampus"

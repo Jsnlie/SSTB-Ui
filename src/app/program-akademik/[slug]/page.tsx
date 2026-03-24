@@ -326,6 +326,7 @@ export default function ProgramDetail() {
       <div className="bg-[#002366] text-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl mb-4">{heroTitle}</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mb-6"></div>
           <p className="text-xl text-gray-200">{heroSubtitle}</p>
         </div>
       </div>
@@ -573,7 +574,7 @@ export default function ProgramDetail() {
 
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">
-                    Pesan (Opsional)
+                    Pesan 
                   </label>
                   <textarea
                     rows={3}

@@ -66,6 +66,7 @@ export default function ProgramStudi() {
         <div className="relative h-full flex items-center">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white">
             <h1 className="text-4xl md:text-5xl mb-4">Program Studi</h1>
+            <div className="h-1 w-24 bg-[#C41E3A] mx-auto mb-6"></div>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
               Temukan program yang sesuai dengan panggilan pelayanan Anda
             </p>

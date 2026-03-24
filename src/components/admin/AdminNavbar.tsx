@@ -24,10 +24,10 @@ export default function AdminNavbar({ title }: { title: string }) {
 
       <div className="flex items-center gap-4">
         {/* Notification */}
-        <button className="relative p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+        {/* <button className="relative p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
           <Bell size={20} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DC2626] rounded-full"></span>
-        </button>
+        </button> */}
 
         {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>

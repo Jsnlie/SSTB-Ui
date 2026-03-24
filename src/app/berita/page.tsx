@@ -4,7 +4,6 @@ import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { Calendar, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import Masonry from "react-responsive-masonry";
 import { apiUrl } from "../../lib/api";
 import {
   BERITA_IMAGE_FALLBACK,
@@ -89,10 +88,7 @@ export default function Berita() {
   }, [data, selectedCategory]);
 
   const featuredArticle = filtered[0] || null;
-  const listArticles =
-    filtered.length <= 1
-      ? filtered
-      : filtered.filter((item) => item.id !== featuredArticle?.id);
+  const listArticles = filtered;
 
   const totalPages = Math.max(1, Math.ceil(listArticles.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -114,7 +110,13 @@ export default function Berita() {
     <div>
       {/* Hero */}
       <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl text-white">Berita</h1>
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl text-white">Berita</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
+          <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
+            Ikuti kabar terbaru, artikel, dan informasi penting dari kegiatan STTB.
+          </p>
+        </div>
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Berita"
@@ -182,26 +184,26 @@ export default function Berita() {
                 Tidak ada berita pada kategori ini.
               </div>
             ) : (
-              <Masonry columnsCount={2} gutter="1.5rem">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {paginatedArticles.map((article) => (
                   <Link
                     key={article.id}
                     href={`/berita/${article.id}`}
-                    className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+                    className="block h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
                   >
                     <ImageWithFallback
                       src={article.image || BERITA_IMAGE_FALLBACK}
                       alt={article.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="p-4">
-                      <span className="inline-block text-xs text-white bg-[#002366] px-2 py-1 rounded mb-2">
+                    <div className="p-4 h-[190px] flex flex-col">
+                      <span className="inline-block w-fit text-xs text-white bg-[#002366] px-2 py-1 rounded mb-2">
                         {article.category || "Berita"}
                       </span>
                       <h3 className="text-[#002366] mb-2 group-hover:text-[#C41E3A] transition-colors">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-1">
                         {truncate(stripHtml(article.excerpt), 140)}
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500">
@@ -217,7 +219,7 @@ export default function Berita() {
                     </div>
                   </Link>
                 ))}
-              </Masonry>
+              </div>
             )}
 
             {/* Pagination */}

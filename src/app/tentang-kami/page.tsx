@@ -18,7 +18,13 @@ export default function TentangKami() {
     <div>
       {/* Hero Banner */}
       <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl text-white">Tentang Kami</h1>
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl text-white">Tentang Kami</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
+          <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
+            Mengenal sejarah, visi, dan komitmen STTB dalam membentuk pelayan Tuhan.
+          </p>
+        </div>
         <ImageWithFallback
           src="https://ayokuliah.id/wp-content/uploads/2015/09/Sekolah-Tinggi-Teologi-Bandung.jpg"
           alt="about us pics"

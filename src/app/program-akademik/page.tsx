@@ -123,6 +123,7 @@ export default function ProgramAkademikPage() {
       <div className="bg-[#002366] text-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl mb-4">Program Akademik</h1>
+          <div className="h-1 w-24 bg-[#C41E3A] mb-6"></div>
           <p className="text-xl text-gray-200">
             Pilih program studi yang sesuai dengan panggilan pelayanan Anda
           </p>
