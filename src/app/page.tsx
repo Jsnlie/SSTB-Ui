@@ -65,6 +65,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Campus Tour Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#002366] mb-4">Campus Tour</h2>
+          <p className="text-gray-700 mb-8 max-w-2xl mx-auto">
+            Jelajahi lingkungan kampus STTB secara virtual melalui video Campus Tour berikut. Temukan fasilitas, suasana, dan kehidupan kampus yang mendukung pertumbuhan akademik dan spiritual.
+          </p>
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl aspect-video rounded-lg overflow-hidden shadow-lg">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/hTh0QkKxNhg?start=6"
+                title="Campus Tour STT Bandung"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <VisiMisi />
       <CoreValues />
 
