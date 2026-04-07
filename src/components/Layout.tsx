@@ -2,23 +2,65 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, Mail, MapPin, Smartphone, LogIn } from "lucide-react";
+import {
+  ChevronDown,
+  Menu,
+  X,
+  Phone,
+  Mail,
+  MapPin,
+  Smartphone,
+  LogIn,
+} from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+
+const aboutLinks = [
+  { name: "Tentang Kami", href: "/tentang-kami" },
+  { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
+];
+
+const academicLinks = [
+  { name: "Program Studi", href: "/program-studi" },
+  { name: "Perpustakaan", href: "/perpustakaan" },
+];
+
+const infoLinks = [
+  { name: "Berita", href: "/berita" },
+  { name: "Kegiatan", href: "/kegiatan" },
+];
+
+const directLinks = [
+  { name: "Admisi", href: "/admisi" },
+  { name: "Kontak", href: "/kontak-kami" },
+];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSectionOpen, setMobileSectionOpen] = useState<string | null>(null);
   const pathname = usePathname();
 
-  const navigation = [
-    { name: "Tentang Kami", href: "/tentang-kami" },
-    { name: "Program Studi", href: "/program-studi" },
-    { name: "Admisi", href: "/admisi" },
-    { name: "Berita", href: "/berita" },
-    { name: "Kegiatan", href: "/kegiatan" },
-    { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
-    { name: "Kontak Kami", href: "/kontak-kami" },
+  const sections = [
+    { name: "Tentang", items: aboutLinks },
+    { name: "Akademik", items: academicLinks },
+    { name: "Informasi", items: infoLinks },
   ];
+
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
+
+  const isSectionActive = (items: { href: string }[]) =>
+    items.some((item) => isActive(item.href));
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setMobileSectionOpen(null);
+  };
 
   // Skip public layout for admin routes
   const isAdmin = pathname?.startsWith("/admin");
@@ -44,15 +86,49 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex md:items-center md:gap-x-6">
-              {navigation.map((item) => (
+            <div className="hidden md:flex md:items-center md:gap-x-4">
+              {sections.map((section) => (
+                <DropdownMenu key={section.name}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className={`inline-flex items-center gap-1 text-sm font-medium transition-colors px-2 py-1.5 rounded-md ${
+                        isSectionActive(section.items)
+                          ? "text-[#C41E3A] bg-[#C41E3A]/8"
+                          : "text-[#002366] hover:text-[#C41E3A] hover:bg-gray-50"
+                      }`}
+                    >
+                      {section.name}
+                      <ChevronDown size={16} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-52 border-gray-200 bg-white">
+                    {section.items.map((item) => (
+                      <DropdownMenuItem key={item.name} asChild>
+                        <Link
+                          href={item.href}
+                          className={`cursor-pointer rounded-sm px-3 py-2 text-sm transition-colors ${
+                            isActive(item.href)
+                              ? "bg-[#C41E3A] text-white focus:bg-[#C41E3A] focus:text-white"
+                              : "text-[#002366] focus:bg-gray-100 focus:text-[#C41E3A]"
+                          }`}
+                        >
+                          {item.name}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ))}
+
+              {directLinks.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`text-sm transition-colors ${
-                    pathname === item.href
-                      ? "text-[#C41E3A]"
-                      : "text-[#002366] hover:text-[#C41E3A]"
+                  className={`text-sm font-medium transition-colors px-2 py-1.5 rounded-md ${
+                    isActive(item.href)
+                      ? "text-[#C41E3A] bg-[#C41E3A]/8"
+                      : "text-[#002366] hover:text-[#C41E3A] hover:bg-gray-50"
                   }`}
                 >
                   {item.name}
@@ -81,17 +157,61 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <div className="md:hidden pb-4">
-              <div className="space-y-1">
-                {navigation.map((item) => (
+            <div className="md:hidden pb-4 space-y-2">
+              <div className="space-y-2 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
+                {sections.map((section) => (
+                  <div key={section.name} className="rounded-xl border border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMobileSectionOpen((current) =>
+                          current === section.name ? null : section.name
+                        )
+                      }
+                      className={`flex w-full items-center justify-between px-4 py-3 text-left text-base font-medium ${
+                        isSectionActive(section.items)
+                          ? "text-[#C41E3A]"
+                          : "text-[#002366]"
+                      }`}
+                    >
+                      {section.name}
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${
+                          mobileSectionOpen === section.name ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {mobileSectionOpen === section.name && (
+                      <div className="space-y-1 border-t border-gray-100 px-2 pb-2">
+                        {section.items.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={closeMobileMenu}
+                            className={`block rounded-lg px-3 py-2 text-sm ${
+                              isActive(item.href)
+                                ? "bg-[#C41E3A] text-white"
+                                : "text-[#002366] hover:bg-gray-50"
+                            }`}
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {directLinks.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-3 py-2 rounded-md text-base ${
-                      pathname === item.href
+                    onClick={closeMobileMenu}
+                    className={`block px-4 py-3 rounded-xl text-base font-medium border border-gray-100 ${
+                      isActive(item.href)
                         ? "bg-[#C41E3A] text-white"
-                        : "text-[#002366] hover:bg-gray-100"
+                        : "text-[#002366] hover:bg-gray-50"
                     }`}
                   >
                     {item.name}
@@ -99,8 +219,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ))}
                 <Link
                   href="/admin/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-base bg-[#002366] text-white mt-2"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-base bg-[#002366] text-white mt-2"
                 >
                   <LogIn size={16} />
                   Login
@@ -149,6 +269,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     className="text-gray-300 hover:text-white"
                   >
                     Program Studi
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/perpustakaan"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Perpustakaan
                   </Link>
                 </li>
                 <li>
