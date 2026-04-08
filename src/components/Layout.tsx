@@ -37,8 +37,9 @@ const infoLinks = [
 ];
 
 const directLinks = [
+  { name: "Media", href: "/media" },
   { name: "Admisi", href: "/admisi" },
-  { name: "Kontak", href: "/kontak-kami" },
+  { name: "Kontak Kami", href: "/kontak-kami" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

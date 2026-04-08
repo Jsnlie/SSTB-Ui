@@ -70,6 +70,35 @@ export default function PerpustakaanPage() {
             <p className="text-gray-600 text-lg max-w-xl">
               Jelajahi koleksi ebook teologi, kepemimpinan, dan spiritualitas.
             </p>
+
+            <div className="mt-8">
+              <h2 className="text-[#061538] text-2xl font-semibold mb-4">
+                Perpustakaan Fisik
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="https://library.sttb.ac.id/"
+                  target="_blank"
+                  className="px-6 py-3 rounded-lg bg-[#C41E3A] text-white hover:bg-[#a01830] transition-colors font-medium"
+                >
+                  Katalog
+                </Link>
+                <Link
+                  href="https://docs.google.com/forms/d/18xoNEwlURemRdvMCCypUSXAK57Ni1S26j3pHlokUwyM/viewform?chromeless=1&edit_requested=true"
+                  target="_blank"
+                  className="px-6 py-3 rounded-lg bg-[#C41E3A] text-white hover:bg-[#a01830] transition-colors font-medium"
+                >
+                  Pustaka Pintar
+                </Link>
+                <Link
+                  href="https://library.sttb.ac.id/index.php?p=perpanjang"
+                  target="_blank"
+                  className="px-6 py-3 rounded-lg bg-[#C41E3A] text-white hover:bg-[#a01830] transition-colors font-medium"
+                >
+                  Perpanjangan Mandiri
+                </Link>
+              </div>
+            </div>
           </div>
 
           <div className="relative">
