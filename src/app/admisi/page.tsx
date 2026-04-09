@@ -4,6 +4,7 @@ import { ChevronDown, DollarSign, GraduationCap, FileText, CheckCircle2, X } fro
 import { useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function Admisi() {
   const [showForm, setShowForm] = useState(false);
@@ -165,36 +166,42 @@ export default function Admisi() {
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <div className="relative z-10 text-center">
+      <ScrollReveal y={28} amount={0.2}>
+        <div className="relative h-80 bg-[#002366] flex items-center justify-center overflow-hidden">
+          <div className="absolute -left-16 top-10 h-48 w-48 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
+          <div className="relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl text-white">Admisi & Keuangan</h1>
           <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
           <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
             Informasi lengkap pendaftaran, persyaratan, dan rincian biaya studi di STTB.
           </p>
-        </div>
-        <ImageWithFallback
+          </div>
+          <ImageWithFallback
           src="https://plus.unsplash.com/premium_photo-1661634003229-975f2828c45a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="admisi"
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-      </div>
+        </div>
+      </ScrollReveal>
 
       {/* Registration Procedure Timeline */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
+        <ScrollReveal>
+          <div className="text-center mb-12">
           <h2 className="text-3xl text-[#002366] mb-4">Prosedur Pendaftaran</h2>
           <p className="text-gray-600">
             Ikuti 5 langkah mudah untuk menjadi mahasiswa STTB
           </p>
-        </div>
+          </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-5 gap-8 relative">
           {/* Connection line for desktop */}
           <div className="hidden md:block absolute top-8 left-0 right-0 h-0.5 bg-gray-300 -z-10"></div>
 
-          {steps.map((step) => (
-            <div key={step.number} className="relative text-center">
+          {steps.map((step, index) => (
+            <ScrollReveal key={step.number} delay={index * 0.08} amount={0.2}>
+              <div className="relative text-center">
               <div className="flex justify-center mb-4">
                 <div className="w-16 h-16 rounded-full bg-[#C41E3A] text-white flex items-center justify-center text-2xl border-4 border-white shadow-lg">
                   {step.number}
@@ -202,7 +209,8 @@ export default function Admisi() {
               </div>
               <h3 className="text-lg text-[#002366] mb-2">{step.title}</h3>
               <p className="text-sm text-gray-600">{step.description}</p>
-            </div>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -210,16 +218,19 @@ export default function Admisi() {
       {/* Tuition Fees Table */}
       <section className="bg-gray-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <ScrollReveal>
+            <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">Biaya Studi</h2>
             <p className="text-gray-600">
               Rincian biaya pendidikan untuk tahun akademik 2025/2026
             </p>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {tuitionFees.map((fee, idx) => (
-              <div
+              <ScrollReveal key={idx} delay={idx * 0.06} amount={0.18}>
+                <div
                 key={idx}
                 className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
@@ -264,7 +275,8 @@ export default function Admisi() {
                   </span>
                   <span className="text-[#C41E3A] font-bold">{fee.total}</span>
                 </div>
-              </div>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
 

@@ -5,6 +5,7 @@ import { BookOpen, Heart, Users, Building, Lightbulb, Handshake } from "lucide-r
 import { useState } from "react";
 import Image from "next/image";
 import Masonry from "react-responsive-masonry";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function KehidupanKampus() {
   const [activeSection, setActiveSection] = useState("fasilitas");
@@ -195,7 +196,9 @@ export default function KehidupanKampus() {
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
+      <ScrollReveal y={28} amount={0.2}>
+      <div className="relative h-80 bg-[#002366] flex items-center justify-center overflow-hidden">
+        <div className="absolute -left-16 top-10 h-48 w-48 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
         <div className="relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl text-white">Kehidupan Kampus</h1>
           <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
@@ -209,6 +212,7 @@ export default function KehidupanKampus() {
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
       </div>
+      </ScrollReveal>
 
       {/* Sub Navigation */}
       <div className="bg-white shadow-md sticky top-16 z-40">
@@ -240,15 +244,18 @@ export default function KehidupanKampus() {
         <>
           {/* Gallery */}
           <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+            <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl text-[#002366] mb-4">Galeri Fasilitas</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Fasilitas modern dan lengkap untuk mendukung proses pembelajaran
               </p>
             </div>
+            </ScrollReveal>
 
             <Masonry columnsCount={3} gutter="1.5rem">
-              {facilityImages.map((image) => (
+              {facilityImages.map((image, index) => (
+                <ScrollReveal key={image.id} delay={index * 0.06} amount={0.18}>
                 <div
                   key={image.id}
                   className="relative group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer"
@@ -266,6 +273,7 @@ export default function KehidupanKampus() {
                     </div>
                   </div>
                 </div>
+                </ScrollReveal>
               ))}
             </Masonry>
           </section>
@@ -273,16 +281,19 @@ export default function KehidupanKampus() {
           {/* Facilities Grid */}
           <section className="bg-gray-50 py-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <ScrollReveal>
               <div className="text-center mb-12">
                 <h2 className="text-3xl text-[#002366] mb-4">
                   Fasilitas yang Tersedia
                 </h2>
               </div>
+              </ScrollReveal>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {facilities.map((facility, idx) => {
                   const Icon = facility.icon;
                   return (
+                    <ScrollReveal key={idx} delay={idx * 0.05} amount={0.18}>
                     <div
                       key={idx}
                       className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
@@ -299,6 +310,7 @@ export default function KehidupanKampus() {
                         {facility.description}
                       </p>
                     </div>
+                    </ScrollReveal>
                   );
                 })}
               </div>
@@ -309,6 +321,7 @@ export default function KehidupanKampus() {
 
       {/* Pembinaan Section */}
       {activeSection === "pembinaan" && (
+        <ScrollReveal>
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">
@@ -322,6 +335,7 @@ export default function KehidupanKampus() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {pembinaanPrograms.map((program, idx) => (
+              <ScrollReveal key={idx} delay={idx * 0.08} amount={0.18}>
               <div
                 key={idx}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
@@ -338,9 +352,11 @@ export default function KehidupanKampus() {
                   <p className="text-gray-700 mb-4">{program.description}</p>
                 </div>
               </div>
+              </ScrollReveal>
             ))}
           </div>
 
+          <ScrollReveal>
           <div className="mt-12 bg-[#002366] text-white p-8 rounded-lg">
             <h3 className="text-2xl mb-4">Komitmen Pembinaan Kami</h3>
             <p className="text-gray-200 mb-4">
@@ -373,11 +389,14 @@ export default function KehidupanKampus() {
               </li>
             </ul>
           </div>
+          </ScrollReveal>
         </section>
+        </ScrollReveal>
       )}
 
       {/* Senat Section */}
       {activeSection === "senat" && (
+        <ScrollReveal>
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">
@@ -391,6 +410,7 @@ export default function KehidupanKampus() {
 
           <div className="grid md:grid-cols-4 gap-6 mb-12">
             {senatActivities.map((activity, idx) => (
+              <ScrollReveal key={idx} delay={idx * 0.06} amount={0.18}>
               <div
                 key={idx}
                 className="bg-white p-6 rounded-lg border-2 border-[#002366] hover:border-[#C41E3A] hover:shadow-lg transition-all"
@@ -405,15 +425,18 @@ export default function KehidupanKampus() {
                   ))}
                 </ul>
               </div>
+              </ScrollReveal>
             ))}
           </div>
 
+          <ScrollReveal>
           <div className="bg-gray-50 p-8 rounded-lg">
             <h3 className="text-2xl text-[#002366] mb-6 text-center">
               Galeri Kegiatan Senat
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {senatGallery.map((photo) => (
+              {senatGallery.map((photo, idx) => (
+                <ScrollReveal key={photo.id} delay={idx * 0.05} amount={0.18}>
                 <div
                   key={photo.id}
                   className="group relative overflow-hidden rounded-lg aspect-square"
@@ -424,10 +447,13 @@ export default function KehidupanKampus() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
+          </ScrollReveal>
         </section>
+        </ScrollReveal>
       )}
     </div>
   );

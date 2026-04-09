@@ -10,6 +10,7 @@ import CoreValues from "../../components/CoreValues";
 import PengakuanIman from "../../components/PengakuanIman";
 import DewanDosen from "../../components/DewanDosen";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function TentangKami() {
   const [activeSection, setActiveSection] = useState("sejarah");
@@ -17,20 +18,23 @@ export default function TentangKami() {
   return (
     <div>
       {/* Hero Banner */}
-      <div className="relative h-80 bg-[#002366] flex items-center justify-center">
-        <div className="relative z-10 text-center">
+      <ScrollReveal y={28} amount={0.2}>
+        <div className="relative h-80 bg-[#002366] flex items-center justify-center overflow-hidden">
+          <div className="absolute -left-16 top-10 h-48 w-48 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
+          <div className="relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl text-white">Tentang Kami</h1>
           <div className="h-1 w-24 bg-[#C41E3A] mx-auto mt-4"></div>
           <p className="text-gray-200 text-base md:text-lg mt-4 max-w-2xl mx-auto px-4">
             Mengenal sejarah, visi, dan komitmen STTB dalam membentuk pelayan Tuhan.
           </p>
-        </div>
-        <ImageWithFallback
+          </div>
+          <ImageWithFallback
           src="https://ayokuliah.id/wp-content/uploads/2015/09/Sekolah-Tinggi-Teologi-Bandung.jpg"
           alt="about us pics"
           className="absolute inset-1 w-full h-full opacity-20"
         />
-      </div>
+        </div>
+      </ScrollReveal>
 
       {/* Sub Navigation */}
       <div className="bg-white shadow-md sticky top-16 z-40">
@@ -62,7 +66,8 @@ export default function TentangKami() {
 
       {/* Sejarah Section */}
       {activeSection === "sejarah" && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <ScrollReveal>
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">Timeline Sejarah</h2>
             <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
@@ -98,6 +103,7 @@ export default function TentangKami() {
           <LogoMeaning/>
 
         </section>
+        </ScrollReveal>
       )}
 
       {/* Visi & Misi Section */}
@@ -110,6 +116,7 @@ export default function TentangKami() {
 
       {/* Mars STTB Section */}
       {activeSection === "mars" && (
+        <ScrollReveal>
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">
@@ -145,15 +152,17 @@ export default function TentangKami() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
       )}
 
       {/* Pengakuan Iman Section */}
       {activeSection === "pengakuan-iman" && <PengakuanIman />}
       {/* Dewan Dosen Section */}
-      {activeSection === "dewan-dosen" && <DewanDosen />}
+      {activeSection === "dewan-dosen" && <ScrollReveal><DewanDosen /></ScrollReveal>}
 
       {/* Pengurus Yayasan Section */}
       {activeSection === "yayasan" && (
+        <ScrollReveal>
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">Pengurus Yayasan</h2>
@@ -203,6 +212,7 @@ export default function TentangKami() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import * as Tabs from "@radix-ui/react-tabs";
 import Link from "next/link";
 import { apiUrl } from "../../../lib/api";
+import { ScrollReveal } from "../../../components/ScrollReveal";
 
 interface OverviewAbout {
   id: number;
@@ -323,15 +324,18 @@ export default function ProgramDetail() {
   return (
     <div>
       {/* Hero Header */}
-      <div className="bg-[#002366] text-white py-16">
+      <ScrollReveal y={28} amount={0.2}>
+      <div className="bg-[#002366] text-white py-16 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl mb-4">{heroTitle}</h1>
           <div className="h-1 w-24 bg-[#C41E3A] mb-6"></div>
           <p className="text-xl text-gray-200">{heroSubtitle}</p>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Quick Facts */}
+      <ScrollReveal>
       <section className="bg-white border-b">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid md:grid-cols-3 gap-6">
@@ -365,6 +369,7 @@ export default function ProgramDetail() {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* Main Content - 2 Column Layout */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -395,6 +400,7 @@ export default function ProgramDetail() {
 
               {/* Overview Tab */}
               <Tabs.Content value="overview">
+                <ScrollReveal>
                 <div className="prose max-w-none">
                   <h2 className="text-2xl text-[#002366] mb-4">
                     Tentang Program
@@ -431,13 +437,16 @@ export default function ProgramDetail() {
                     <p className="text-gray-600 mt-6">Requirements belum tersedia.</p>
                   )}
                 </div>
+                </ScrollReveal>
               </Tabs.Content>
 
               {/* Curriculum Tab */}
               <Tabs.Content value="curriculum">
+                <ScrollReveal>
                 <h2 className="text-2xl text-[#002366] mb-6">
                   Daftar Mata Kuliah
                 </h2>
+                </ScrollReveal>
 
                 {loadingCurriculum && curriculumItems.length === 0 ? (
                   <div className="flex justify-center py-8">
@@ -448,7 +457,8 @@ export default function ProgramDetail() {
                 ) : (
                   <div className="space-y-8">
                     {curriculumItems.map((semester, sIdx) => (
-                      <div key={sIdx}>
+                      <ScrollReveal key={sIdx} delay={sIdx * 0.06} amount={0.18}>
+                      <div>
                         <h3 className="text-xl text-[#002366] mb-4">
                           {semester.label}
                         </h3>
@@ -458,6 +468,7 @@ export default function ProgramDetail() {
                               <tr>
                                 <th className="px-4 py-3 text-left">Mata Kuliah</th>
                                 <th className="px-4 py-3 text-center w-20 bg-[#C41E3A]">SKS</th>
+                          </ScrollReveal>
                               </tr>
                             </thead>
                             <tbody>
@@ -465,9 +476,11 @@ export default function ProgramDetail() {
                                 <tr
                                   key={cIdx}
                                   className="border-b border-gray-200 hover:bg-gray-50"
-                                >
+                    <ScrollReveal>
+                    <h2 className="text-2xl text-[#002366] mb-6">
                                   <td className="px-4 py-3 text-gray-800">
                                     {course.name}
+                    </ScrollReveal>
                                   </td>
                                   <td className="px-4 py-3 text-center text-[#002366] font-semibold bg-gray-50 border-l border-gray-200">
                                     {course.credits}
@@ -507,8 +520,9 @@ export default function ProgramDetail() {
                   <p className="text-gray-600">Kompetensi belum tersedia.</p>
                 ) : (
                   <div className="space-y-6">
-                    {competencyItems.map((group) => (
-                      <div key={group.id} className="bg-gray-50 p-6 rounded-lg">
+                    {competencyItems.map((group, index) => (
+                      <ScrollReveal key={group.id} delay={index * 0.06} amount={0.18}>
+                      <div className="bg-gray-50 p-6 rounded-lg">
                         <h3 className="text-lg text-[#002366] mb-3">
                           {group.title}
                         </h3>
@@ -521,6 +535,7 @@ export default function ProgramDetail() {
                           ))}
                         </ul>
                       </div>
+                      </ScrollReveal>
                     ))}
                   </div>
                 )}
@@ -530,6 +545,7 @@ export default function ProgramDetail() {
 
           {/* Right Column - Sticky Form */}
           <div className="lg:col-span-1">
+            <ScrollReveal>
             <div className="sticky top-24 bg-white border-2 border-[#002366] rounded-lg p-6">
               <h3 className="text-xl text-[#002366] mb-4">
                 Tertarik dengan Program Ini?
@@ -591,6 +607,7 @@ export default function ProgramDetail() {
                 </button>
               </form>
             </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>

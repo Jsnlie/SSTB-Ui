@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { books, categories } from "../../lib/perpustakaan";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 type ListCategory = (typeof categories)[number];
 
@@ -56,6 +57,7 @@ export default function PerpustakaanPage() {
 
   return (
     <div className="bg-[#f3f4f7] min-h-screen">
+      <ScrollReveal y={28} amount={0.2}>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
@@ -111,7 +113,9 @@ export default function PerpustakaanPage() {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
+      <ScrollReveal>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-5 flex flex-col md:flex-row gap-3 md:gap-4 md:items-center">
           <div className="relative flex-1">
@@ -161,15 +165,19 @@ export default function PerpustakaanPage() {
           ))}
         </div>
       </section>
+      </ScrollReveal>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
         {paginatedBooks.length === 0 ? (
+          <ScrollReveal>
           <div className="bg-white rounded-xl p-10 text-center border border-dashed border-gray-300 text-gray-500">
             Ebook tidak ditemukan. Coba kata kunci lain.
           </div>
+          </ScrollReveal>
         ) : (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {paginatedBooks.map((book) => (
+            {paginatedBooks.map((book, index) => (
+              <ScrollReveal key={book.id} delay={index * 0.06} amount={0.18}>
               <article
                 key={book.id}
                 className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100"
@@ -206,10 +214,12 @@ export default function PerpustakaanPage() {
                   </Link>
                 </div>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         )}
 
+        <ScrollReveal>
         <div className="flex items-center justify-center gap-2 mt-8">
           <button
             type="button"
@@ -244,6 +254,7 @@ export default function PerpustakaanPage() {
             <ChevronRight size={18} className="mx-auto" />
           </button>
         </div>
+        </ScrollReveal>
       </section>
     </div>
   );

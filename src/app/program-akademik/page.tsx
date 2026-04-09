@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Clock, BookOpen, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { apiUrl } from "../../lib/api";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 interface ProgramStudiItem {
   id: number;
@@ -120,7 +121,8 @@ export default function ProgramAkademikPage() {
 
   return (
     <div>
-      <div className="bg-[#002366] text-white py-16">
+      <ScrollReveal y={28} amount={0.2}>
+      <div className="bg-[#002366] text-white py-16 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl mb-4">Program Akademik</h1>
           <div className="h-1 w-24 bg-[#C41E3A] mb-6"></div>
@@ -129,21 +131,27 @@ export default function ProgramAkademikPage() {
           </p>
         </div>
       </div>
+      </ScrollReveal>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <ScrollReveal>
         {error && (
           <div className="mb-6 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-700">
             {error}
           </div>
         )}
+        </ScrollReveal>
 
         {sortedPrograms.length === 0 ? (
+          <ScrollReveal>
           <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-gray-500">
             Program akademik belum tersedia.
           </div>
+          </ScrollReveal>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedPrograms.map((program) => (
+            {sortedPrograms.map((program, index) => (
+              <ScrollReveal key={program.id || program.slug} delay={index * 0.08} amount={0.18}>
               <Link
                 key={program.id || program.slug}
                 href={`/program-akademik/${program.slug}`}
@@ -178,6 +186,7 @@ export default function ProgramAkademikPage() {
                   </span>
                 </div>
               </Link>
+              </ScrollReveal>
             ))}
           </div>
         )}

@@ -10,6 +10,7 @@ import { Button } from "../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Card, CardContent } from "../../components/ui/card";
 import { mediaItems } from "../../lib/media";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function MediaLibraryPage() {
   const [activeTab, setActiveTab] = useState("all");
@@ -57,6 +58,7 @@ export default function MediaLibraryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 font-sans">
+      <ScrollReveal y={28} amount={0.2}>
       <section className="relative overflow-hidden h-80 flex items-center justify-center bg-[#071f55]">
         <Image
           src="https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=1600&auto=format&fit=crop"
@@ -79,9 +81,10 @@ export default function MediaLibraryPage() {
           </p>
         </div>
       </section>
+      </ScrollReveal>
 
       <div className="container mx-auto px-4 py-12 max-w-7xl">
-
+        <ScrollReveal>
         <div className="flex flex-col md:flex-row gap-4 mb-8 bg-gray-100/60 p-2 rounded-2xl border border-gray-200/60 items-center">
             <Search className="text-gray-400 h-5 w-5 ml-4" />
             <Input 
@@ -98,7 +101,9 @@ export default function MediaLibraryPage() {
               <Filter className="h-4 w-4 mr-2" /> Apply
             </Button>
         </div>
+        </ScrollReveal>
 
+        <ScrollReveal>
         <Tabs defaultValue="all" value={activeTab} onValueChange={(val) => {
           if (val === 'ojs') {
             handleOjsClick();
@@ -118,37 +123,40 @@ export default function MediaLibraryPage() {
             ))}
           </TabsList>
         </Tabs>
+        </ScrollReveal>
 
         {showFeaturedAllLayout ? (
            <div className="flex flex-col lg:flex-row gap-6">
              {/* Left Column */}
              <div className="w-full lg:w-1/3 flex flex-col gap-6">
-               <MediaCard item={mediaItems[0]} /> {/* Article */}
-               <MediaCard item={mediaItems[2]} /> {/* Journal */}
+               <ScrollReveal><MediaCard item={mediaItems[0]} /></ScrollReveal> {/* Article */}
+               <ScrollReveal delay={0.06}><MediaCard item={mediaItems[2]} /></ScrollReveal> {/* Journal */}
              </div>
              {/* Right Column */}
              <div className="w-full lg:w-2/3 flex flex-col gap-6">
-               <MediaCard item={mediaItems[1]} /> {/* Video */}
+               <ScrollReveal><MediaCard item={mediaItems[1]} /></ScrollReveal> {/* Video */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <MediaCard item={mediaItems[3]} /> {/* Monograph */}
-                 <MediaCard item={mediaItems[4]} /> {/* Bulletin */}
+                 <ScrollReveal><MediaCard item={mediaItems[3]} /></ScrollReveal> {/* Monograph */}
+                 <ScrollReveal delay={0.06}><MediaCard item={mediaItems[4]} /></ScrollReveal> {/* Bulletin */}
                </div>
              </div>
            </div>
         ) : (
            <>
              {filteredItems.length === 0 ? (
+               <ScrollReveal>
                <div className="rounded-2xl border border-dashed border-gray-300 bg-white/70 p-10 text-center">
                  <p className="text-lg font-semibold text-gray-800">Tidak ada media yang cocok</p>
                  <p className="text-sm text-gray-500 mt-2">
                    Coba kata kunci lain atau ganti tab kategori.
                  </p>
                </div>
+               </ScrollReveal>
              ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                 {filteredItems.map((item) => (
+                 {filteredItems.map((item, index) => (
                    <div key={item.id} className={item.type === "Video" ? "col-span-1 lg:col-span-2" : ""}>
-                     <MediaCard item={item} />
+                     <ScrollReveal delay={index * 0.06} amount={0.18}><MediaCard item={item} /></ScrollReveal>
                    </div>
                  ))}
                </div>

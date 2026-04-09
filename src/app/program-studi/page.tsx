@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { Clock, Award, BookOpen, GraduationCap, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
+import { ScrollReveal } from "../../components/ScrollReveal";
 
 interface ProgramStudi {
   id: number;
@@ -21,6 +23,7 @@ export default function ProgramStudi() {
   const [programs, setPrograms] = useState<ProgramStudi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -61,10 +64,18 @@ export default function ProgramStudi() {
   return (
     <div>
       {/* Hero */}
-      <div className="relative h-80 bg-[#002366]">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#002366] to-[#003080]"></div>
-        <div className="relative h-full flex items-center">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white">
+      <ScrollReveal y={28} amount={0.2}>
+        <div className="relative h-80 bg-[#002366] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#002366] to-[#003080]"></div>
+          <div className="absolute -left-20 top-8 h-56 w-56 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
+          <div className="relative h-full flex items-center">
+            <motion.div
+              className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white"
+              initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
             <h1 className="text-4xl md:text-5xl mb-4">Program Studi</h1>
             <div className="h-1 w-24 bg-[#C41E3A] mx-auto mb-6"></div>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
@@ -75,13 +86,15 @@ export default function ProgramStudi() {
               alt="STT Campus"
               className="absolute inset-0 w-full h-full object-cover opacity-20"
             />
+            </motion.div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Programs Grid */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
+        <ScrollReveal>
+          <div className="text-center mb-12">
           <h2 className="text-3xl text-[#002366] mb-4">
             Program yang Kami Tawarkan
           </h2>
@@ -89,15 +102,14 @@ export default function ProgramStudi() {
             STTB menyediakan berbagai program pendidikan teologi
             untuk memenuhi kebutuhan pelayanan yang beragam
           </p>
-        </div>
+          </div>
+        </ScrollReveal>
 
         <div className="space-y-8">
           {programs.map((program) => (
-            <div
-              key={program.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              <div className="grid md:grid-cols-3 gap-6">
+            <ScrollReveal key={program.id} amount={0.18}>
+              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="grid md:grid-cols-3 gap-6">
                 {/* Image */}
                 <div className="md:col-span-1">
                   <ImageWithFallback
@@ -162,7 +174,8 @@ export default function ProgramStudi() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -170,11 +183,13 @@ export default function ProgramStudi() {
       {/* Why Choose Us */}
       <section className="bg-gray-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <ScrollReveal>
+            <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">
               Mengapa Memilih STT Seminari Theologia?
             </h2>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -222,7 +237,8 @@ export default function ProgramStudi() {
 
       {/* CTA */}
       <section className="bg-[#002366] py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+        <ScrollReveal>
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl text-white mb-4">
             Butuh Konsultasi Program?
           </h2>
@@ -241,7 +257,8 @@ export default function ProgramStudi() {
               Lihat Panduan Admisi
             </Link>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
       </section>
     </div>
   );

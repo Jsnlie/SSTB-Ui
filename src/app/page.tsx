@@ -5,7 +5,7 @@ import VisiMisi from "../components/VisiMisi";
 import CoreValues from "../components/CoreValues";
 import LatestNewsSection from "../components/home/LatestNewsSection";
 import LatestEventsSection from "../components/home/LatestEventsSection";
-import { ScrollReveal } from "../components/home/ScrollReveal";
+import { ScrollReveal } from "../components/ScrollReveal";
 import TestimonialsSection from "../components/home/TestimonialsSection";
 
 export default function Home() {

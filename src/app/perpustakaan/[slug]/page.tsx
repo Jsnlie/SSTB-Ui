@@ -66,7 +66,7 @@ export default function EbookDetailPage() {
 
           <main className="lg:col-span-8">
             <div className="bg-[#061538] rounded-t-xl px-4 py-3 flex flex-wrap gap-3 items-center justify-between text-white">
-              <p className="text-sm">PDF Reader Preview</p>
+              <p className="text-sm"></p>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
