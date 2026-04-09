@@ -1,3 +1,6 @@
+"use client";
+
+import { motion, useReducedMotion } from "motion/react";
 import { Heart, BookOpenText, Handshake, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -35,21 +38,37 @@ const coreValues: CoreValue[] = [
 ];
 
 export default function CoreValues() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section className="bg-gray-50 py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <h2 className="text-4xl text-[#002366] mb-4">Core Values</h2>
           <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-4 gap-8">
           {coreValues.map((value, index) => {
             const Icon = value.icon;
             return (
-              <div
+              <motion.div
                 key={index}
                 className="bg-white p-8 rounded-lg border-2 border-[#002366] hover:border-[#C41E3A] hover:shadow-lg transition-all"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{
+                  duration: 0.7,
+                  delay: index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 <div className="flex justify-center mb-6">
                   <Icon className="text-[#002366]" size={48} strokeWidth={1.5} />
@@ -58,7 +77,7 @@ export default function CoreValues() {
                   {value.title}
                 </h3>
                 <p className="text-gray-600 text-center">{value.description}</p>
-              </div>
+              </motion.div>
             );
           })}
         </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Calendar } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { apiUrl } from "../../lib/api";
 
@@ -86,6 +87,7 @@ export default function LatestEventsSection() {
   const [events, setEvents] = useState<AcaraItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -137,10 +139,16 @@ export default function LatestEventsSection() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <h2 className="text-4xl text-[#002366] mb-4">Kegiatan & Acara</h2>
           <div className="h-1 w-20 bg-[#C41E3A] mx-auto"></div>
-        </div>
+        </motion.div>
 
         {error && (
           <div className="mb-6 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-700 text-center">
@@ -161,26 +169,37 @@ export default function LatestEventsSection() {
         ) : (
           <div className="grid md:grid-cols-3 gap-8">
             {displayEvents.map((event, index) => (
-              <Link
+              <motion.div
                 key={event.id || `${event.title}-${event.date}-${index}`}
-                href="/kegiatan"
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{
+                  duration: 0.7,
+                  delay: index * 0.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
-                <ImageWithFallback
-                  src={EVENT_IMAGE_FALLBACKS[index % EVENT_IMAGE_FALLBACKS.length]}
-                  alt={event.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="p-6">
-                  <h3 className="text-[#002366] mb-3 group-hover:text-[#C41E3A] transition-colors">
-                    {event.title}
-                  </h3>
-                  <div className="flex items-center text-gray-600">
-                    <Calendar size={16} className="mr-2 text-[#C41E3A]" />
-                    <span className="text-sm">{formatAcaraDate(event.date)}</span>
+                <Link
+                  href="/kegiatan"
+                  className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow group h-full"
+                >
+                  <ImageWithFallback
+                    src={EVENT_IMAGE_FALLBACKS[index % EVENT_IMAGE_FALLBACKS.length]}
+                    alt={event.title}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="p-6">
+                    <h3 className="text-[#002366] mb-3 group-hover:text-[#C41E3A] transition-colors">
+                      {event.title}
+                    </h3>
+                    <div className="flex items-center text-gray-600">
+                      <Calendar size={16} className="mr-2 text-[#C41E3A]" />
+                      <span className="text-sm">{formatAcaraDate(event.date)}</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         )}

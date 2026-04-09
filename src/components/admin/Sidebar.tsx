@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   GraduationCap,
   BookOpen,
+  Library,
   Layers,
   Target,
   Newspaper,
@@ -21,6 +22,7 @@ const mainMenuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Berita", href: "/admin/berita", icon: Newspaper },
   { name: "Kegiatan", href: "/admin/kegiatan", icon: CalendarDays },
+  { name: "Perpustakaan", href: "/admin/perpustakaan", icon: Library },
 ];
 
 const academicMenuItems = [

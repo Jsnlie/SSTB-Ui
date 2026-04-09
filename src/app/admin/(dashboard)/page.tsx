@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   GraduationCap,
   BookOpen,
+  Library,
   Newspaper,
   CalendarDays,
   TrendingUp,
@@ -17,6 +18,7 @@ import {
   formatBeritaDate,
   parseBeritaListResponse,
 } from "../../../lib/berita";
+import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
 
@@ -32,6 +34,7 @@ interface DashboardCounts {
   mataKuliah: number;
   berita: number;
   kegiatan: number;
+  ebook: number;
 }
 
 interface ActivityItem {
@@ -159,6 +162,7 @@ export default function AdminDashboardPage() {
     mataKuliah: 0,
     berita: 0,
     kegiatan: 0,
+    ebook: getTotalAdminEbook(),
   });
   const [beritaList, setBeritaList] = useState<BeritaItem[]>([]);
   const [kegiatanList, setKegiatanList] = useState<AcaraItem[]>([]);
@@ -221,6 +225,7 @@ export default function AdminDashboardPage() {
           mataKuliah: mataKuliah.length,
           berita: berita.length,
           kegiatan: kegiatan.length,
+          ebook: getTotalAdminEbook(),
         });
         setBeritaList(berita);
         setKegiatanList(kegiatan);
@@ -374,7 +379,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatsCard
           title="Total Program Studi"
           value={counts.programStudi}
@@ -402,6 +407,13 @@ export default function AdminDashboardPage() {
           icon={CalendarDays}
           color="text-purple-600"
           bgColor="bg-purple-50"
+        />
+        <StatsCard
+          title="Total Ebook"
+          value={counts.ebook}
+          icon={Library}
+          color="text-rose-600"
+          bgColor="bg-rose-50"
         />
       </div>
 
