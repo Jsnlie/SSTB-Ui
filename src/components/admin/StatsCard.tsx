@@ -10,14 +10,14 @@ interface StatsCardProps {
 
 export default function StatsCard({ title, value, icon: Icon, color, bgColor }: StatsCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl border border-gray-200 p-6 min-h-[136px] hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
+        <div className="pr-3">
+          <p className="text-[15px] leading-7 font-semibold text-slate-600">{title}</p>
+          <p className="text-[44px] leading-none font-bold text-gray-900 mt-2">{value}</p>
         </div>
-        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${bgColor}`}>
-          <Icon size={24} className={color} />
+        <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${bgColor}`}>
+          <Icon size={28} className={color} />
         </div>
       </div>
     </div>

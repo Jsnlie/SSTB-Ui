@@ -16,6 +16,7 @@ import {
   Newspaper,
   CalendarDays,
   FileText,
+  Clapperboard,
   LogOut,
 } from "lucide-react";
 
@@ -34,7 +35,14 @@ const academicMenuItems = [
   { name: "Jenis Mata Kuliah", href: "/admin/jenis-matkul", icon: Layers },
   { name: "Mata Kuliah", href: "/admin/mata-kuliah", icon: BookOpen },
   { name: "Kompetensi", href: "/admin/kompetensi", icon: Target },
- 
+];
+
+const mediaMenuItems = [
+  { name: "Artikel", href: "/admin/media/article", icon: FileText },
+  { name: "Jurnal", href: "/admin/media/journal", icon: FileText },
+  { name: "Bulletin", href: "/admin/media/bulletin", icon: FileText },
+  { name: "Monograf", href: "/admin/media/monograph", icon: FileText },
+  { name: "Video", href: "/admin/media/video", icon: Clapperboard },
 ];
 
 export default function Sidebar() {
@@ -42,11 +50,19 @@ export default function Sidebar() {
   const isAcademicActive = academicMenuItems.some(
     (item) => pathname === item.href || pathname?.startsWith(item.href)
   );
+  const isMediaActive = mediaMenuItems.some(
+    (item) => pathname === item.href || pathname?.startsWith(item.href)
+  );
   const [isAcademicOpen, setIsAcademicOpen] = useState(isAcademicActive);
+  const [isMediaOpen, setIsMediaOpen] = useState(isMediaActive);
 
   useEffect(() => {
     if (isAcademicActive) setIsAcademicOpen(true);
   }, [isAcademicActive]);
+
+  useEffect(() => {
+    if (isMediaActive) setIsMediaOpen(true);
+  }, [isMediaActive]);
 
   return (
     <aside className="w-64 bg-[#1E3A8A] min-h-screen fixed left-0 top-0 flex flex-col text-white z-40">
@@ -111,6 +127,51 @@ export default function Sidebar() {
           {isAcademicOpen && (
             <div className="mt-1 ml-2 space-y-1 border-l border-white/20 pl-2">
               {academicMenuItems.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/admin" && pathname?.startsWith(item.href));
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      isActive
+                        ? "bg-white/15 text-white"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <item.icon size={16} />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="pt-1">
+          <button
+            onClick={() => setIsMediaOpen((prev) => !prev)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              isMediaActive
+                ? "bg-[#DC2626] text-white shadow-lg shadow-red-500/20"
+                : "text-white/80 hover:bg-white/10"
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <Clapperboard size={18} />
+              Media
+            </span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform ${isMediaOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {isMediaOpen && (
+            <div className="mt-1 ml-2 space-y-1 border-l border-white/20 pl-2">
+              {mediaMenuItems.map((item) => {
                 const isActive =
                   pathname === item.href ||
                   (item.href !== "/admin" && pathname?.startsWith(item.href));

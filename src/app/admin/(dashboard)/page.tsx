@@ -5,6 +5,7 @@ import {
   GraduationCap,
   BookOpen,
   Library,
+  Clapperboard,
   DollarSign,
   Newspaper,
   CalendarDays,
@@ -19,6 +20,7 @@ import {
   formatBeritaDate,
   parseBeritaListResponse,
 } from "../../../lib/berita";
+import { getTotalAdminMedia } from "../../../lib/admin-media";
 import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
 import { getTotalAdmisiBiayaStudi } from "../../../lib/admin-admisi";
 
@@ -36,6 +38,7 @@ interface DashboardCounts {
   mataKuliah: number;
   berita: number;
   kegiatan: number;
+  media: number;
   ebook: number;
   biayaStudi: number;
 }
@@ -165,6 +168,7 @@ export default function AdminDashboardPage() {
     mataKuliah: 0,
     berita: 0,
     kegiatan: 0,
+    media: getTotalAdminMedia(),
     ebook: getTotalAdminEbook(),
     biayaStudi: getTotalAdmisiBiayaStudi(),
   });
@@ -229,6 +233,7 @@ export default function AdminDashboardPage() {
           mataKuliah: mataKuliah.length,
           berita: berita.length,
           kegiatan: kegiatan.length,
+          media: getTotalAdminMedia(),
           ebook: getTotalAdminEbook(),
           biayaStudi: getTotalAdmisiBiayaStudi(),
         });
@@ -384,7 +389,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
         <StatsCard
           title="Total Program Studi"
           value={counts.programStudi}
@@ -412,6 +417,13 @@ export default function AdminDashboardPage() {
           icon={CalendarDays}
           color="text-purple-600"
           bgColor="bg-purple-50"
+        />
+        <StatsCard
+          title="Total Media"
+          value={counts.media}
+          icon={Clapperboard}
+          color="text-indigo-600"
+          bgColor="bg-indigo-50"
         />
         <StatsCard
           title="Total Ebook"

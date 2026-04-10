@@ -66,9 +66,15 @@ export default function ProgramStudi() {
       {/* Hero */}
       <ScrollReveal y={28} amount={0.2}>
         <div className="relative h-80 bg-[#002366] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#002366] to-[#003080]"></div>
-          <div className="absolute -left-20 top-8 h-56 w-56 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
-          <div className="relative h-full flex items-center">
+          <ImageWithFallback
+            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1373&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="STTB Campus"
+            className="absolute inset-0 z-0 w-full h-full object-cover opacity-100"
+            loading="eager"
+          />
+          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#002366]/85 to-[#003080]/85"></div>
+          <div className="absolute -left-20 top-8 z-10 h-56 w-56 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
+          <div className="relative z-20 h-full flex items-center">
             <motion.div
               className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white"
               initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -81,11 +87,6 @@ export default function ProgramStudi() {
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
               Temukan program yang sesuai dengan panggilan pelayanan Anda
             </p>
-            <ImageWithFallback
-              src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1373&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="STT Campus"
-              className="absolute inset-0 w-full h-full object-cover opacity-20"
-            />
             </motion.div>
           </div>
         </div>
