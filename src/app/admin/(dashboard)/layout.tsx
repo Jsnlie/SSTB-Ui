@@ -13,6 +13,7 @@ const pageTitles: Record<string, string> = {
   "/admin/berita": "Berita",
   "/admin/kegiatan": "Kegiatan",
   "/admin/perpustakaan": "Perpustakaan",
+  "/admin/admisi": "Biaya Studi",
   "/admin/overview-about": "Overview About",
   "/admin/overview-requirement": "Overview Requirement",
 };

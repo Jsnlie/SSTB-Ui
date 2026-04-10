@@ -5,6 +5,7 @@ import { useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { ScrollReveal } from "../../components/ScrollReveal";
+import { admisiBiayaStudiDummyData } from "../../lib/admin-admisi";
 
 export default function Admisi() {
   const [showForm, setShowForm] = useState(false);
@@ -38,58 +39,7 @@ export default function Admisi() {
     },
   ];
 
-  const tuitionFees = [
-    {
-      program: "Sarjana Teologi (S.Th)",
-      pendaftaranTes: "Rp 500.000",
-      administrasiPerSemester: "Rp 500.000",
-      biayaKuliahPerSemester: "Rp 9.000.000",
-      bimbinganTA: "Rp 1.500.000",
-      wisuda: "Rp 2.000.000",
-      cutiAkademik: "Rp 500.000",
-      total: "Rp 14.000.000",
-    },
-    {
-      program: "Sarjana Teologi (S.Pd)",
-      pendaftaranTes: "Rp 500.000",
-      administrasiPerSemester: "Rp 500.000",
-      biayaKuliahPerSemester: "Rp 9.000.000",
-      bimbinganTA: "Rp 1.500.000",
-      wisuda: "Rp 2.000.000",
-      cutiAkademik: "Rp 500.000",
-      total: "Rp 14.000.000",
-    },
-    {
-      program: "Magister Teologi (M.Th)",
-      pendaftaranTes: "Rp 500.000",
-      administrasiPerSemester: "Rp 500.000",
-      biayaKuliahPerSemester: "Rp 1.500.000",
-      bimbinganTA: "Rp 7.000.000",
-      wisuda: "Rp 2.500.000",
-      cutiAkademik: "Rp 500.000",
-      total: "Rp 12.500.000",
-    },
-    {
-      program: "Magister Pendidikan (M.Pd)",
-      pendaftaranTes: "Rp 500.000",
-      administrasiPerSemester: "Rp 500.000",
-      biayaKuliahPerSemester: "Rp 1.500.000",
-      bimbinganTA: "Rp 7.000.000",
-      wisuda: "Rp 2.500.000",
-      cutiAkademik: "Rp 500.000",
-      total: "Rp 12.500.000",
-    },
-    {
-      program: "Magister Pelayanan (M.Min)",
-      pendaftaranTes: "Rp 500.000",
-      administrasiPerSemester: "Rp 500.000",
-      biayaKuliahPerSemester: "Rp 1.500.000",
-      bimbinganTA: "Rp 2.500.000",
-      wisuda: "Rp 2.500.000",
-      cutiAkademik: "Rp 500.000",
-      total: "Rp 8.000.000",
-    },
-  ];
+  const tuitionFees = admisiBiayaStudiDummyData;
 
   const scholarships = [
     {
@@ -229,9 +179,8 @@ export default function Admisi() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {tuitionFees.map((fee, idx) => (
-              <ScrollReveal key={idx} delay={idx * 0.06} amount={0.18}>
+              <ScrollReveal key={fee.id} delay={idx * 0.06} amount={0.18}>
                 <div
-                key={idx}
                 className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <div className="bg-[#002366] px-4 py-3">
@@ -581,8 +530,8 @@ export default function Admisi() {
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#002366] focus:border-transparent"
                     >
                       <option value="">Pilih Program Studi</option>
-                      {tuitionFees.map((fee, idx) => (
-                        <option key={idx} value={fee.program}>
+                      {tuitionFees.map((fee) => (
+                        <option key={fee.id} value={fee.program}>
                           {fee.program}
                         </option>
                       ))}

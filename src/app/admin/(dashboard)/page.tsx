@@ -5,6 +5,7 @@ import {
   GraduationCap,
   BookOpen,
   Library,
+  DollarSign,
   Newspaper,
   CalendarDays,
   TrendingUp,
@@ -19,6 +20,7 @@ import {
   parseBeritaListResponse,
 } from "../../../lib/berita";
 import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
+import { getTotalAdmisiBiayaStudi } from "../../../lib/admin-admisi";
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
 
@@ -35,6 +37,7 @@ interface DashboardCounts {
   berita: number;
   kegiatan: number;
   ebook: number;
+  biayaStudi: number;
 }
 
 interface ActivityItem {
@@ -163,6 +166,7 @@ export default function AdminDashboardPage() {
     berita: 0,
     kegiatan: 0,
     ebook: getTotalAdminEbook(),
+    biayaStudi: getTotalAdmisiBiayaStudi(),
   });
   const [beritaList, setBeritaList] = useState<BeritaItem[]>([]);
   const [kegiatanList, setKegiatanList] = useState<AcaraItem[]>([]);
@@ -226,6 +230,7 @@ export default function AdminDashboardPage() {
           berita: berita.length,
           kegiatan: kegiatan.length,
           ebook: getTotalAdminEbook(),
+          biayaStudi: getTotalAdmisiBiayaStudi(),
         });
         setBeritaList(berita);
         setKegiatanList(kegiatan);
@@ -379,7 +384,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         <StatsCard
           title="Total Program Studi"
           value={counts.programStudi}
@@ -414,6 +419,13 @@ export default function AdminDashboardPage() {
           icon={Library}
           color="text-rose-600"
           bgColor="bg-rose-50"
+        />
+        <StatsCard
+          title="Total Biaya Studi"
+          value={counts.biayaStudi}
+          icon={DollarSign}
+          color="text-cyan-600"
+          bgColor="bg-cyan-50"
         />
       </div>
 

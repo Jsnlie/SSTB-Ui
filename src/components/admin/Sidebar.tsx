@@ -8,6 +8,7 @@ import {
   ChevronDown,
   LayoutDashboard,
   GraduationCap,
+  DollarSign,
   BookOpen,
   Library,
   Layers,
@@ -23,6 +24,7 @@ const mainMenuItems = [
   { name: "Berita", href: "/admin/berita", icon: Newspaper },
   { name: "Kegiatan", href: "/admin/kegiatan", icon: CalendarDays },
   { name: "Perpustakaan", href: "/admin/perpustakaan", icon: Library },
+  { name: "Biaya Studi", href: "/admin/admisi", icon: DollarSign },
 ];
 
 const academicMenuItems = [
