@@ -789,10 +789,6 @@ function MediaSectionForm({
 								</div>
 							</div>
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1.5">Title Description</label>
-								<input type="text" name="titleDescription" value={form.titleDescription} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
-							</div>
-							<div>
 								<label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
 								<textarea name="description" value={form.description} onChange={handleChange} rows={4} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
 							</div>
@@ -803,7 +799,7 @@ function MediaSectionForm({
 						<>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1.5">Author</label>
+									<label className="block text-sm font-medium text-gray-700 mb-1.5">Penulis</label>
 									<input type="text" name="author" value={form.author} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
 								</div>
 								<div>
@@ -823,8 +819,8 @@ function MediaSectionForm({
 									<input type="text" name="descriptionTitle" value={form.descriptionTitle} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
 								</div>
 								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1.5">Writer</label>
-									<input type="text" name="writer" value={form.writer} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
+									<label className="block text-sm font-medium text-gray-700 mb-1.5">Editor</label>
+									<input type="text" name="writer" value={form.writer} onChange={handleChange} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
 								</div>
 							</div>
 							<div>

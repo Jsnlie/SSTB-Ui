@@ -21,6 +21,10 @@ export interface MediaItem {
   videoUrl?: string;
   authorImage?: string;
   authorDescription?: string;
+  isbn?: string;
+  writer?: string;
+  theme?: string;
+  tagline?: string;
 }
 
 export const readableMediaTypes: MediaType[] = ["Article", "Journal", "Bulletin", "Monograph"];
@@ -97,8 +101,8 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       slug: media.slug,
       type,
       title: media.title,
-      description: media.article?.tagline || "Artikel belum memiliki deskripsi.",
-      author: media.article?.author || "-",
+      description: media.article?.tagline || media.description || "Artikel belum memiliki deskripsi.",
+      author: media.article?.author || media.author || "-",
       image: normalizeResourceUrl(media.coverImage),
       meta: "Article",
       categoryLabel: media.category,
@@ -109,6 +113,7 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       pdfUrl: articlePdfUrl ? normalizeResourceUrl(articlePdfUrl) : undefined,
       authorImage: media.article?.authorImage || undefined,
       authorDescription: media.article?.authorDescription || undefined,
+      tagline: media.article?.tagline || "",
     };
   }
 
@@ -118,8 +123,8 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       slug: media.slug,
       type,
       title: media.title,
-      description: media.video?.description || "Video belum memiliki deskripsi.",
-      author: media.video?.theme || "-",
+      description: media.video?.description || media.description || "Video belum memiliki deskripsi.",
+      author: media.video?.theme || media.author || "-",
       image: normalizeResourceUrl(media.coverImage),
       meta: "FEATURED VIDEO",
       categoryLabel: media.category,
@@ -128,6 +133,7 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       referenceCode: media.video?.youtubeUrl || media.slug || `video-${media.id}`,
       pages: [],
       videoUrl: media.video?.youtubeUrl || undefined,
+      theme: media.video?.theme || media.author || "",
     };
   }
 
@@ -142,8 +148,8 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       slug: media.slug,
       type,
       title: media.title,
-      description: journalPdfUrl || "Dokumen jurnal tersedia dalam lampiran.",
-      author: "Editor",
+      description: media.description || journalPdfUrl || "Dokumen jurnal tersedia dalam lampiran.",
+      author: media.author || "Editor",
       image: normalizeResourceUrl(media.coverImage),
       meta: "Journal",
       categoryLabel: media.category,
@@ -168,8 +174,8 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       slug: media.slug,
       type,
       title: media.title,
-      description: media.bulletin?.description || media.bulletin?.titleDescription || "Bulletin belum memiliki deskripsi.",
-      author: media.bulletin?.author || "-",
+      description: media.bulletin?.description || media.bulletin?.titleDescription || media.description || "Bulletin belum memiliki deskripsi.",
+      author: media.bulletin?.author || media.author || "-",
       image: normalizeResourceUrl(media.coverImage),
       categoryLabel: media.category,
       releaseDate: media.publishedAt,
@@ -185,20 +191,36 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
     slug: media.slug,
     type,
     title: media.title,
-    description: media.monograph?.descriptionTitle || media.monograph?.synopsis || "Monograf belum memiliki deskripsi.",
-    author: media.monograph?.author || "-",
+    description: media.monograph?.descriptionTitle || media.monograph?.synopsis || media.description || "Monograf belum memiliki deskripsi.",
+    author: media.monograph?.author || media.author || "-",
     image: normalizeResourceUrl(media.monograph?.image || media.coverImage || ""),
     categoryLabel: media.category,
     releaseDate: media.publishedAt,
     category: media.category,
     referenceCode: media.monograph?.isbn || media.slug || `monograph-${media.id}`,
     pages: safePages([media.monograph?.descriptionTitle, media.monograph?.synopsis].filter(Boolean).join("\n\n")),
+    isbn: media.monograph?.isbn || media.isbn || "",
+    writer: media.monograph?.writer || media.author || "-",
   };
 }
 
 export async function fetchMediaItems() {
   const medias = await getMedias();
-  return medias.map(toPublicMediaItem);
+
+  // Fetch detailed data for each media item concurrently so that we receive
+  // all internal related objects (article, video, bulletin, etc.) which contain the author, theme, and others.
+  const detailedMedias = await Promise.all(
+    medias.map(async (media) => {
+      try {
+        const detail = await getMediaById(media.id);
+        return detail ? toPublicMediaItem(detail) : toPublicMediaItem(media);
+      } catch {
+        return toPublicMediaItem(media);
+      }
+    })
+  );
+
+  return detailedMedias;
 }
 
 export async function getMediaBySlug(slug: string) {

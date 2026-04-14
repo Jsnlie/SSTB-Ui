@@ -28,6 +28,9 @@ interface MediaCore {
 	category: string;
 	coverImage: string;
 	publishedAt: string;
+	author?: string;
+	description?: string;
+	isbn?: string;
 }
 
 export interface ArticleDetail {
@@ -386,6 +389,9 @@ function parseMediaResponse(item: unknown): MediaResponse {
 			(categorySource ? pickStringFrom(categorySource, ["name", "Name"]) : ""),
 		coverImage: pickStringFrom(source, ["coverImage", "CoverImage", "image", "Image"]),
 		publishedAt: pickStringFrom(source, ["publishedAt", "PublishedAt", "releaseDate", "ReleaseDate", "createdAt", "CreatedAt"]),
+		author: pickStringFrom(source, ["author", "Author", "theme", "Theme", "writer", "Writer"]),
+		description: pickStringFrom(source, ["description", "Description", "tagline", "Tagline", "synopsis", "Synopsis"]),
+		isbn: pickStringFrom(source, ["isbn", "Isbn", "ISBN"]),
 	};
 
 	const article = parseArticleDetail(

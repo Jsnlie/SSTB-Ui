@@ -134,16 +134,32 @@ export default function MediaDetailPage() {
                 <h1 className="text-[#061538] text-3xl [font-family:Georgia,_Times_New_Roman,_serif] mb-3">
                   {media.title}
                 </h1>
-                <p className="text-sm text-gray-600 mb-4">{media.description}</p>
+                
+                {media.description && !media.description.startsWith("data:") && !isMonograph && (
+                  <p className="text-sm text-gray-600 mb-4">{media.description}</p>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
                   <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
                     <User size={15} className="mt-0.5 shrink-0 text-[#002366]" />
                     <div className="min-w-0">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">Author / Tema</p>
-                      <p className="font-medium text-gray-800 break-words">{media.author || "-"}</p>
+                      <p className="text-xs uppercase tracking-wide text-gray-500">
+                        {isMonograph ? "Penulis" : isVideo ? "Tema" : "Author"}
+                      </p>
+                      <p className="font-medium text-gray-800 break-words">
+                        {isMonograph ? media.author || "-" : isVideo ? media.theme || media.author || "-" : media.author || "-"}
+                      </p>
                     </div>
                   </div>
+                  {isMonograph && media.writer && (
+                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
+                      <User size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Editor</p>
+                        <p className="font-medium text-gray-800 break-words">{media.writer}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
                     <Calendar size={15} className="mt-0.5 shrink-0 text-[#002366]" />
                     <div className="min-w-0">
@@ -158,13 +174,33 @@ export default function MediaDetailPage() {
                       <p className="font-medium text-gray-800 break-words">{media.category}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
-                    <BookOpen size={15} className="mt-0.5 shrink-0 text-[#002366]" />
-                    <div className="min-w-0">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">Referensi</p>
-                      <p className="font-normal text-gray-800 break-words">{media.referenceCode}</p>
+                  {isMonograph && media.isbn && (
+                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0 col-span-1 sm:col-span-2">
+                      <BookOpen size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">ISBN</p>
+                        <p className="font-medium text-gray-800 break-words">{media.isbn}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {media.type !== "Journal" && media.tagline && (
+                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0 col-span-1 sm:col-span-2">
+                      <BookOpen size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Tagline</p>
+                        <p className="font-normal text-gray-800 break-words line-clamp-2">{media.tagline}</p>
+                      </div>
+                    </div>
+                  )}
+                  {isMonograph && media.description && !media.description.startsWith("data:") && (
+                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0 col-span-1 sm:col-span-2">
+                      <BookOpen size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Sinopsis</p>
+                        <p className="font-normal text-gray-800 break-words whitespace-pre-wrap">{media.description}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {media.authorDescription && (

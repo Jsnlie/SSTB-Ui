@@ -595,10 +595,6 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 									/>
 								</div>
 								<div className="lg:col-span-2">
-									<label className="mb-1.5 block text-sm font-medium text-gray-700">Title Description</label>
-									<input type="text" name="titleDescription" value={form.titleDescription} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
-								</div>
-								<div className="lg:col-span-2">
 									<label className="mb-1.5 block text-sm font-medium text-gray-700">Description</label>
 									<textarea name="description" value={form.description} onChange={handleChange} rows={4} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
 								</div>
@@ -608,7 +604,7 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 						{selectedType === "monograph" && (
 							<div className="grid gap-5 rounded-2xl border border-violet-200 bg-violet-50/60 p-5 lg:grid-cols-2">
 								<div>
-									<label className="mb-1.5 block text-sm font-medium text-gray-700">Author</label>
+									<label className="mb-1.5 block text-sm font-medium text-gray-700">Penulis</label>
 									<input type="text" name="author" value={form.author} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
 								</div>
 								<div>
@@ -627,8 +623,8 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 									<input type="text" name="descriptionTitle" value={form.descriptionTitle} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
 								</div>
 								<div>
-									<label className="mb-1.5 block text-sm font-medium text-gray-700">Writer</label>
-									<input type="text" name="writer" value={form.writer} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
+									<label className="mb-1.5 block text-sm font-medium text-gray-700">Editor</label>
+									<input type="text" name="writer" value={form.writer} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" />
 								</div>
 								<div className="lg:col-span-2">
 									<label className="mb-1.5 block text-sm font-medium text-gray-700">Synopsis</label>

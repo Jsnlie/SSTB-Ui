@@ -3,13 +3,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Filter, User, Calendar } from "lucide-react";
+import { Search, Filter, User, Calendar, BookOpen, Tag } from "lucide-react";
 
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Card } from "../../components/ui/card";
-import { fetchMediaItems, MediaItem } from "../../lib/media";
+import { fetchMediaItems, MediaItem, mediaItems } from "../../lib/media";
 import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function MediaLibraryPage() {
@@ -124,18 +124,18 @@ export default function MediaLibraryPage() {
         <div className="flex flex-col md:flex-row gap-4 mb-8 bg-gray-100/60 p-2 rounded-2xl border border-gray-200/60 items-center">
             <Search className="text-gray-400 h-5 w-5 ml-4" />
             <Input 
-              placeholder="Search by title, author, or keyword..." 
+              placeholder="Search by title, author, or category..." 
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               className="flex-1 border-0 bg-transparent shadow-none h-12 focus-visible:ring-0 text-base"
             />
             <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block" />
-            <Button variant="ghost" className="h-12 px-4 gap-2 text-gray-700 hover:bg-gray-200/50 font-medium whitespace-nowrap hidden md:flex">
+            {/* <Button variant="ghost" className="h-12 px-4 gap-2 text-gray-700 hover:bg-gray-200/50 font-medium whitespace-nowrap hidden md:flex">
               All Categories <Filter className="h-4 w-4" />
-            </Button>
-            <Button className="h-12 px-8 bg-[#0c34a6] hover:bg-[#0c34a6]/90 rounded-xl text-base font-semibold text-white ml-2 whitespace-nowrap">
+            </Button> */}
+            {/* <Button className="h-12 px-8 bg-[#0c34a6] hover:bg-[#0c34a6]/90 rounded-xl text-base font-semibold text-white ml-2 whitespace-nowrap">
               <Filter className="h-4 w-4 mr-2" /> Apply
-            </Button>
+            </Button> */}
         </div>
         </ScrollReveal>
 
@@ -238,12 +238,16 @@ function MediaCard({ item }: { item: MediaItem }) {
               </div>
               <div className="flex flex-col gap-1">
                  <span className="text-xs font-bold tracking-[0.2em] text-[#d93025] uppercase flex items-center gap-2">
-                   {item.meta}
+                   {item.meta} {item.theme && <><span className="text-white/50">•</span> <span className="text-white/70">{item.theme}</span></>}
                  </span>
                  <h3 className="text-3xl md:text-3xl font-bold font-sans tracking-tight">{item.title}</h3>
               </div>
             </div>
-            <p className="text-gray-300 max-w-2xl text-[16px] leading-relaxed opacity-90 block pt-2 ml-[4.5rem]">{item.description}</p>
+            {item.description && item.description !== "Video belum memiliki deskripsi." && (
+              <p className="text-gray-300 max-w-2xl text-[16px] leading-relaxed opacity-90 block pt-2 ml-[4.5rem]">
+                {item.description}
+              </p>
+            )}
           </div>
         </Card>
       </Link>
@@ -267,6 +271,9 @@ function MediaCard({ item }: { item: MediaItem }) {
         </div>
 
         <div className="flex flex-1 flex-col p-5">
+           <span className="inline-block w-fit px-2 py-1 text-xs rounded-full bg-[#eef2ff] text-[#002366] mb-2">
+              {item.type}
+            </span>
           <h3 className="text-xl font-bold text-[#061538] mb-2 line-clamp-2 [font-family:Georgia,_Times_New_Roman,_serif]">
             {item.title}
           </h3>
@@ -275,14 +282,20 @@ function MediaCard({ item }: { item: MediaItem }) {
           </p>
 
           <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
-            <span className="inline-flex items-center gap-1.5">
+            {/* <span className="inline-flex items-center gap-1.5">
               <User size={13} className="text-[#0b2f86]" />
-              {item.author || "-"}
-            </span>
+             {item.author}
+            </span> */}
             <span className="inline-flex items-center gap-1.5">
               <Calendar size={13} className="text-[#0b2f86]" />
               {releaseDateLabel}
             </span>
+            {item.isbn && (
+              <span className="inline-flex items-center gap-1.5">
+                <BookOpen size={13} className="text-[#0b2f86]" />
+                <span className="line-clamp-1 break-all max-w-[150px]">ISBN: {item.isbn}</span>
+              </span>
+            )}
           </div>
 
           <div className="mt-auto inline-flex h-10 items-center justify-center rounded-lg bg-[#0c34a6] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0a2d90]">
