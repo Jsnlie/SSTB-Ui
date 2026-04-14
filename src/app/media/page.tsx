@@ -3,12 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, User, Calendar } from "lucide-react";
 
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card } from "../../components/ui/card";
 import { fetchMediaItems, MediaItem } from "../../lib/media";
 import { ScrollReveal } from "../../components/ScrollReveal";
 
@@ -215,107 +215,80 @@ export default function MediaLibraryPage() {
 }
 
 function MediaCard({ item }: { item: MediaItem }) {
+  const detailHref = `/media/${item.slug}`;
+  const releaseDate = new Date(item.releaseDate);
+  const releaseDateLabel = Number.isNaN(releaseDate.getTime())
+    ? "-"
+    : releaseDate.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+
   if (item.type === "Video") {
     return (
-      <Card className="col-span-1 lg:col-span-2 overflow-hidden group border-0 shadow-none rounded-[2rem] relative min-h-[460px] cursor-pointer">
-        <Image src={item.image} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-        <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-gray-950 flex flex-col justify-end p-10 z-10" />
-        <div className="absolute bottom-0 left-0 p-8 md:p-12 text-white w-full z-20">
-          <div className="flex items-center gap-4 mb-5">
-            <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all border border-white/20">
-              <div className="w-4 h-5 rounded-sm bg-white ml-1" style={{ clipPath: 'polygon(0 0, 100% 50%, 0 100%)' }}></div>
+      <Link href={detailHref} className="block">
+        <Card className="col-span-1 lg:col-span-2 overflow-hidden group border-0 shadow-none rounded-[2rem] relative min-h-[460px] cursor-pointer">
+          <Image src={item.image} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-gray-950 flex flex-col justify-end p-10 z-10" />
+          <div className="absolute bottom-0 left-0 p-8 md:p-12 text-white w-full z-20">
+            <div className="flex items-center gap-4 mb-5">
+              <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all border border-white/20">
+                <div className="w-4 h-5 rounded-sm bg-white ml-1" style={{ clipPath: 'polygon(0 0, 100% 50%, 0 100%)' }}></div>
+              </div>
+              <div className="flex flex-col gap-1">
+                 <span className="text-xs font-bold tracking-[0.2em] text-[#d93025] uppercase flex items-center gap-2">
+                   {item.meta}
+                 </span>
+                 <h3 className="text-3xl md:text-3xl font-bold font-sans tracking-tight">{item.title}</h3>
+              </div>
             </div>
-            <div className="flex flex-col gap-1">
-               <span className="text-xs font-bold tracking-[0.2em] text-[#d93025] uppercase flex items-center gap-2">
-                 {item.meta}
-               </span>
-               <h3 className="text-3xl md:text-3xl font-bold font-sans tracking-tight">{item.title}</h3>
-            </div>
+            <p className="text-gray-300 max-w-2xl text-[16px] leading-relaxed opacity-90 block pt-2 ml-[4.5rem]">{item.description}</p>
           </div>
-          <p className="text-gray-300 max-w-2xl text-[16px] leading-relaxed opacity-90 block pt-2 ml-[4.5rem]">{item.description}</p>
-        </div>
-      </Card>
+        </Card>
+      </Link>
     );
   }
 
-  const detailHref = `/media/${item.slug}`;
-
   return (
     <Link href={detailHref} className="block h-full">
-      <Card className={`flex flex-col overflow-hidden shadow-none transition-shadow cursor-pointer rounded-2xl group bg-white h-full hover:shadow-lg ${
-        item.type === "Article" || item.type === "Journal"
-          ? "border-l-4 border-l-red-600 border-t-0 border-r-0 border-b-0 rounded-l-md"
-          : "border-0"
-      }`}>
-        <CardContent className="p-6 md:p-8 flex flex-col flex-grow">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#d93025]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d93025]"></span>
-              {item.categoryLabel || item.type}
-            </div>
-            {item.meta && <span className="text-xs font-bold text-gray-500">{item.meta}</span>}
-          </div>
+      <Card className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-none transition-all duration-300 group hover:-translate-y-0.5 hover:shadow-lg">
+        <div className="relative">
+          <Image
+            src={item.image}
+            alt={item.title}
+            width={800}
+            height={520}
+            className="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+          <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#0b2f86] shadow-sm">
+            {item.categoryLabel || item.type}
+          </span>
+        </div>
 
-          {(item.type === "Monograph" || item.type === "Bulletin") && item.image && (
-            <div className="w-full h-48 relative mb-6 rounded-xl overflow-hidden shadow-sm">
-              <Image src={item.image} alt={item.title} fill className="object-cover" />
-            </div>
-          )}
-
-          {item.type === "Journal" && item.image && (
-            <div className="w-24 h-32 relative mb-6 rounded-md overflow-hidden bg-gray-900 shadow-md flex-shrink-0">
-              <Image src={item.image} alt="Journal Cover" fill className="object-cover opacity-90" />
-              <div className="absolute inset-0 border border-white/20 rounded-md pointer-events-none" />
-            </div>
-          )}
-
-          <h3 className={`font-bold text-gray-900 mb-4 transition-colors ${item.type === "Article" ? "text-3xl pr-4" : "text-xl"}`}>
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="text-xl font-bold text-[#061538] mb-2 line-clamp-2 [font-family:Georgia,_Times_New_Roman,_serif]">
             {item.title}
           </h3>
+          <p className="mb-5 text-sm leading-relaxed text-gray-600 line-clamp-2">
+            {item.description}
+          </p>
 
-          <p className="text-gray-600 flex-grow mb-6 leading-relaxed text-[15px]">{item.description}</p>
+          <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
+            <span className="inline-flex items-center gap-1.5">
+              <User size={13} className="text-[#0b2f86]" />
+              {item.author || "-"}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar size={13} className="text-[#0b2f86]" />
+              {releaseDateLabel}
+            </span>
+          </div>
 
-          {item.type === "Article" && (
-            <div className="w-full bg-[#0c34a6] text-white rounded-xl py-4 tracking-wide text-[15px] font-semibold mt-auto text-center">
-              Full Text <span className="ml-2 transition-transform group-hover:translate-x-1 inline-block">→</span>
-            </div>
-          )}
-
-          {item.type === "Journal" && (
-            <div className="mt-auto space-y-4 pt-4 border-t border-gray-100">
-              <div className="flex justify-between items-center text-[13px] border-b border-gray-100 pb-3">
-                <span className="font-semibold text-gray-800">Editor's Choice</span>
-                <span className="text-[#0c34a6] font-semibold hover:underline">Read</span>
-              </div>
-              <div className="flex justify-between items-center text-[13px]">
-                <span className="font-semibold text-gray-800">Submission Guidelines</span>
-                <span className="text-gray-400">↓</span>
-              </div>
-            </div>
-          )}
-
-          {(item.type === "Monograph" || item.type === "Bulletin") && (
-            <div className="flex items-center justify-between mt-auto pt-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden relative border border-gray-100">
-                  <Image
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80"
-                    alt={item.author}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <span className="text-xs font-bold text-gray-800">{item.author}</span>
-              </div>
-              {item.type === "Bulletin" && (
-                <div className="flex items-center gap-4">
-                  <span className="text-[#0c34a6] text-sm font-semibold hover:underline">Apply Now</span>
-                  <span className="text-gray-500 text-sm font-semibold hover:text-gray-800">Learn More</span>
-                </div>
-              )}
-            </div>
-          )}
-        </CardContent>
+          <div className="mt-auto inline-flex h-10 items-center justify-center rounded-lg bg-[#0c34a6] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0a2d90]">
+            Liat selengkapnya
+          </div>
+        </div>
       </Card>
     </Link>
   );

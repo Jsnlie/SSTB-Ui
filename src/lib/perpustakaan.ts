@@ -1,3 +1,4 @@
+import { apiUrl } from "./api";
 import { normalizeArray, toNumberSafe, toStringSafe } from "./response";
 
 export type LibraryStatus = "Published" | "Draft";
@@ -42,6 +43,80 @@ function pickString(source: any, keys: string[]) {
     if (value) return value;
   }
   return "";
+}
+
+function pickUrl(source: any, keys: string[]) {
+  for (const key of keys) {
+    const picked = source?.[key];
+
+    if (typeof picked === "string" && picked.trim()) {
+      return picked.trim();
+    }
+
+    if (!picked || typeof picked !== "object") {
+      continue;
+    }
+
+    const nested = picked as Record<string, unknown>;
+    for (const nestedKey of [
+      "url",
+      "Url",
+      "path",
+      "Path",
+      "fileUrl",
+      "FileUrl",
+      "downloadUrl",
+      "DownloadUrl",
+      "href",
+      "Href",
+    ]) {
+      const nestedValue = nested[nestedKey];
+      if (typeof nestedValue === "string" && nestedValue.trim()) {
+        return nestedValue.trim();
+      }
+    }
+  }
+
+  return "";
+}
+
+function normalizeResourceUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  const rewriteApiHostIfNeeded = (urlValue: string) => {
+    try {
+      const resourceUrl = new URL(urlValue);
+      const configuredApiUrl = new URL(apiUrl(""));
+
+      const isResourceLocalhost =
+        resourceUrl.hostname === "localhost" || resourceUrl.hostname === "127.0.0.1";
+      const hasPublicApiHost =
+        configuredApiUrl.hostname !== "localhost" && configuredApiUrl.hostname !== "127.0.0.1";
+
+      if (!isResourceLocalhost || !hasPublicApiHost) {
+        return urlValue;
+      }
+
+      resourceUrl.protocol = configuredApiUrl.protocol;
+      resourceUrl.host = configuredApiUrl.host;
+      return resourceUrl.toString();
+    } catch {
+      return urlValue;
+    }
+  };
+
+  if (/^https?:\/\//i.test(trimmed)) return rewriteApiHostIfNeeded(trimmed);
+  if (trimmed.startsWith("//")) return rewriteApiHostIfNeeded(`https:${trimmed}`);
+  if (trimmed.startsWith("/")) return apiUrl(trimmed);
+  if (/^www\./i.test(trimmed)) return `https://${trimmed}`;
+
+  // Backend can return file paths without leading slash.
+  if (!trimmed.includes(" ") && /\.(pdf|png|jpg|jpeg|webp|gif|svg)(\?|#|$)/i.test(trimmed)) {
+    return apiUrl(`/${trimmed}`);
+  }
+
+  return trimmed;
 }
 
 function slugify(value: string) {
@@ -114,12 +189,50 @@ function mapLibraryBook(raw: any): LibraryBook {
     releaseDate: toDateOnly(releaseDateRaw),
     category: pickString(raw, ["category", "genre", "type"]) || "Umum",
     isbn: pickString(raw, ["isbn", "isbn13", "code"]),
-    cover:
-      pickString(raw, ["cover", "coverUrl", "image", "imageUrl", "thumbnail", "thumbnailUrl"]) ||
-      LIBRARY_COVER_FALLBACK,
+    cover: normalizeResourceUrl(
+      pickUrl(raw, [
+        "cover",
+        "Cover",
+        "coverUrl",
+        "CoverUrl",
+        "image",
+        "Image",
+        "imageUrl",
+        "ImageUrl",
+        "thumbnail",
+        "Thumbnail",
+        "thumbnailUrl",
+        "ThumbnailUrl",
+        "coverImage",
+        "CoverImage",
+        "filePath",
+        "FilePath",
+      ])
+    ) || LIBRARY_COVER_FALLBACK,
     description: pickString(raw, ["description", "excerpt", "summary"]),
     content,
-    pdfUrl: pickString(raw, ["pdfUrl", "ebookUrl", "fileUrl", "documentUrl", "attachmentUrl"]),
+    pdfUrl: normalizeResourceUrl(
+      pickUrl(raw, [
+        "pdfUrl",
+        "PdfUrl",
+        "ebookUrl",
+        "EbookUrl",
+        "fileUrl",
+        "FileUrl",
+        "documentUrl",
+        "DocumentUrl",
+        "attachmentUrl",
+        "AttachmentUrl",
+        "file",
+        "File",
+        "attachment",
+        "Attachment",
+        "content",
+        "Content",
+        "filePath",
+        "FilePath",
+      ])
+    ),
     status: normalizeStatus(raw),
     pages: toPages(raw, content),
   };

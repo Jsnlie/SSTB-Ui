@@ -39,6 +39,7 @@ export interface ArticleDetail {
 	authorDescription: string;
 	tagline: string;
 	content: string;
+	fileUrl?: string;
 }
 
 export interface VideoDetail {
@@ -212,6 +213,142 @@ function parseNullableObject<T>(value: unknown): T | null {
 	return value as T;
 }
 
+function unwrapObject(value: unknown): Record<string, unknown> {
+	if (!value || typeof value !== "object") return {};
+	const source = value as Record<string, unknown>;
+
+	if (source.data && typeof source.data === "object" && !Array.isArray(source.data)) {
+		return source.data as Record<string, unknown>;
+	}
+
+	if (source.item && typeof source.item === "object" && !Array.isArray(source.item)) {
+		return source.item as Record<string, unknown>;
+	}
+
+	return source;
+}
+
+function pickUnknown(source: Record<string, unknown>, keys: string[]) {
+	for (const key of keys) {
+		if (key in source) return source[key];
+	}
+	return undefined;
+}
+
+function pickStringFrom(source: Record<string, unknown>, keys: string[]) {
+	const picked = pickUnknown(source, keys);
+	if (typeof picked === "string") return picked;
+	if (typeof picked === "number" || typeof picked === "boolean") return String(picked);
+	return "";
+}
+
+function pickNumberFrom(source: Record<string, unknown>, keys: string[]) {
+	return toNumberSafe(pickUnknown(source, keys));
+}
+
+function pickUrlFrom(source: Record<string, unknown>, keys: string[]) {
+	const picked = pickUnknown(source, keys);
+
+	if (typeof picked === "string") return picked;
+	if (!picked || typeof picked !== "object") return "";
+
+	const nested = picked as Record<string, unknown>;
+	for (const key of [
+		"url",
+		"Url",
+		"path",
+		"Path",
+		"fileUrl",
+		"FileUrl",
+		"pdfUrl",
+		"PdfUrl",
+		"downloadUrl",
+		"DownloadUrl",
+		"href",
+		"Href",
+	]) {
+		const value = nested[key];
+		if (typeof value === "string" && value.trim()) return value;
+	}
+
+	return "";
+}
+
+function parseArticleDetail(value: unknown): ArticleDetail | null {
+	const source = unwrapObject(value);
+	if (Object.keys(source).length === 0) return null;
+
+	return {
+		id: pickNumberFrom(source, ["id", "Id"]),
+		mediaId: pickNumberFrom(source, ["mediaId", "MediaId"]),
+		media: pickStringFrom(source, ["media", "Media"]),
+		author: pickStringFrom(source, ["author", "Author"]),
+		authorImage: pickStringFrom(source, ["authorImage", "AuthorImage"]),
+		authorDescription: pickStringFrom(source, ["authorDescription", "AuthorDescription"]),
+		tagline: pickStringFrom(source, ["tagline", "Tagline"]),
+		content: pickStringFrom(source, ["content", "Content"]),
+		fileUrl: pickUrlFrom(source, ["fileUrl", "FileUrl", "pdfUrl", "PdfUrl", "documentUrl", "DocumentUrl", "file", "File", "attachment", "Attachment"]),
+	};
+}
+
+function parseVideoDetail(value: unknown): VideoDetail | null {
+	const source = unwrapObject(value);
+	if (Object.keys(source).length === 0) return null;
+
+	return {
+		id: pickNumberFrom(source, ["id", "Id"]),
+		mediaId: pickNumberFrom(source, ["mediaId", "MediaId"]),
+		media: pickStringFrom(source, ["media", "Media"]),
+		youtubeUrl: pickUrlFrom(source, ["youtubeUrl", "YoutubeUrl", "youTubeUrl", "YouTubeUrl", "url", "Url", "link", "Link"]),
+		theme: pickStringFrom(source, ["theme", "Theme"]),
+		description: pickStringFrom(source, ["description", "Description"]),
+	};
+}
+
+function parseJournalDetail(value: unknown): JournalDetail | null {
+	const source = unwrapObject(value);
+	if (Object.keys(source).length === 0) return null;
+
+	return {
+		id: pickNumberFrom(source, ["id", "Id"]),
+		mediaId: pickNumberFrom(source, ["mediaId", "MediaId"]),
+		media: pickStringFrom(source, ["media", "Media"]),
+		fileUrl: pickUrlFrom(source, ["fileUrl", "FileUrl", "pdfUrl", "PdfUrl", "documentUrl", "DocumentUrl", "attachmentUrl", "AttachmentUrl", "url", "Url", "file", "File", "attachment", "Attachment", "content", "Content", "filePath", "FilePath"]),
+	};
+}
+
+function parseBulletinDetail(value: unknown): BulletinDetail | null {
+	const source = unwrapObject(value);
+	if (Object.keys(source).length === 0) return null;
+
+	return {
+		id: pickNumberFrom(source, ["id", "Id"]),
+		mediaId: pickNumberFrom(source, ["mediaId", "MediaId"]),
+		media: pickStringFrom(source, ["media", "Media"]),
+		author: pickStringFrom(source, ["author", "Author"]),
+		fileUrl: pickUrlFrom(source, ["fileUrl", "FileUrl", "pdfUrl", "PdfUrl", "documentUrl", "DocumentUrl", "attachmentUrl", "AttachmentUrl", "url", "Url", "file", "File", "attachment", "Attachment", "content", "Content", "filePath", "FilePath"]),
+		titleDescription: pickStringFrom(source, ["titleDescription", "TitleDescription"]),
+		description: pickStringFrom(source, ["description", "Description"]),
+	};
+}
+
+function parseMonographDetail(value: unknown): MonographDetail | null {
+	const source = unwrapObject(value);
+	if (Object.keys(source).length === 0) return null;
+
+	return {
+		id: pickNumberFrom(source, ["id", "Id"]),
+		mediaId: pickNumberFrom(source, ["mediaId", "MediaId"]),
+		media: pickStringFrom(source, ["media", "Media"]),
+		author: pickStringFrom(source, ["author", "Author"]),
+		image: pickStringFrom(source, ["image", "Image"]),
+		descriptionTitle: pickStringFrom(source, ["descriptionTitle", "DescriptionTitle"]),
+		writer: pickStringFrom(source, ["writer", "Writer"]),
+		synopsis: pickStringFrom(source, ["synopsis", "Synopsis"]),
+		isbn: pickStringFrom(source, ["isbn", "ISBN", "Isbn"]),
+	};
+}
+
 function parseMediaType(value: unknown): MediaType {
 	const normalized = toStringSafe(value).toLowerCase();
 	if (
@@ -228,27 +365,52 @@ function parseMediaType(value: unknown): MediaType {
 }
 
 function parseMediaResponse(item: unknown): MediaResponse {
-	const source = (item ?? {}) as Record<string, unknown>;
-	const type = parseMediaType(source.type);
+	const source = unwrapObject(item);
+	const type = parseMediaType(
+		pickUnknown(source, ["type", "Type", "mediaType", "MediaType"])
+	);
+	const categorySource = parseNullableObject<Record<string, unknown>>(
+		pickUnknown(source, ["category", "Category"])
+	);
 
 	const base: MediaCore = {
-		id: toNumberSafe(source.id),
-		title: toStringSafe(source.title),
-		slug: toStringSafe(source.slug),
+		id: pickNumberFrom(source, ["id", "Id"]),
+		title: pickStringFrom(source, ["title", "Title"]),
+		slug: pickStringFrom(source, ["slug", "Slug"]),
 		type,
-		categoryId: toNumberSafe(source.categoryId),
-		category: toStringSafe(source.category),
-		coverImage: toStringSafe(source.coverImage),
-		publishedAt: toStringSafe(source.publishedAt),
+		categoryId:
+			pickNumberFrom(source, ["categoryId", "CategoryId"]) ||
+			(categorySource ? pickNumberFrom(categorySource, ["id", "Id"]) : 0),
+		category:
+			pickStringFrom(source, ["categoryName", "CategoryName", "category", "Category"]) ||
+			(categorySource ? pickStringFrom(categorySource, ["name", "Name"]) : ""),
+		coverImage: pickStringFrom(source, ["coverImage", "CoverImage", "image", "Image"]),
+		publishedAt: pickStringFrom(source, ["publishedAt", "PublishedAt", "releaseDate", "ReleaseDate", "createdAt", "CreatedAt"]),
 	};
+
+	const article = parseArticleDetail(
+		pickUnknown(source, ["article", "Article", "articleDetail", "ArticleDetail"])
+	);
+	const video = parseVideoDetail(
+		pickUnknown(source, ["video", "Video", "videoDetail", "VideoDetail"])
+	);
+	const journal = parseJournalDetail(
+		pickUnknown(source, ["journal", "Journal", "journalDetail", "JournalDetail"])
+	);
+	const bulletin = parseBulletinDetail(
+		pickUnknown(source, ["bulletin", "Bulletin", "bulletinDetail", "BulletinDetail"])
+	);
+	const monograph = parseMonographDetail(
+		pickUnknown(source, ["monograph", "Monograph", "monographDetail", "MonographDetail"])
+	);
 
 	return {
 		...base,
-		article: parseNullableObject<ArticleDetail>(source.article),
-		video: parseNullableObject<VideoDetail>(source.video),
-		journal: parseNullableObject<JournalDetail>(source.journal),
-		bulletin: parseNullableObject<BulletinDetail>(source.bulletin),
-		monograph: parseNullableObject<MonographDetail>(source.monograph),
+		article,
+		video,
+		journal,
+		bulletin,
+		monograph,
 	} as MediaResponse;
 }
 

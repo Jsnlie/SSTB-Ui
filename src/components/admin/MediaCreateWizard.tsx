@@ -134,6 +134,20 @@ function imageFileToDataUrl(file: File): Promise<string> {
 	});
 }
 
+function fileToDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(toString(reader.result));
+		reader.onerror = () => reject(new Error("Gagal membaca file"));
+		reader.readAsDataURL(file);
+	});
+}
+
+function toString(value: string | ArrayBuffer | null): string {
+	if (typeof value === "string") return value;
+	return "";
+}
+
 function buildUploadPath(file: File, scope: string) {
 	const safeName = encodeURIComponent(file.name.trim().replace(/\s+/g, "-"));
 	return `/uploads/${scope}/${safeName}`;
@@ -198,7 +212,7 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 	const [selectedType, setSelectedType] = useState<MediaType | null>(initialType);
 	const [form, setForm] = useState<MediaFormInput>(() => createDefaultMediaForm(initialType ?? "article"));
 	const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-	const [authorImageFile, setAuthorImageFile] = useState<File | null>(null);
+	const [articleContentFile, setArticleContentFile] = useState<File | null>(null);
 	const [journalFile, setJournalFile] = useState<File | null>(null);
 	const [bulletinPdfFile, setBulletinPdfFile] = useState<File | null>(null);
 	const [monographImageFile, setMonographImageFile] = useState<File | null>(null);
@@ -234,7 +248,7 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 		if (!selectedType) return;
 		setForm(createDefaultMediaForm(selectedType, categories[0]?.id ?? 0));
 		setCoverImageFile(null);
-		setAuthorImageFile(null);
+		setArticleContentFile(null);
 		setJournalFile(null);
 		setBulletinPdfFile(null);
 		setMonographImageFile(null);
@@ -245,7 +259,7 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 		setSelectedType(nextType);
 		setForm(createDefaultMediaForm(nextType, categories[0]?.id ?? form.categoryId ?? 0));
 		setCoverImageFile(null);
-		setAuthorImageFile(null);
+		setArticleContentFile(null);
 		setJournalFile(null);
 		setBulletinPdfFile(null);
 		setMonographImageFile(null);
@@ -277,8 +291,8 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 			setCoverImageFile(null);
 		}
 
-		if (name === "authorImage") {
-			setAuthorImageFile(null);
+		if (name === "content") {
+			setArticleContentFile(null);
 		}
 
 		if (name === "image") {
@@ -328,10 +342,14 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 			const nextForm = { ...form };
 
 			if (coverImageFile) nextForm.coverImage = await imageFileToDataUrl(coverImageFile);
-			if (authorImageFile) nextForm.authorImage = await imageFileToDataUrl(authorImageFile);
-			if (journalFile) nextForm.fileUrl = buildUploadPath(journalFile, "journal");
-			if (bulletinPdfFile) nextForm.fileUrl = buildUploadPath(bulletinPdfFile, "bulletin");
+			if (articleContentFile) nextForm.content = await fileToDataUrl(articleContentFile);
+			if (journalFile) nextForm.fileUrl = await fileToDataUrl(journalFile);
+			if (bulletinPdfFile) nextForm.fileUrl = await fileToDataUrl(bulletinPdfFile);
 			if (monographImageFile) nextForm.image = await imageFileToDataUrl(monographImageFile);
+
+			if (selectedType === "monograph") {
+				nextForm.coverImage = nextForm.image || nextForm.coverImage;
+			}
 
 			const payload = buildMediaPayload(selectedType, nextForm);
 			const created = await createMedia(payload);
@@ -490,14 +508,16 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 								/>
 							</div>
 							<div>
-								<FileChoice
-									label="Cover Image"
-									accept="image/*"
-									helperText="Format JPG, PNG, atau WEBP."
-									file={coverImageFile}
+								{selectedType === "monograph" ? null : (
+									<FileChoice
+										label="Cover Image"
+										accept="image/*"
+										helperText="Format JPG, PNG, atau WEBP."
+										file={coverImageFile}
 										onChange={handleFileChange(setCoverImageFile, "coverImage", 2 * 1024 * 1024, "Ukuran cover image maksimal 2MB")}
-									imageLike
-								/>
+										imageLike
+									/>
+								)}
 							</div>
 						</div>
 
@@ -506,16 +526,6 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 								<div>
 									<label className="mb-1.5 block text-sm font-medium text-gray-700">Author</label>
 									<input type="text" name="author" value={form.author} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
-								</div>
-								<div>
-									<FileChoice
-										label="Author Image"
-										accept="image/*"
-										helperText="Format JPG, PNG, atau WEBP."
-										file={authorImageFile}
-										onChange={handleFileChange(setAuthorImageFile, "authorImage", 2 * 1024 * 1024, "Ukuran author image maksimal 2MB")}
-										imageLike
-									/>
 								</div>
 								<div className="lg:col-span-2">
 									<label className="mb-1.5 block text-sm font-medium text-gray-700">Author Description</label>
@@ -526,8 +536,14 @@ export default function MediaCreateWizard({ initialType = null }: MediaCreateWiz
 									<input type="text" name="tagline" value={form.tagline} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" />
 								</div>
 								<div className="lg:col-span-2">
-									<label className="mb-1.5 block text-sm font-medium text-gray-700">Content</label>
-									<textarea name="content" value={form.content} onChange={handleChange} rows={8} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#1E3A8A]" required />
+									<FileChoice
+										label="Content Artikel (PDF)"
+										accept="application/pdf"
+										helperText="Upload file PDF untuk konten artikel."
+										file={articleContentFile}
+										onChange={handleFileChange(setArticleContentFile, "content", 10 * 1024 * 1024, "Ukuran PDF artikel maksimal 10MB")}
+										required
+									/>
 								</div>
 							</div>
 						)}

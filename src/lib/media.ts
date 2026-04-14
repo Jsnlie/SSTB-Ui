@@ -1,4 +1,5 @@
-import { getMedias, MediaResponse } from "./admin-media";
+import { getMediaById, getMedias, MediaResponse } from "./admin-media";
+import { apiUrl } from "./api";
 
 export type MediaType = "Article" | "Video" | "Journal" | "Bulletin" | "Monograph";
 
@@ -16,6 +17,10 @@ export interface MediaItem {
   category: string;
   referenceCode: string;
   pages: string[];
+  pdfUrl?: string;
+  videoUrl?: string;
+  authorImage?: string;
+  authorDescription?: string;
 }
 
 export const readableMediaTypes: MediaType[] = ["Article", "Journal", "Bulletin", "Monograph"];
@@ -39,24 +44,71 @@ function safePages(raw: string) {
   return normalized.length > 0 ? normalized : ["Konten belum tersedia."];
 }
 
+function isLikelyUrl(value: string) {
+  const trimmed = value.trim();
+  return /^https?:\/\//i.test(trimmed) || trimmed.startsWith("/") || /^data:application\/pdf/i.test(trimmed);
+}
+
+function isLikelyPdfUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (/^data:application\/pdf/i.test(trimmed)) return true;
+  if (trimmed.includes(" ")) return false;
+  if (!isLikelyUrl(trimmed)) return false;
+  const lower = trimmed.toLowerCase();
+  return lower.includes(".pdf") || lower.includes("/file") || lower.includes("download") || lower.includes("document");
+}
+
+function resolvePdfSource(...sources: string[]) {
+  for (const source of sources) {
+    const trimmed = source.trim();
+    if (!trimmed) continue;
+    if (isLikelyPdfUrl(trimmed)) return trimmed;
+  }
+  return "";
+}
+
+function normalizeResourceUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  if (trimmed.startsWith("/")) return apiUrl(trimmed);
+
+  // Backend sometimes returns file path without leading slash.
+  if (!trimmed.includes(" ") && /\.(pdf|png|jpg|jpeg|webp|gif|svg)(\?|#|$)/i.test(trimmed)) {
+    return apiUrl(`/${trimmed}`);
+  }
+
+  return trimmed;
+}
+
 export function toPublicMediaItem(media: MediaResponse): MediaItem {
   const type = toDisplayType(media.type);
 
   if (media.type === "article") {
+    const articleContent = media.article?.content || "";
+    const articleFileUrl = media.article?.fileUrl || "";
+    const articlePdfUrl = resolvePdfSource(articleFileUrl, articleContent);
+
     return {
       id: media.id,
       slug: media.slug,
       type,
       title: media.title,
-      description: media.article?.tagline || media.article?.content || "Artikel belum memiliki deskripsi.",
+      description: media.article?.tagline || "Artikel belum memiliki deskripsi.",
       author: media.article?.author || "-",
-      image: media.coverImage,
+      image: normalizeResourceUrl(media.coverImage),
       meta: "Article",
       categoryLabel: media.category,
       releaseDate: media.publishedAt,
       category: media.category,
       referenceCode: media.slug || `article-${media.id}`,
-      pages: safePages(media.article?.content || media.article?.tagline || ""),
+      pages: safePages(media.article?.tagline || media.article?.content || ""),
+      pdfUrl: articlePdfUrl ? normalizeResourceUrl(articlePdfUrl) : undefined,
+      authorImage: media.article?.authorImage || undefined,
+      authorDescription: media.article?.authorDescription || undefined,
     };
   }
 
@@ -68,35 +120,49 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       title: media.title,
       description: media.video?.description || "Video belum memiliki deskripsi.",
       author: media.video?.theme || "-",
-      image: media.coverImage,
+      image: normalizeResourceUrl(media.coverImage),
       meta: "FEATURED VIDEO",
       categoryLabel: media.category,
       releaseDate: media.publishedAt,
       category: media.category,
       referenceCode: media.video?.youtubeUrl || media.slug || `video-${media.id}`,
       pages: [],
+      videoUrl: media.video?.youtubeUrl || undefined,
     };
   }
 
   if (media.type === "journal") {
+    const journalPdfUrl = resolvePdfSource(
+      media.journal?.fileUrl || "",
+      media.journal?.media || ""
+    );
+
     return {
       id: media.id,
       slug: media.slug,
       type,
       title: media.title,
-      description: media.journal?.fileUrl || "Dokumen jurnal tersedia dalam lampiran.",
+      description: journalPdfUrl || "Dokumen jurnal tersedia dalam lampiran.",
       author: "Editor",
-      image: media.coverImage,
+      image: normalizeResourceUrl(media.coverImage),
       meta: "Journal",
       categoryLabel: media.category,
       releaseDate: media.publishedAt,
       category: media.category,
-      referenceCode: media.journal?.fileUrl || media.slug || `journal-${media.id}`,
-      pages: safePages(`Dokumen jurnal tersedia di URL berikut:\n\n${media.journal?.fileUrl || "-"}`),
+      referenceCode: journalPdfUrl || media.slug || `journal-${media.id}`,
+      pages: safePages(`Dokumen jurnal tersedia di URL berikut:\n\n${journalPdfUrl || "-"}`),
+      pdfUrl: journalPdfUrl ? normalizeResourceUrl(journalPdfUrl) : undefined,
     };
   }
 
   if (media.type === "bulletin") {
+    const bulletinPdfUrl = resolvePdfSource(
+      media.bulletin?.fileUrl || "",
+      media.bulletin?.description || "",
+      media.bulletin?.titleDescription || "",
+      media.bulletin?.media || ""
+    );
+
     return {
       id: media.id,
       slug: media.slug,
@@ -104,12 +170,13 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
       title: media.title,
       description: media.bulletin?.description || media.bulletin?.titleDescription || "Bulletin belum memiliki deskripsi.",
       author: media.bulletin?.author || "-",
-      image: media.coverImage,
+      image: normalizeResourceUrl(media.coverImage),
       categoryLabel: media.category,
       releaseDate: media.publishedAt,
       category: media.category,
-      referenceCode: media.bulletin?.fileUrl || media.slug || `bulletin-${media.id}`,
+      referenceCode: bulletinPdfUrl || media.slug || `bulletin-${media.id}`,
       pages: safePages([media.bulletin?.titleDescription, media.bulletin?.description].filter(Boolean).join("\n\n")),
+      pdfUrl: bulletinPdfUrl ? normalizeResourceUrl(bulletinPdfUrl) : undefined,
     };
   }
 
@@ -120,7 +187,7 @@ export function toPublicMediaItem(media: MediaResponse): MediaItem {
     title: media.title,
     description: media.monograph?.descriptionTitle || media.monograph?.synopsis || "Monograf belum memiliki deskripsi.",
     author: media.monograph?.author || "-",
-    image: media.coverImage || media.monograph?.image || "",
+    image: normalizeResourceUrl(media.monograph?.image || media.coverImage || ""),
     categoryLabel: media.category,
     releaseDate: media.publishedAt,
     category: media.category,
@@ -135,8 +202,28 @@ export async function fetchMediaItems() {
 }
 
 export async function getMediaBySlug(slug: string) {
+  const identifier = slug.trim();
+  if (!identifier) return null;
+
+  try {
+    const detail = await getMediaById(identifier);
+    if (detail) return toPublicMediaItem(detail);
+  } catch {
+    // Fallback to list lookup if detail endpoint fails for any reason.
+  }
+
   const medias = await fetchMediaItems();
-  return medias.find((item) => item.slug === slug) || null;
+  const matched = medias.find((item) => item.slug === identifier) || null;
+  if (!matched) return null;
+
+  try {
+    const detailById = await getMediaById(matched.id);
+    if (detailById) return toPublicMediaItem(detailById);
+  } catch {
+    // Keep list-level match as last fallback.
+  }
+
+  return matched;
 }
 
 export function isReadableMediaType(type: MediaType) {

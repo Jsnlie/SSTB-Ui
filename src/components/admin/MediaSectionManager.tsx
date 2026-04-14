@@ -117,6 +117,20 @@ function imageFileToDataUrl(file: File): Promise<string> {
 	});
 }
 
+function fileToDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(toString(reader.result));
+		reader.onerror = () => reject(new Error("Gagal membaca file"));
+		reader.readAsDataURL(file);
+	});
+}
+
+function toString(value: string | ArrayBuffer | null): string {
+	if (typeof value === "string") return value;
+	return "";
+}
+
 function buildUploadPath(file: File, scope: string) {
 	const safeName = encodeURIComponent(file.name.trim().replace(/\s+/g, "-"));
 	return `/uploads/${scope}/${safeName}`;
@@ -475,7 +489,6 @@ function MediaSectionForm({
 	const [form, setForm] = useState<MediaFormInput>(createDefaultMediaForm(config.section));
 	const [resolvedMediaId, setResolvedMediaId] = useState<number | null>(null);
 	const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-	const [authorImageFile, setAuthorImageFile] = useState<File | null>(null);
 	const [articleContentFile, setArticleContentFile] = useState<File | null>(null);
 	const [documentFile, setDocumentFile] = useState<File | null>(null);
 	const [monographImageFile, setMonographImageFile] = useState<File | null>(null);
@@ -526,7 +539,6 @@ function MediaSectionForm({
 						categoryId: matchedCategoryId,
 					});
 					setCoverImageFile(null);
-					setAuthorImageFile(null);
 					setArticleContentFile(null);
 					setDocumentFile(null);
 					setMonographImageFile(null);
@@ -563,7 +575,7 @@ function MediaSectionForm({
 	};
 
 	const handleFileChange = (
-		name: "coverImage" | "authorImage" | "content" | "fileUrl" | "image",
+		name: "coverImage" | "content" | "fileUrl" | "image",
 		file: File | null
 	) => {
 		if (state.error) {
@@ -572,11 +584,6 @@ function MediaSectionForm({
 
 		if (name === "coverImage") {
 			setCoverImageFile(file);
-			return;
-		}
-
-		if (name === "authorImage") {
-			setAuthorImageFile(file);
 			return;
 		}
 
@@ -601,11 +608,14 @@ function MediaSectionForm({
 			const preparedForm: MediaFormInput = {
 				...form,
 				coverImage: coverImageFile ? await imageFileToDataUrl(coverImageFile) : form.coverImage,
-				authorImage: authorImageFile ? await imageFileToDataUrl(authorImageFile) : form.authorImage,
-				content: articleContentFile ? buildUploadPath(articleContentFile, "article/content") : form.content,
-				fileUrl: documentFile ? buildUploadPath(documentFile, config.section) : form.fileUrl,
+				content: articleContentFile ? await fileToDataUrl(articleContentFile) : form.content,
+				fileUrl: documentFile ? await fileToDataUrl(documentFile) : form.fileUrl,
 				image: monographImageFile ? await imageFileToDataUrl(monographImageFile) : form.image,
 			};
+
+			if (config.section === "monograph") {
+				preparedForm.coverImage = preparedForm.image || preparedForm.coverImage;
+			}
 
 			const errors = validateMediaForm(config.section, preparedForm);
 
@@ -688,16 +698,18 @@ function MediaSectionForm({
 						</div>
 					</div>
 
-					<div>
-						<FileInputField
-							label="Cover Image"
-							accept="image/*"
-							file={coverImageFile}
-							onChange={(file) => handleFileChange("coverImage", file)}
-							helperText="Upload gambar cover terbaru bila ingin mengganti cover saat ini."
-							existingValue={form.coverImage}
-						/>
-					</div>
+					{config.section === "monograph" ? null : (
+						<div>
+							<FileInputField
+								label="Cover Image"
+								accept="image/*"
+								file={coverImageFile}
+								onChange={(file) => handleFileChange("coverImage", file)}
+								helperText="Upload gambar cover terbaru bila ingin mengganti cover saat ini."
+								existingValue={form.coverImage}
+							/>
+						</div>
+					)}
 
 					{config.section === "article" && (
 						<>
@@ -705,16 +717,6 @@ function MediaSectionForm({
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-1.5">Author</label>
 									<input type="text" name="author" value={form.author} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none" />
-								</div>
-								<div>
-									<FileInputField
-										label="Author Image"
-										accept="image/*"
-										file={authorImageFile}
-										onChange={(file) => handleFileChange("authorImage", file)}
-										helperText="Upload foto author terbaru jika perlu."
-										existingValue={form.authorImage}
-									/>
 								</div>
 							</div>
 							<div>
