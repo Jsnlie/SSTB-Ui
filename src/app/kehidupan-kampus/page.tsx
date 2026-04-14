@@ -226,7 +226,7 @@ export default function KehidupanKampus() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`px-8 py-4 whitespace-nowrap border-b-2 transition-colors ${
+                className={`flex h-16 items-center justify-center px-8 whitespace-nowrap border-b-2 leading-none transition-colors ${
                   activeSection === section.id
                     ? "border-[#C41E3A] text-[#C41E3A]"
                     : "border-transparent text-[#002366] hover:text-[#C41E3A]"
@@ -408,18 +408,18 @@ export default function KehidupanKampus() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6 mb-12">
+          <div className="grid items-stretch md:grid-cols-4 gap-6 mb-12">
             {senatActivities.map((activity, idx) => (
-              <ScrollReveal key={idx} delay={idx * 0.06} amount={0.18}>
+              <ScrollReveal key={idx} delay={idx * 0.06} amount={0.18} className="h-full">
               <div
                 key={idx}
-                className="bg-white p-6 rounded-lg border-2 border-[#002366] hover:border-[#C41E3A] hover:shadow-lg transition-all"
+                className="flex h-full flex-col bg-white p-6 rounded-lg border-2 border-[#002366] hover:border-[#C41E3A] hover:shadow-lg transition-all"
               >
                 <div className="flex items-center mb-4">
                   <Users className="text-[#C41E3A] mr-3" size={24} />
-                  <h3 className="text-lg text-[#002366]">{activity.title}</h3>
+                  <h3 className="text-lg text-[#002366] whitespace-nowrap">{activity.title}</h3>
                 </div>
-                <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 flex-1">
                   {activity.description.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}

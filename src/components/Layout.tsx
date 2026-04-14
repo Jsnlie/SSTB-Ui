@@ -42,6 +42,23 @@ const directLinks = [
   { name: "Kontak Kami", href: "/kontak-kami" },
 ];
 
+const footerLinksLeft = [
+  { name: "Home", href: "/" },
+  { name: "Tentang Kami", href: "/tentang-kami" },
+  { name: "Program Studi", href: "/program-studi" },
+  { name: "Program Akademik", href: "/program-akademik" },
+  { name: "Perpustakaan", href: "/perpustakaan" },
+];
+
+const footerLinksRight = [
+  { name: "Admisi", href: "/admisi" },
+  { name: "Berita", href: "/berita" },
+  { name: "Kegiatan", href: "/kegiatan" },
+  { name: "Kehidupan Kampus", href: "/kehidupan-kampus" },
+  { name: "Media", href: "/media" },
+  { name: "Kontak Kami", href: "/kontak-kami" },
+];
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSectionOpen, setMobileSectionOpen] = useState<string | null>(null);
@@ -247,81 +264,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="px-16">
               <h3 className="font-bold mb-4">Tautan Cepat</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/tentang-kami"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Tentang Kami
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/program-studi"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Program Studi
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/perpustakaan"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Perpustakaan
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/admisi"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Admisi
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/berita"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Berita
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/kegiatan"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Kegiatan
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/kehidupan-kampus"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Kehidupan Kampus
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/kontak-kami"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Kontak Kami
-                  </Link>
-                </li>
-                
-              </ul>
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 text-sm">
+                <ul className="space-y-2">
+                  {footerLinksLeft.map((item) => (
+                    <li key={item.name}>
+                      <Link href={item.href} className="text-gray-300 hover:text-white">
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="space-y-2">
+                  {footerLinksRight.map((item) => (
+                    <li key={item.name}>
+                      <Link href={item.href} className="text-gray-300 hover:text-white">
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
               <div className="text-sm text-gray-300 space-y-3">
                 <h3 className="font-bold mb-4">Contact Us</h3>

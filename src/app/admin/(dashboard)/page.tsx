@@ -311,6 +311,65 @@ export default function AdminDashboardPage() {
     };
   }, [beritaList, kegiatanList]);
 
+  const statsCards = [
+    {
+      title: "Total Program Studi",
+      value: counts.programStudi,
+      icon: GraduationCap,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      className: "xl:col-span-3",
+    },
+    {
+      title: "Total Mata Kuliah",
+      value: counts.mataKuliah,
+      icon: BookOpen,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      className: "xl:col-span-3",
+    },
+    {
+      title: "Total Berita",
+      value: counts.berita,
+      icon: Newspaper,
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
+      className: "xl:col-span-3",
+    },
+    {
+      title: "Total Kegiatan",
+      value: counts.kegiatan,
+      icon: CalendarDays,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      className: "xl:col-span-3",
+    },
+    {
+      title: "Total Media",
+      value: counts.media,
+      icon: Clapperboard,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      className: "xl:col-span-4",
+    },
+    {
+      title: "Total Ebook",
+      value: counts.ebook,
+      icon: Library,
+      color: "text-rose-600",
+      bgColor: "bg-rose-50",
+      className: "xl:col-span-4",
+    },
+    {
+      title: "Total Biaya Studi",
+      value: counts.biayaStudi,
+      icon: DollarSign,
+      color: "text-cyan-600",
+      bgColor: "bg-cyan-50",
+      className: "xl:col-span-4",
+    },
+  ];
+
   if (loading && !lastUpdated) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -347,56 +406,18 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
-        <StatsCard
-          title="Total Program Studi"
-          value={counts.programStudi}
-          icon={GraduationCap}
-          color="text-blue-600"
-          bgColor="bg-blue-50"
-        />
-        <StatsCard
-          title="Total Mata Kuliah"
-          value={counts.mataKuliah}
-          icon={BookOpen}
-          color="text-emerald-600"
-          bgColor="bg-emerald-50"
-        />
-        <StatsCard
-          title="Total Berita"
-          value={counts.berita}
-          icon={Newspaper}
-          color="text-amber-600"
-          bgColor="bg-amber-50"
-        />
-        <StatsCard
-          title="Total Kegiatan"
-          value={counts.kegiatan}
-          icon={CalendarDays}
-          color="text-purple-600"
-          bgColor="bg-purple-50"
-        />
-        <StatsCard
-          title="Total Media"
-          value={counts.media}
-          icon={Clapperboard}
-          color="text-indigo-600"
-          bgColor="bg-indigo-50"
-        />
-        <StatsCard
-          title="Total Ebook"
-          value={counts.ebook}
-          icon={Library}
-          color="text-rose-600"
-          bgColor="bg-rose-50"
-        />
-        <StatsCard
-          title="Total Biaya Studi"
-          value={counts.biayaStudi}
-          icon={DollarSign}
-          color="text-cyan-600"
-          bgColor="bg-cyan-50"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-12 gap-7">
+        {statsCards.map((card) => (
+          <div key={card.title} className={card.className}>
+            <StatsCard
+              title={card.title}
+              value={card.value}
+              icon={card.icon}
+              color={card.color}
+              bgColor={card.bgColor}
+            />
+          </div>
+        ))}
       </div>
 
       {/* Quick overview row */}
