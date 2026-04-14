@@ -6,13 +6,8 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { apiUrl } from "../../lib/api";
-
-interface AcaraItem {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-}
+import { parseAcaraListResponse, type AcaraItem } from "../../lib/acara";
+import { getErrorMessage } from "../../lib/response";
 
 const EVENT_IMAGE_FALLBACKS = [
   "https://images.unsplash.com/photo-1583062434105-9bef71509685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
@@ -20,44 +15,6 @@ const EVENT_IMAGE_FALLBACKS = [
   "https://images.unsplash.com/photo-1547817651-7fb0cc360536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
 ];
 
-function toStringSafe(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-function toNumberSafe(value: unknown) {
-  if (typeof value === "number") return value;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function parseAcaraListResponse(payload: any): AcaraItem[] {
-  const source = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload?.items)
-    ? payload.items
-    : [];
-
-  return source.map((item: any) => ({
-    id: toNumberSafe(item?.id),
-    title: toStringSafe(item?.title),
-    date: toStringSafe(item?.date),
-    time: toStringSafe(item?.time),
-  }));
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
 
 function toDateOnly(value: string): Date | null {
   if (!value) return null;

@@ -5,6 +5,7 @@ import { Clock, BookOpen, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { apiUrl } from "../../lib/api";
 import { ScrollReveal } from "../../components/ScrollReveal";
+import { getErrorMessage } from "../../lib/response";
 
 interface ProgramStudiItem {
   id: number;
@@ -52,17 +53,6 @@ function parseProgramStudiList(payload: any): ProgramStudiItem[] {
     heroSubtitle: toStringSafe(item?.heroSubtitle),
     degree: toStringSafe(item?.degree),
   }));
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
 }
 
 function truncate(text: string, maxLength: number) {

@@ -443,9 +443,9 @@ export default function ProgramDetail() {
               {/* Curriculum Tab */}
               <Tabs.Content value="curriculum">
                 <ScrollReveal>
-                <h2 className="text-2xl text-[#002366] mb-6">
-                  Daftar Mata Kuliah
-                </h2>
+                  <h2 className="text-2xl text-[#002366] mb-6">
+                    Daftar Mata Kuliah
+                  </h2>
                 </ScrollReveal>
 
                 {loadingCurriculum && curriculumItems.length === 0 ? (
@@ -458,49 +458,45 @@ export default function ProgramDetail() {
                   <div className="space-y-8">
                     {curriculumItems.map((semester, sIdx) => (
                       <ScrollReveal key={sIdx} delay={sIdx * 0.06} amount={0.18}>
-                      <div>
-                        <h3 className="text-xl text-[#002366] mb-4">
-                          {semester.label}
-                        </h3>
-                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                          <table className="w-full">
-                            <thead className="bg-[#002366] text-white">
-                              <tr>
-                                <th className="px-4 py-3 text-left">Mata Kuliah</th>
-                                <th className="px-4 py-3 text-center w-20 bg-[#C41E3A]">SKS</th>
-                          </ScrollReveal>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {semester.courses.map((course, cIdx) => (
-                                <tr
-                                  key={cIdx}
-                                  className="border-b border-gray-200 hover:bg-gray-50"
-                    <ScrollReveal>
-                    <h2 className="text-2xl text-[#002366] mb-6">
-                                  <td className="px-4 py-3 text-gray-800">
-                                    {course.name}
-                    </ScrollReveal>
+                        <div>
+                          <h3 className="text-xl text-[#002366] mb-4">
+                            {semester.label}
+                          </h3>
+                          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full">
+                              <thead className="bg-[#002366] text-white">
+                                <tr>
+                                  <th className="px-4 py-3 text-left">Mata Kuliah</th>
+                                  <th className="px-4 py-3 text-center w-20 bg-[#C41E3A]">SKS</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {semester.courses.map((course, cIdx) => (
+                                  <tr
+                                    key={cIdx}
+                                    className="border-b border-gray-200 hover:bg-gray-50"
+                                  >
+                                    <td className="px-4 py-3 text-gray-800">{course.name}</td>
+                                    <td className="px-4 py-3 text-center text-[#002366] font-semibold bg-gray-50 border-l border-gray-200">
+                                      {course.credits}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                              <tfoot>
+                                <tr className="bg-[#002366]/5 border-t-2 border-[#002366]">
+                                  <td className="px-4 py-3 text-[#002366] font-bold">
+                                    Total SKS
                                   </td>
-                                  <td className="px-4 py-3 text-center text-[#002366] font-semibold bg-gray-50 border-l border-gray-200">
-                                    {course.credits}
+                                  <td className="px-4 py-3 text-center text-[#C41E3A] font-bold bg-[#C41E3A]/10 border-l border-gray-200">
+                                    {semester.courses.reduce((sum, c) => sum + c.credits, 0)}
                                   </td>
                                 </tr>
-                              ))}
-                            </tbody>
-                            <tfoot>
-                              <tr className="bg-[#002366]/5 border-t-2 border-[#002366]">
-                                <td className="px-4 py-3 text-[#002366] font-bold">
-                                  Total SKS
-                                </td>
-                                <td className="px-4 py-3 text-center text-[#C41E3A] font-bold bg-[#C41E3A]/10 border-l border-gray-200">
-                                  {semester.courses.reduce((sum, c) => sum + c.credits, 0)}
-                                </td>
-                              </tr>
-                            </tfoot>
-                          </table>
+                              </tfoot>
+                            </table>
+                          </div>
                         </div>
-                      </div>
+                      </ScrollReveal>
                     ))}
                   </div>
                 )}

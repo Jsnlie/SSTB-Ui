@@ -5,25 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
 import { apiUrl } from "../../../../../lib/api";
-
-interface AcaraItem {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-}
-
-function toStringSafe(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-function toNumberSafe(value: unknown) {
-  if (typeof value === "number") return value;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
+import { parseAcaraListResponse, type AcaraItem } from "../../../../../lib/acara";
+import { getErrorMessage, toNumberSafe, toStringSafe } from "../../../../../lib/response";
 
 function parseAcaraDetailResponse(payload: any): AcaraItem | null {
   const source = Array.isArray(payload)
@@ -42,32 +25,6 @@ function parseAcaraDetailResponse(payload: any): AcaraItem | null {
   };
 }
 
-function parseAcaraListResponse(payload: any): AcaraItem[] {
-  const source = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload?.items)
-    ? payload.items
-    : [];
-
-  return source.map((item: any) => ({
-    id: toNumberSafe(item?.id),
-    title: toStringSafe(item?.title),
-    date: toStringSafe(item?.date),
-    time: toStringSafe(item?.time),
-  }));
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
 
 function normalizeDateInput(value: string) {
   if (!value) return "";

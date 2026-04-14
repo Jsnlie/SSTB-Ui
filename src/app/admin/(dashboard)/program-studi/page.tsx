@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
 
 interface ProgramStudiItem {
   id: number;
@@ -27,7 +28,7 @@ export default function ProgramStudiPage() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/program-studi", {
+      const res = await fetch(apiUrl("/api/program-studi"), {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) throw new Error("Gagal memuat data");
@@ -49,7 +50,7 @@ export default function ProgramStudiPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/program-studi/${deleteId}`, {
+      const res = await fetch(apiUrl(`/api/program-studi/${deleteId}`), {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

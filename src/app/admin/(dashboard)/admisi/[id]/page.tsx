@@ -12,6 +12,7 @@ import {
   parseAdmissionListResponse,
   parseCurrencyInput,
 } from "../../../../../lib/admin-admisi";
+import { normalizeArray } from "../../../../../lib/response";
 
 interface ProgramStudiOption {
   id: number;
@@ -44,13 +45,6 @@ function toNumberSafe(value: unknown) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function extractArray(payload: any): any[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.data?.items)) return payload.data.items;
-  return [];
-}
 
 function formatNominalInput(value: string) {
   const digits = value.replace(/[^\d]/g, "");
@@ -110,7 +104,7 @@ export default function EditBiayaStudiPage() {
           ? await admissionListRes.json().catch(() => null)
           : null;
 
-        const options = extractArray(programStudiJson)
+        const options = normalizeArray<any>(programStudiJson)
           .map((item) => ({
             id: toNumberSafe(item?.id),
             name: toStringSafe(item?.name),

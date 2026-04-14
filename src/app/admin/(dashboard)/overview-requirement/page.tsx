@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
 
 interface ProgramStudiItem {
   id: number;
@@ -31,12 +32,12 @@ export default function OverviewRequirementPage() {
       const token = localStorage.getItem("token");
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const endpoint = programStudiId
-        ? `https://localhost:7013/api/OverviewRequirement/programstudi/${programStudiId}`
-        : "https://localhost:7013/api/OverviewRequirement";
+        ? apiUrl(`/api/OverviewRequirement/programstudi/${programStudiId}`)
+        : apiUrl("/api/OverviewRequirement");
 
       const [requirementRes, prodiRes] = await Promise.all([
         fetch(endpoint, { headers }),
-        fetch("https://localhost:7013/api/program-studi", { headers }),
+        fetch(apiUrl("/api/program-studi"), { headers }),
       ]);
 
       if (requirementRes.ok) {
@@ -63,7 +64,7 @@ export default function OverviewRequirementPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/OverviewRequirement/${deleteId}`, {
+      const res = await fetch(apiUrl(`/api/OverviewRequirement/${deleteId}`), {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

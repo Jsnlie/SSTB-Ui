@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 interface CurriculumGroupItem {
   id: number;
@@ -37,8 +38,8 @@ export default function EditJenisMatkulPage() {
         const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [groupRes, prodiRes] = await Promise.all([
-          fetch("https://localhost:7013/api/jenis-matkul", { headers }),
-          fetch("https://localhost:7013/api/program-studi", { headers }),
+          fetch(apiUrl("/api/jenis-matkul"), { headers }),
+          fetch(apiUrl("/api/program-studi"), { headers }),
         ]);
 
         if (!groupRes.ok) throw new Error("Gagal memuat jenis mata kuliah");
@@ -84,7 +85,7 @@ export default function EditJenisMatkulPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/jenis-matkul", {
+      const res = await fetch(apiUrl("/api/jenis-matkul"), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

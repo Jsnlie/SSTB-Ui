@@ -13,17 +13,7 @@ import {
   parseBeritaListResponse,
   stripHtml,
 } from "../../lib/berita";
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
+import { getErrorMessage } from "../../lib/response";
 
 function truncate(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;

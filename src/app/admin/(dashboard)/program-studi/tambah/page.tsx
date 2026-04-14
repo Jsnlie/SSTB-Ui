@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
@@ -105,7 +106,7 @@ export default function TambahProgramStudiPage() {
 
       const imageDataUrl = imageFile ? await fileToDataUrl(imageFile) : "";
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/program-studi", {
+      const res = await fetch(apiUrl("/api/program-studi"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 interface CourseItem {
   id: number;
@@ -51,9 +52,9 @@ export default function EditMataKuliahPage() {
         const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [courseRes, groupRes, prodiRes] = await Promise.all([
-          fetch(`https://localhost:7013/api/mata-kuliah/${id}`, { headers }),
-          fetch("https://localhost:7013/api/jenis-matkul", { headers }),
-          fetch("https://localhost:7013/api/program-studi", { headers }),
+          fetch(apiUrl(`/api/mata-kuliah/${id}`), { headers }),
+          fetch(apiUrl("/api/jenis-matkul"), { headers }),
+          fetch(apiUrl("/api/program-studi"), { headers }),
         ]);
 
         if (!courseRes.ok) {
@@ -109,7 +110,7 @@ export default function EditMataKuliahPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/mata-kuliah", {
+      const res = await fetch(apiUrl("/api/mata-kuliah"), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 interface ProgramStudiItem {
   id: number;
@@ -26,7 +27,7 @@ export default function TambahJenisMatkulPage() {
     const fetchProdi = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("https://localhost:7013/api/program-studi", {
+        const res = await fetch(apiUrl("/api/program-studi"), {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
@@ -56,7 +57,7 @@ export default function TambahJenisMatkulPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/jenis-matkul", {
+      const res = await fetch(apiUrl("/api/jenis-matkul"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

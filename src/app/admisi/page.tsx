@@ -12,6 +12,7 @@ import {
   type AdmisiBiayaStudiItem,
 } from "../../lib/admin-admisi";
 import { apiUrl } from "../../lib/api";
+import { normalizeArray } from "../../lib/response";
 
 function toStringSafe(value: unknown) {
   if (typeof value === "string") return value;
@@ -23,14 +24,6 @@ function toNumberSafe(value: unknown) {
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function extractArray(payload: any): any[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.data?.items)) return payload.data.items;
-  return [];
 }
 
 export default function Admisi() {
@@ -91,7 +84,7 @@ export default function Admisi() {
         const programNameById = new Map<number, string>();
         if (programStudiRes.ok) {
           const programStudiJson = await programStudiRes.json().catch(() => null);
-          const programStudiList = extractArray(programStudiJson);
+          const programStudiList = normalizeArray<any>(programStudiJson);
           for (const item of programStudiList) {
             const id = toNumberSafe(item?.id);
             const name = toStringSafe(item?.name);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 interface CurriculumGroupItem {
   id: number;
@@ -41,8 +42,8 @@ export default function TambahMataKuliahPage() {
         const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [groupRes, prodiRes] = await Promise.all([
-          fetch("https://localhost:7013/api/jenis-matkul", { headers }),
-          fetch("https://localhost:7013/api/program-studi", { headers }),
+          fetch(apiUrl("/api/jenis-matkul"), { headers }),
+          fetch(apiUrl("/api/program-studi"), { headers }),
         ]);
 
         if (groupRes.ok) {
@@ -82,7 +83,7 @@ export default function TambahMataKuliahPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/mata-kuliah", {
+      const res = await fetch(apiUrl("/api/mata-kuliah"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

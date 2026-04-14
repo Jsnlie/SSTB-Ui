@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion } from "motion/react";
 
+const smoothEase = [0.22, 1, 0.36, 1] as const;
+
 const testimonials = [
   {
     name: "Maria Elsa",
@@ -28,7 +30,7 @@ const cardVariants = {
     transition: {
       duration: 0.7,
       delay: index * 0.12,
-      ease: [0.22, 1, 0.36, 1],
+      ease: smoothEase,
     },
   }),
 };
@@ -44,7 +46,7 @@ export default function TestimonialsSection() {
           initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7, ease: smoothEase }}
         >
           <h2 className="text-4xl text-[#002366] mb-4">Kesaksian Alumni</h2>
           <div className="h-1 w-20 bg-[#C41E3A] mx-auto mb-4"></div>

@@ -5,52 +5,8 @@ import { CalendarDays, Clock3 } from "lucide-react";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { Calendar } from "../../components/ui/calendar";
 import { apiUrl } from "../../lib/api";
-
-interface AcaraItem {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-}
-
-function toStringSafe(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-function toNumberSafe(value: unknown) {
-  if (typeof value === "number") return value;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function parseAcaraListResponse(payload: any): AcaraItem[] {
-  const source = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.data)
-    ? payload.data
-    : Array.isArray(payload?.items)
-    ? payload.items
-    : [];
-
-  return source.map((item: any) => ({
-    id: toNumberSafe(item?.id),
-    title: toStringSafe(item?.title),
-    date: toStringSafe(item?.date),
-    time: toStringSafe(item?.time),
-  }));
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
+import { parseAcaraListResponse, type AcaraItem } from "../../lib/acara";
+import { getErrorMessage } from "../../lib/response";
 
 function toDateOnly(value: string): Date | null {
   if (!value) return null;

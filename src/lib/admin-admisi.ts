@@ -1,3 +1,10 @@
+import {
+  getErrorMessage,
+  normalizeArray,
+  toNumberSafe,
+  toStringSafe,
+} from "./response";
+
 export interface AdmissionApiItem {
   id: number;
   admissionPackageId: number;
@@ -21,18 +28,6 @@ export interface AdmisiBiayaStudiItem {
   admissionItems: AdmissionApiItem[];
 }
 
-function toStringSafe(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-function toNumberSafe(value: unknown) {
-  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
 function toAdmissionItem(raw: any): AdmissionApiItem {
   return {
     id: toNumberSafe(raw?.id),
@@ -42,14 +37,6 @@ function toAdmissionItem(raw: any): AdmissionApiItem {
   };
 }
 
-function extractArray(payload: any): any[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.data?.items)) return payload.data.items;
-  return [];
-}
-
 function mapAdmissionPackage(
   raw: any,
   programNameById: Map<number, string>
@@ -57,7 +44,7 @@ function mapAdmissionPackage(
   const id = toNumberSafe(raw?.id);
   const programStudiId = toNumberSafe(raw?.programStudiId);
   const year = toStringSafe(raw?.year);
-  const admissionItems = extractArray(raw?.admissionItems).map(toAdmissionItem);
+  const admissionItems = normalizeArray<any>(raw?.admissionItems).map(toAdmissionItem);
 
   const total = admissionItems.reduce((sum, item) => sum + toNumberSafe(item.price), 0);
   const program =
@@ -79,7 +66,7 @@ export function parseAdmissionListResponse(
   payload: any,
   programNameById: Map<number, string> = new Map()
 ) {
-  return extractArray(payload).map((item) => mapAdmissionPackage(item, programNameById));
+  return normalizeArray<any>(payload).map((item) => mapAdmissionPackage(item, programNameById));
 }
 
 export function parseAdmissionDetailResponse(
@@ -112,12 +99,4 @@ export function formatRupiah(value: number) {
   }).format(Number.isFinite(value) ? value : 0);
 }
 
-export function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
+export { getErrorMessage };

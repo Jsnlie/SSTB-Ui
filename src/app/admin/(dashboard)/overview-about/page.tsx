@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
 
 interface ProgramStudiItem {
   id: number;
@@ -31,8 +32,8 @@ export default function OverviewAboutPage() {
       const token = localStorage.getItem("token");
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const [aboutRes, prodiRes] = await Promise.all([
-        fetch("https://localhost:7013/api/OverviewAbout", { headers }),
-        fetch("https://localhost:7013/api/program-studi", { headers }),
+        fetch(apiUrl("/api/OverviewAbout"), { headers }),
+        fetch(apiUrl("/api/program-studi"), { headers }),
       ]);
       if (aboutRes.ok) {
         const json = await aboutRes.json();
@@ -58,7 +59,7 @@ export default function OverviewAboutPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/OverviewAbout/${deleteId}`, {
+      const res = await fetch(apiUrl(`/api/OverviewAbout/${deleteId}`), {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

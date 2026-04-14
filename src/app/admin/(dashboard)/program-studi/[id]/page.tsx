@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
@@ -85,7 +86,7 @@ export default function EditProgramStudiPage() {
         let item: any = null;
 
         // Try direct endpoint first (slug-based on current backend, but keep flexible).
-        const directRes = await fetch(`https://localhost:7013/api/program-studi/${id}`, {
+        const directRes = await fetch(apiUrl(`/api/program-studi/${id}`), {
           headers,
         });
         if (directRes.ok) {
@@ -95,7 +96,7 @@ export default function EditProgramStudiPage() {
 
         // Fallback: resolve from list by either id or slug.
         if (!item || typeof item !== "object") {
-          const listRes = await fetch("https://localhost:7013/api/program-studi", { headers });
+          const listRes = await fetch(apiUrl("/api/program-studi"), { headers });
           if (listRes.ok) {
             const listJson = await listRes.json();
             const list = Array.isArray(listJson) ? listJson : listJson.data ?? [];
@@ -166,7 +167,7 @@ export default function EditProgramStudiPage() {
       const imagePayload = imageFile ? await fileToDataUrl(imageFile) : form.image;
       const slug = form.slug || generateSlug(form.name);
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/program-studi/${realId}`, {
+      const res = await fetch(apiUrl(`/api/program-studi/${realId}`), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

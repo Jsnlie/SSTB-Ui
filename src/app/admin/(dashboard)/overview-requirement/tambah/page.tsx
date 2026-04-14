@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { apiUrl } from "../../../../../lib/api";
 
 interface ProgramStudiItem {
   id: number;
@@ -22,7 +23,7 @@ export default function TambahOverviewRequirementPage() {
     const fetchProdi = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("https://localhost:7013/api/program-studi", {
+        const res = await fetch(apiUrl("/api/program-studi"), {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         if (res.ok) {
@@ -44,7 +45,7 @@ export default function TambahOverviewRequirementPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/OverviewRequirement/batch", {
+      const res = await fetch(apiUrl("/api/OverviewRequirement/batch"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

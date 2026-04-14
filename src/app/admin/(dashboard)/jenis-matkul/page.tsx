@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { apiUrl } from "../../../../lib/api";
 
 interface CourseItem {
   id: number;
@@ -39,8 +40,8 @@ export default function JenisMatkulPage() {
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
       const [groupRes, prodiRes] = await Promise.all([
-        fetch("https://localhost:7013/api/jenis-matkul", { headers }),
-        fetch("https://localhost:7013/api/program-studi", { headers }),
+        fetch(apiUrl("/api/jenis-matkul"), { headers }),
+        fetch(apiUrl("/api/program-studi"), { headers }),
       ]);
 
       if (groupRes.ok) {
@@ -70,7 +71,7 @@ export default function JenisMatkulPage() {
     setDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://localhost:7013/api/jenis-matkul/${deleteId}`, {
+      const res = await fetch(apiUrl(`/api/jenis-matkul/${deleteId}`), {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

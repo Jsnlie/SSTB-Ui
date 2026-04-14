@@ -10,6 +10,7 @@ import {
   parseBeritaDetailResponse,
   stripHtml,
 } from "../../../../../lib/berita";
+import { getErrorMessage } from "../../../../../lib/response";
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
@@ -48,16 +49,6 @@ function fileToDataUrl(file: File): Promise<string> {
 
     img.src = objectUrl;
   });
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
 }
 
 export default function EditBeritaPage() {

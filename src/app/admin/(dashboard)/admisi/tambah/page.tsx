@@ -11,6 +11,7 @@ import {
   getErrorMessage,
   parseCurrencyInput,
 } from "../../../../../lib/admin-admisi";
+import { normalizeArray } from "../../../../../lib/response";
 
 interface ProgramStudiOption {
   id: number;
@@ -41,14 +42,6 @@ function toNumberSafe(value: unknown) {
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function extractArray(payload: any): any[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.data?.items)) return payload.data.items;
-  return [];
 }
 
 function formatNominalInput(value: string) {
@@ -85,7 +78,7 @@ export default function TambahBiayaStudiPage() {
         }
 
         const json = await res.json();
-        const options = extractArray(json)
+        const options = normalizeArray<any>(json)
           .map((item) => ({
             id: toNumberSafe(item?.id),
             name: toStringSafe(item?.name),

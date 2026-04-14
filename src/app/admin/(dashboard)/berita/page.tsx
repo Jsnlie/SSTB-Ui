@@ -9,16 +9,7 @@ import {
   formatBeritaDate,
   parseBeritaListResponse,
 } from "../../../../lib/berita";
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
-}
+import { getErrorMessage } from "../../../../lib/response";
 
 export default function BeritaPage() {
   const [search, setSearch] = useState("");

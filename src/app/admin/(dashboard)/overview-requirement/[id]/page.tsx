@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { apiUrl } from "../../../../../lib/api";
 import Link from "next/link";
 
 interface ProgramStudiItem {
@@ -34,8 +35,8 @@ export default function EditOverviewRequirementPage() {
         const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [requirementRes, prodiRes] = await Promise.all([
-          fetch("https://localhost:7013/api/OverviewRequirement", { headers }),
-          fetch("https://localhost:7013/api/program-studi", { headers }),
+          fetch(apiUrl("/api/OverviewRequirement"), { headers }),
+          fetch(apiUrl("/api/program-studi"), { headers }),
         ]);
 
         if (prodiRes.ok) {
@@ -67,7 +68,7 @@ export default function EditOverviewRequirementPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://localhost:7013/api/OverviewRequirement", {
+      const res = await fetch(apiUrl("/api/OverviewRequirement"), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -16,8 +16,10 @@ import {
 	X,
 } from "lucide-react";
 import {
+	AdminMediaContentItem,
 	AdminMediaSection,
 	AdminMediaStatus,
+	AdminMediaVideoItem,
 	getAdminMediaCategories,
 	getAdminMediaContentById,
 	getAdminMediaContentItems,
@@ -82,7 +84,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 	const [search, setSearch] = useState("");
 	const [filterCategory, setFilterCategory] = useState("");
 	const [deleteId, setDeleteId] = useState<number | null>(null);
-	const [data, setData] = useState(
+	const [data, setData] = useState<(AdminMediaContentItem | AdminMediaVideoItem)[]>(
 		isVideo ? getAdminMediaVideoItems() : getAdminMediaContentItems(config.section as Exclude<AdminMediaSection, "video">)
 	);
 
@@ -92,27 +94,34 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 		setFilterCategory("");
 	}, [config.section, isVideo]);
 
+	const videoData = useMemo(() => (isVideo ? (data as AdminMediaVideoItem[]) : []), [data, isVideo]);
+	const contentData = useMemo(() => (!isVideo ? (data as AdminMediaContentItem[]) : []), [data, isVideo]);
+
 	const categories = useMemo(() => {
 		if (isVideo) return [];
-		return Array.from(new Set(data.map((item) => item.category))).sort((a, b) => a.localeCompare(b));
-	}, [data, isVideo]);
+		return Array.from(new Set(contentData.map((item) => item.category))).sort((a, b) => a.localeCompare(b));
+	}, [contentData, isVideo]);
 
-	const filtered = useMemo(() => {
+	const filteredVideos = useMemo(() => {
 		const keyword = search.trim().toLowerCase();
-		if (isVideo) {
-			return data.filter((item) => {
-				const searchable = [item.title, item.youtubeUrl, item.description].join(" ").toLowerCase();
-				return !keyword || searchable.includes(keyword);
-			});
-		}
+		if (!isVideo) return [];
+		return videoData.filter((item) => {
+			const searchable = [item.title, item.youtubeUrl, item.description].join(" ").toLowerCase();
+			return !keyword || searchable.includes(keyword);
+		});
+	}, [isVideo, search, videoData]);
 
-		return data.filter((item) => {
+	const filteredContents = useMemo(() => {
+		const keyword = search.trim().toLowerCase();
+		if (isVideo) return [];
+
+		return contentData.filter((item) => {
 			const searchable = [item.title, item.author, item.category, item.referenceCode, item.description].join(" ").toLowerCase();
 			const matchSearch = !keyword || searchable.includes(keyword);
 			const matchFilter = !filterCategory || item.category === filterCategory;
 			return matchSearch && matchFilter;
 		});
-	}, [data, filterCategory, isVideo, search]);
+	}, [contentData, filterCategory, isVideo, search]);
 
 	const handleDelete = () => {
 		if (deleteId === null) return;
@@ -176,7 +185,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">
-								{filtered.map((item, idx) => (
+								{filteredVideos.map((item, idx) => (
 									<tr key={item.id} className="hover:bg-gray-50 transition-colors">
 										<td className="px-6 py-4 text-gray-500">{idx + 1}</td>
 										<td className="px-6 py-4 font-medium text-gray-800 max-w-xs truncate">{item.title}</td>
@@ -194,7 +203,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 										</td>
 									</tr>
 								))}
-								{filtered.length === 0 && (
+								{filteredVideos.length === 0 && (
 									<tr>
 										<td colSpan={5} className="px-6 py-12 text-center text-gray-400">Tidak ada data ditemukan</td>
 									</tr>
@@ -215,7 +224,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">
-								{filtered.map((item, idx) => (
+								{filteredContents.map((item, idx) => (
 									<tr key={item.id} className="hover:bg-gray-50 transition-colors">
 										<td className="px-6 py-4 text-gray-500">{idx + 1}</td>
 										<td className="px-6 py-4 font-medium text-gray-800 max-w-xs truncate">{item.title}</td>
@@ -239,7 +248,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 										</td>
 									</tr>
 								))}
-								{filtered.length === 0 && (
+								{filteredContents.length === 0 && (
 									<tr>
 										<td colSpan={7} className="px-6 py-12 text-center text-gray-400">Tidak ada data ditemukan</td>
 									</tr>
@@ -250,7 +259,7 @@ function MediaSectionList({ config }: { config: NonNullable<ReturnType<typeof ge
 				</div>
 
 				<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-					<p className="text-sm text-gray-500">Menampilkan {filtered.length} dari {data.length} data</p>
+					<p className="text-sm text-gray-500">Menampilkan {isVideo ? filteredVideos.length : filteredContents.length} dari {data.length} data</p>
 					<div className="flex items-center gap-2">
 						<button className="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled><ChevronLeft size={16} /></button>
 						<button className="px-3 py-1.5 bg-[#1E3A8A] text-white text-sm rounded-lg">1</button>

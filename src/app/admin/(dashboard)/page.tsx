@@ -15,6 +15,7 @@ import {
 import StatsCard from "../../../components/admin/StatsCard";
 import Link from "next/link";
 import { apiUrl } from "../../../lib/api";
+import { parseAcaraListResponse, type AcaraItem } from "../../../lib/acara";
 import {
   BeritaItem,
   formatBeritaDate,
@@ -23,15 +24,9 @@ import {
 import { parseAdmissionListResponse } from "../../../lib/admin-admisi";
 import { getTotalAdminMedia } from "../../../lib/admin-media";
 import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
+import { getErrorMessage, normalizeArray } from "../../../lib/response";
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
-
-interface AcaraItem {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-}
 
 interface DashboardCounts {
   programStudi: number;
@@ -48,47 +43,6 @@ interface ActivityItem {
   title: string;
   timestamp: number;
   dotColor: string;
-}
-
-function toStringSafe(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-function toNumberSafe(value: unknown) {
-  if (typeof value === "number") return value;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function extractArray(payload: any): any[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.data?.items)) return payload.data.items;
-  return [];
-}
-
-function parseAcaraListResponse(payload: any): AcaraItem[] {
-  const source = extractArray(payload);
-
-  return source.map((item: any) => ({
-    id: toNumberSafe(item?.id),
-    title: toStringSafe(item?.title),
-    date: toStringSafe(item?.date),
-    time: toStringSafe(item?.time),
-  }));
-}
-
-function getErrorMessage(text: string, fallback: string) {
-  if (!text) return fallback;
-  try {
-    const parsed = JSON.parse(text);
-    return parsed?.message || parsed?.title || fallback;
-  } catch {
-    return text;
-  }
 }
 
 function toDateOnly(value: string): Date | null {
@@ -224,8 +178,8 @@ export default function AdminDashboardPage() {
             fetchJson("/api/admission", "biaya studi", headers),
           ]);
 
-        const programStudi = extractArray(programStudiPayload);
-        const mataKuliah = extractArray(mataKuliahPayload);
+        const programStudi = normalizeArray<any>(programStudiPayload);
+        const mataKuliah = normalizeArray<any>(mataKuliahPayload);
         const berita = parseBeritaListResponse(beritaPayload);
         const kegiatan = parseAcaraListResponse(kegiatanPayload);
         const admission = parseAdmissionListResponse(admissionPayload);

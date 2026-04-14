@@ -6,6 +6,7 @@ import { Clock, Award, BookOpen, GraduationCap, ArrowRight } from "lucide-react"
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { ScrollReveal } from "../../components/ScrollReveal";
+import { apiUrl } from "../../lib/api";
 
 interface ProgramStudi {
   id: number;
@@ -28,7 +29,7 @@ export default function ProgramStudi() {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        const res = await fetch("https://localhost:7013/api/program-studi");
+        const res = await fetch(apiUrl("/api/program-studi"));
         if (!res.ok) throw new Error("Gagal memuat data program studi");
         const data = await res.json();
         setPrograms(Array.isArray(data) ? data : data.data ?? []);
