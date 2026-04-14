@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Filter } from "lucide-react";
@@ -9,12 +9,15 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Card, CardContent } from "../../components/ui/card";
-import { mediaItems } from "../../lib/media";
+import { fetchMediaItems, MediaItem } from "../../lib/media";
 import { ScrollReveal } from "../../components/ScrollReveal";
 
 export default function MediaLibraryPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [items, setItems] = useState<MediaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const categories = [
     { id: "all", label: "All Media" },
@@ -30,9 +33,31 @@ export default function MediaLibraryPage() {
     window.open("https://e-journal.sttb.ac.id/index.php/transformatio", "_blank");
   };
 
+  useEffect(() => {
+    const run = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const result = await fetchMediaItems();
+        setItems(result);
+      } catch (error: unknown) {
+        setItems([]);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Gagal memuat data media");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    run();
+  }, []);
+
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const filteredItems = mediaItems.filter((item) => {
+  const filteredItems = items.filter((item) => {
     const matchesTab = activeTab === "all" || item.type.toLowerCase() === activeTab;
 
     if (!normalizedQuery) {
@@ -54,7 +79,18 @@ export default function MediaLibraryPage() {
     return matchesTab && searchableText.includes(normalizedQuery);
   });
 
-  const showFeaturedAllLayout = activeTab === "all" && !normalizedQuery;
+  const featuredByType = useMemo(() => {
+    const find = (type: MediaItem["type"]) => items.find((item) => item.type === type) || null;
+    return {
+      article: find("Article"),
+      journal: find("Journal"),
+      video: find("Video"),
+      monograph: find("Monograph"),
+      bulletin: find("Bulletin"),
+    };
+  }, [items]);
+
+  const showFeaturedAllLayout = activeTab === "all" && !normalizedQuery && items.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50/50 font-sans">
@@ -125,19 +161,29 @@ export default function MediaLibraryPage() {
         </Tabs>
         </ScrollReveal>
 
-        {showFeaturedAllLayout ? (
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : showFeaturedAllLayout ? (
            <div className="flex flex-col lg:flex-row gap-6">
              {/* Left Column */}
              <div className="w-full lg:w-1/3 flex flex-col gap-6">
-               <ScrollReveal><MediaCard item={mediaItems[0]} /></ScrollReveal> {/* Article */}
-               <ScrollReveal delay={0.06}><MediaCard item={mediaItems[2]} /></ScrollReveal> {/* Journal */}
+               {featuredByType.article && <ScrollReveal><MediaCard item={featuredByType.article} /></ScrollReveal>}
+               {featuredByType.journal && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.journal} /></ScrollReveal>}
              </div>
              {/* Right Column */}
              <div className="w-full lg:w-2/3 flex flex-col gap-6">
-               <ScrollReveal><MediaCard item={mediaItems[1]} /></ScrollReveal> {/* Video */}
+               {featuredByType.video && <ScrollReveal><MediaCard item={featuredByType.video} /></ScrollReveal>}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <ScrollReveal><MediaCard item={mediaItems[3]} /></ScrollReveal> {/* Monograph */}
-                 <ScrollReveal delay={0.06}><MediaCard item={mediaItems[4]} /></ScrollReveal> {/* Bulletin */}
+                 {featuredByType.monograph && <ScrollReveal><MediaCard item={featuredByType.monograph} /></ScrollReveal>}
+                 {featuredByType.bulletin && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.bulletin} /></ScrollReveal>}
                </div>
              </div>
            </div>
@@ -168,7 +214,7 @@ export default function MediaLibraryPage() {
   );
 }
 
-function MediaCard({ item }: { item: (typeof mediaItems)[number] }) {
+function MediaCard({ item }: { item: MediaItem }) {
   if (item.type === "Video") {
     return (
       <Card className="col-span-1 lg:col-span-2 overflow-hidden group border-0 shadow-none rounded-[2rem] relative min-h-[460px] cursor-pointer">

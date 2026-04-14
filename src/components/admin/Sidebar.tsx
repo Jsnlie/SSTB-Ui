@@ -38,20 +38,37 @@ const academicMenuItems = [
 ];
 
 const mediaMenuItems = [
-  { name: "Artikel", href: "/admin/media/article", icon: FileText },
-  { name: "Jurnal", href: "/admin/media/journal", icon: FileText },
-  { name: "Bulletin", href: "/admin/media/bulletin", icon: FileText },
-  { name: "Monograf", href: "/admin/media/monograph", icon: FileText },
-  { name: "Video", href: "/admin/media/video", icon: Clapperboard },
+  { name: "Category", href: "/admin/media/category", icon: Layers },
+  { name: "Media", href: "/admin/media", icon: Clapperboard },
 ];
+
+function isRouteActive(pathname: string | null, href: string) {
+  return pathname === href || pathname?.startsWith(`${href}/`);
+}
+
+function isMediaCategoryRoute(pathname: string | null) {
+  return isRouteActive(pathname, "/admin/media/category");
+}
+
+function isMediaItemActive(pathname: string | null, href: string) {
+  if (href === "/admin/media/category") {
+    return isMediaCategoryRoute(pathname);
+  }
+
+  if (href === "/admin/media") {
+    return isRouteActive(pathname, href) && !isMediaCategoryRoute(pathname);
+  }
+
+  return isRouteActive(pathname, href);
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
   const isAcademicActive = academicMenuItems.some(
-    (item) => pathname === item.href || pathname?.startsWith(item.href)
+    (item) => isRouteActive(pathname, item.href)
   );
   const isMediaActive = mediaMenuItems.some(
-    (item) => pathname === item.href || pathname?.startsWith(item.href)
+    (item) => isMediaItemActive(pathname, item.href)
   );
   const [isAcademicOpen, setIsAcademicOpen] = useState(isAcademicActive);
   const [isMediaOpen, setIsMediaOpen] = useState(isMediaActive);
@@ -87,8 +104,9 @@ export default function Sidebar() {
       <nav className="flex-1 p-4 space-y-1">
         {mainMenuItems.slice(0, 1).map((item) => {
           const isActive =
-            pathname === item.href ||
-            (item.href !== "/admin" && pathname?.startsWith(item.href));
+            item.href === "/admin"
+              ? pathname === item.href
+              : isRouteActive(pathname, item.href);
           return (
             <Link
               key={item.name}
@@ -128,8 +146,9 @@ export default function Sidebar() {
             <div className="mt-1 ml-2 space-y-1 border-l border-white/20 pl-2">
               {academicMenuItems.map((item) => {
                 const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/admin" && pathname?.startsWith(item.href));
+                  item.href === "/admin"
+                    ? pathname === item.href
+                    : isRouteActive(pathname, item.href);
 
                 return (
                   <Link
@@ -172,9 +191,7 @@ export default function Sidebar() {
           {isMediaOpen && (
             <div className="mt-1 ml-2 space-y-1 border-l border-white/20 pl-2">
               {mediaMenuItems.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/admin" && pathname?.startsWith(item.href));
+                const isActive = isMediaItemActive(pathname, item.href);
 
                 return (
                   <Link
@@ -197,8 +214,9 @@ export default function Sidebar() {
 
         {mainMenuItems.slice(1).map((item) => {
           const isActive =
-            pathname === item.href ||
-            (item.href !== "/admin" && pathname?.startsWith(item.href));
+            item.href === "/admin"
+              ? pathname === item.href
+              : isRouteActive(pathname, item.href);
           return (
             <Link
               key={item.name}

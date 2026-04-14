@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 
+import { MediaItem } from "../../../lib/media";
 import { ImageWithFallback } from "../../../components/figma/ImageWithFallback";
 import { getMediaBySlug, isReadableMediaType } from "../../../lib/media";
 
@@ -30,15 +31,46 @@ export default function MediaDetailPage() {
   const params = useParams<{ slug: string }>();
   const [activePage, setActivePage] = useState(0);
   const [zoom, setZoom] = useState(100);
+  const [media, setMedia] = useState<MediaItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const media = useMemo(() => getMediaBySlug(params.slug), [params.slug]);
+  useEffect(() => {
+    const run = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const detail = await getMediaBySlug(params.slug);
+        setMedia(detail);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Gagal memuat detail media");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    run();
+  }, [params.slug]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!media || !isReadableMediaType(media.type)) {
     notFound();
   }
 
-  const totalPages = media.pages.length;
+  const totalPages = Math.max(media.pages.length, 1);
   const safePage = Math.min(activePage, totalPages - 1);
+  const activeContent = media.pages[safePage] || "Konten belum tersedia.";
 
   return (
     <div className="bg-[#eef1f6] min-h-screen">
@@ -120,7 +152,7 @@ export default function MediaDetailPage() {
                 <h2 className="text-[#061538] text-2xl [font-family:Georgia,_Times_New_Roman,_serif] mb-6">
                   {media.title}
                 </h2>
-                <p className="text-gray-700 leading-8">{media.pages[safePage]}</p>
+                <p className="text-gray-700 leading-8">{activeContent}</p>
               </div>
 
               <div className="mt-4 flex items-center justify-center gap-3">

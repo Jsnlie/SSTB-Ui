@@ -1,4 +1,4 @@
-import MediaSectionManager from "../../../../../../components/admin/MediaSectionManager";
+import { redirect } from "next/navigation";
 
 export default async function AddMediaSectionPage({
 	params,
@@ -6,5 +6,5 @@ export default async function AddMediaSectionPage({
 	params: Promise<{ section: string }>;
 }) {
 	const { section } = await params;
-	return <MediaSectionManager section={section} mode="create" />;
+	redirect(`/admin/media/tambah?type=${section}`);
 }

@@ -29,7 +29,20 @@ export function normalizeArray<T>(payload: unknown): T[] {
 export function getErrorMessage(text: string, fallback: string) {
   if (!text) return fallback;
   try {
-    const parsed = JSON.parse(text) as { message?: string; title?: string };
+    const parsed = JSON.parse(text) as {
+      message?: string;
+      title?: string;
+      errors?: Record<string, string[] | undefined>;
+    };
+
+    if (parsed?.errors && typeof parsed.errors === "object") {
+      for (const [field, messages] of Object.entries(parsed.errors)) {
+        if (Array.isArray(messages) && messages.length > 0) {
+          return `${field}: ${messages[0]}`;
+        }
+      }
+    }
+
     return parsed?.message || parsed?.title || fallback;
   } catch {
     return text;

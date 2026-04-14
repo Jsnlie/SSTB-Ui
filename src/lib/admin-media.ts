@@ -1,5 +1,8 @@
-export type AdminMediaSection = "article" | "journal" | "bulletin" | "monograph" | "video";
-export type AdminMediaStatus = "Published" | "Draft";
+import { apiUrlCandidates } from "./api";
+import { getErrorMessage, normalizeArray, toNumberSafe, toStringSafe } from "./response";
+
+export type AdminMediaSection = "article" | "video" | "journal" | "bulletin" | "monograph";
+export type MediaType = AdminMediaSection;
 
 export interface AdminMediaSectionConfig {
 	section: AdminMediaSection;
@@ -10,26 +13,175 @@ export interface AdminMediaSectionConfig {
 	isVideo: boolean;
 }
 
-export interface AdminMediaContentItem {
+export interface CategoryResponse {
 	id: number;
-	title: string;
-	author: string;
-	category: string;
-	referenceCode: string;
-	releaseDate: string;
-	description: string;
-	status: AdminMediaStatus;
-	cover: string;
-	attachmentName: string;
+	name: string;
+	medias: MediaResponse[];
 }
 
-export interface AdminMediaVideoItem {
+interface MediaCore {
 	id: number;
 	title: string;
-	youtubeUrl: string;
-	description: string;
-	status: AdminMediaStatus;
+	slug: string;
+	type: MediaType;
+	categoryId: number;
+	category: string;
+	coverImage: string;
+	publishedAt: string;
 }
+
+export interface ArticleDetail {
+	id: number;
+	mediaId: number;
+	media: string;
+	author: string;
+	authorImage: string;
+	authorDescription: string;
+	tagline: string;
+	content: string;
+}
+
+export interface VideoDetail {
+	id: number;
+	mediaId: number;
+	media: string;
+	youtubeUrl: string;
+	theme: string;
+	description: string;
+}
+
+export interface JournalDetail {
+	id: number;
+	mediaId: number;
+	media: string;
+	fileUrl: string;
+}
+
+export interface BulletinDetail {
+	id: number;
+	mediaId: number;
+	media: string;
+	author: string;
+	fileUrl: string;
+	titleDescription: string;
+	description: string;
+}
+
+export interface MonographDetail {
+	id: number;
+	mediaId: number;
+	media: string;
+	author: string;
+	image: string;
+	descriptionTitle: string;
+	writer: string;
+	synopsis: string;
+	isbn: string;
+}
+
+interface MediaWithOptionalDetails {
+	article?: ArticleDetail | null;
+	video?: VideoDetail | null;
+	journal?: JournalDetail | null;
+	bulletin?: BulletinDetail | null;
+	monograph?: MonographDetail | null;
+}
+
+export type ArticleMediaResponse = MediaCore & {
+	type: "article";
+	article: ArticleDetail | null;
+} & MediaWithOptionalDetails;
+
+export type VideoMediaResponse = MediaCore & {
+	type: "video";
+	video: VideoDetail | null;
+} & MediaWithOptionalDetails;
+
+export type JournalMediaResponse = MediaCore & {
+	type: "journal";
+	journal: JournalDetail | null;
+} & MediaWithOptionalDetails;
+
+export type BulletinMediaResponse = MediaCore & {
+	type: "bulletin";
+	bulletin: BulletinDetail | null;
+} & MediaWithOptionalDetails;
+
+export type MonographMediaResponse = MediaCore & {
+	type: "monograph";
+	monograph: MonographDetail | null;
+} & MediaWithOptionalDetails;
+
+export type MediaResponse =
+	| ArticleMediaResponse
+	| VideoMediaResponse
+	| JournalMediaResponse
+	| BulletinMediaResponse
+	| MonographMediaResponse;
+
+export type MediaRequest = {
+	type: MediaType;
+	title: string;
+	categoryId: number;
+	coverImage: string;
+	publishedAt: string;
+	author: string;
+	authorImage: string;
+	authorDescription: string;
+	tagline: string;
+	content: string;
+	youtubeUrl: string;
+	videoTheme: string;
+	videoDescription: string;
+	fileUrl: string;
+	titleDescription: string;
+	description: string;
+	image: string;
+	descriptionTitle: string;
+	writer: string;
+	synopsis: string;
+	isbn: string;
+};
+
+export type MediaTypeFieldMap = {
+	article: Pick<MediaRequest, "author" | "authorImage" | "authorDescription" | "tagline" | "content">;
+	video: Pick<MediaRequest, "youtubeUrl" | "videoTheme" | "videoDescription">;
+	journal: Pick<MediaRequest, "fileUrl">;
+	bulletin: Pick<MediaRequest, "author" | "titleDescription" | "description" | "fileUrl">;
+	monograph: Pick<MediaRequest, "author" | "image" | "descriptionTitle" | "writer" | "synopsis" | "isbn">;
+};
+
+export type MediaDetailByType = {
+	article: ArticleDetail;
+	video: VideoDetail;
+	journal: JournalDetail;
+	bulletin: BulletinDetail;
+	monograph: MonographDetail;
+};
+
+export type MediaFormInput = {
+	type: MediaType;
+	title: string;
+	categoryId: number;
+	coverImage: string;
+	publishedAt: string;
+	author: string;
+	authorImage: string;
+	authorDescription: string;
+	tagline: string;
+	content: string;
+	youtubeUrl: string;
+	videoTheme: string;
+	videoDescription: string;
+	fileUrl: string;
+	titleDescription: string;
+	description: string;
+	image: string;
+	descriptionTitle: string;
+	writer: string;
+	synopsis: string;
+	isbn: string;
+};
 
 export const adminMediaSectionConfigs: AdminMediaSectionConfig[] = [
 	{ section: "article", label: "Artikel", menuLabel: "Artikel", singularLabel: "Artikel", pluralLabel: "Artikel", isVideo: false },
@@ -39,86 +191,501 @@ export const adminMediaSectionConfigs: AdminMediaSectionConfig[] = [
 	{ section: "video", label: "Video", menuLabel: "Video", singularLabel: "Video", pluralLabel: "Video", isVideo: true },
 ];
 
-const contentCategories: Record<Exclude<AdminMediaSection, "video">, string[]> = {
-	article: ["Teologi", "Pendidikan", "Gereja"],
-	journal: ["Ilmiah", "Editorial", "Riset"],
-	bulletin: ["Pengumuman", "Kegiatan", "Beasiswa"],
-	monograph: ["Kajian", "Doktrin", "Sejarah"],
+const RELEVANT_FIELDS_BY_TYPE: Record<MediaType, readonly string[]> = {
+	article: ["author", "authorImage", "authorDescription", "tagline", "content"],
+	video: ["youtubeUrl", "videoTheme", "videoDescription"],
+	journal: ["fileUrl"],
+	bulletin: ["author", "titleDescription", "description", "fileUrl"],
+	monograph: ["author", "image", "descriptionTitle", "writer", "synopsis", "isbn"],
 };
 
-function buildContentItem(
-	id: number,
-	title: string,
-	author: string,
-	category: string,
-	referenceCode: string,
-	releaseDate: string,
-	description: string,
-	status: AdminMediaStatus,
-	cover: string,
-	attachmentName: string
-): AdminMediaContentItem {
-	return { id, title, author, category, referenceCode, releaseDate, description, status, cover, attachmentName };
+const REQUIRED_FIELDS_BY_TYPE: Record<MediaType, readonly string[]> = {
+	article: ["title", "categoryId", "content", "author"],
+	video: ["title", "categoryId", "youtubeUrl"],
+	journal: ["title", "categoryId", "fileUrl"],
+	bulletin: ["title", "categoryId", "author", "titleDescription", "description", "fileUrl"],
+	monograph: ["title", "categoryId", "author", "image", "descriptionTitle", "writer", "synopsis", "isbn"],
+};
+
+function parseNullableObject<T>(value: unknown): T | null {
+	if (!value || typeof value !== "object") return null;
+	return value as T;
 }
 
-export const adminMediaContentDummyData: Record<Exclude<AdminMediaSection, "video">, AdminMediaContentItem[]> = {
-	article: [
-		buildContentItem(1, "Tradisi Liturgi dalam Ruang Kota", "Admin", "Teologi", "ART-2026-001", "2026-01-12", "Analisis singkat mengenai adaptasi bahasa liturgi dalam konteks pelayanan urban modern.", "Published", "https://images.unsplash.com/photo-1455885666463-047d7c3f1c1b?auto=format&fit=crop&q=80", "Naskah Artikel.pdf"),
-		buildContentItem(2, "Pembinaan Iman untuk Generasi Muda", "Tim Redaksi", "Pendidikan", "ART-2026-002", "2026-02-05", "Ringkasan praktis tentang pendekatan pembinaan iman yang relevan untuk gereja lokal.", "Draft", "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80", "Artikel Pembinaan.pdf"),
-		buildContentItem(3, "Etika Pelayanan di Era Digital", "Admin", "Gereja", "ART-2026-003", "2026-03-21", "Catatan editorial mengenai etika komunikasi dan pelayanan dalam ruang digital yang terus berkembang.", "Published", "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80", "Lampiran Artikel.pdf"),
-	],
-	journal: [
-		buildContentItem(1, "Journal of Applied Theology Vol. 12", "Editor", "Ilmiah", "JRN-2025-012", "2025-11-23", "Edisi jurnal ilmiah yang mengangkat topik hermeneutika dan pelayanan kontekstual.", "Published", "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80", "Jurnal Vol 12.pdf"),
-		buildContentItem(2, "Prosiding Studi Alkitab dan Konteks", "Tim Editorial", "Riset", "JRN-2025-013", "2025-12-18", "Kumpulan tulisan riset yang siap diterbitkan pada periode berikutnya.", "Draft", "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80", "Prosiding Jurnal.pdf"),
-		buildContentItem(3, "Editorial Notes for Ministry Practice", "Editor", "Editorial", "JRN-2026-001", "2026-01-14", "Catatan redaksi tentang isu-isu yang paling sering muncul dalam pelayanan lapangan.", "Published", "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&q=80", "Editorial Notes.pdf"),
-	],
-	bulletin: [
-		buildContentItem(1, "Bulletin Semester Genap 2026", "Admin", "Pengumuman", "BLT-2026-001", "2026-02-01", "Informasi ringkas seputar agenda kampus, kegiatan, dan pengumuman penting semester ini.", "Published", "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&q=80", "Bulletin Semester Genap.pdf"),
-		buildContentItem(2, "Pendaftaran Beasiswa Internal", "Admin", "Beasiswa", "BLT-2026-002", "2026-02-20", "Pengumuman terkait jadwal, alur, dan persyaratan beasiswa internal institusi.", "Draft", "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80", "Beasiswa Internal.pdf"),
-		buildContentItem(3, "Agenda Kegiatan Kampus Maret", "Sekretariat", "Kegiatan", "BLT-2026-003", "2026-03-02", "Daftar agenda kegiatan, seminar, dan pertemuan yang dijadwalkan selama Maret.", "Published", "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80", "Agenda Maret.pdf"),
-	],
-	monograph: [
-		buildContentItem(1, "Monograf Sejarah Gereja Lokal", "Dr. Mikael", "Sejarah", "MON-2024-001", "2024-08-19", "Kajian panjang mengenai perkembangan komunitas gereja lokal dalam tiga dekade terakhir.", "Published", "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80", "Monograf Sejarah.pdf"),
-		buildContentItem(2, "Kajian Doktrinal tentang Karunia Rohani", "Pdt. Andreas", "Doktrin", "MON-2024-002", "2024-10-07", "Monograf singkat tentang prinsip doktrinal dan penerapannya dalam pembinaan jemaat.", "Draft", "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&q=80", "Kajian Doktrinal.pdf"),
-		buildContentItem(3, "Refleksi Teologi Praktis untuk Pelayanan", "Tim Penulis", "Kajian", "MON-2025-001", "2025-01-15", "Refleksi konseptual mengenai hubungan antara teologi praktis dan kebutuhan pelayanan kontemporer.", "Published", "https://images.unsplash.com/photo-1516942271756-2d4a2c8b2f5f?auto=format&fit=crop&q=80", "Refleksi Teologi.pdf"),
-	],
-};
+function parseMediaType(value: unknown): MediaType {
+	const normalized = toStringSafe(value).toLowerCase();
+	if (
+		normalized === "article" ||
+		normalized === "video" ||
+		normalized === "journal" ||
+		normalized === "bulletin" ||
+		normalized === "monograph"
+	) {
+		return normalized;
+	}
 
-export const adminMediaVideoDummyData: AdminMediaVideoItem[] = [
-	{ id: 1, title: "Klip Pembukaan Seminar Teologi", youtubeUrl: "https://youtu.be/dQw4w9WgXcQ", description: "Cuplikan pembukaan seminar sebagai placeholder konten video.", status: "Published" },
-	{ id: 2, title: "Rangkuman Kegiatan Kampus", youtubeUrl: "https://www.youtube.com/watch?v=oHg5SJYRHA0", description: "Video ringkas aktivitas kampus yang dipakai untuk dummy data.", status: "Draft" },
-	{ id: 3, title: "Testimoni Layanan Akademik", youtubeUrl: "https://youtu.be/9bZkp7q19f0", description: "Placeholder video untuk materi promosi dan dokumentasi internal.", status: "Published" },
-];
+	return "article";
+}
+
+function parseMediaResponse(item: unknown): MediaResponse {
+	const source = (item ?? {}) as Record<string, unknown>;
+	const type = parseMediaType(source.type);
+
+	const base: MediaCore = {
+		id: toNumberSafe(source.id),
+		title: toStringSafe(source.title),
+		slug: toStringSafe(source.slug),
+		type,
+		categoryId: toNumberSafe(source.categoryId),
+		category: toStringSafe(source.category),
+		coverImage: toStringSafe(source.coverImage),
+		publishedAt: toStringSafe(source.publishedAt),
+	};
+
+	return {
+		...base,
+		article: parseNullableObject<ArticleDetail>(source.article),
+		video: parseNullableObject<VideoDetail>(source.video),
+		journal: parseNullableObject<JournalDetail>(source.journal),
+		bulletin: parseNullableObject<BulletinDetail>(source.bulletin),
+		monograph: parseNullableObject<MonographDetail>(source.monograph),
+	} as MediaResponse;
+}
+
+function parseCategoryResponse(item: unknown): CategoryResponse {
+	const source = (item ?? {}) as Record<string, unknown>;
+	return {
+		id: toNumberSafe(source.id),
+		name: toStringSafe(source.name),
+		medias: normalizeArray<unknown>(source.medias).map(parseMediaResponse),
+	};
+}
+
+function getDefaultHeaders(withJson: boolean, includeToken = true): HeadersInit {
+	const headers: HeadersInit = withJson
+		? { "Content-Type": "application/json" }
+		: {};
+
+	if (includeToken && typeof window !== "undefined") {
+		const token = window.localStorage.getItem("token");
+		if (token) {
+			(headers as Record<string, string>).Authorization = `Bearer ${token}`;
+		}
+	}
+
+	return headers;
+}
+
+async function request(path: string, init: RequestInit, fallbackMessage: string) {
+	const isProxyPath = path.startsWith("/api/proxy/");
+	const candidates = isProxyPath ? [path] : apiUrlCandidates(path);
+	let lastNetworkError: unknown = null;
+
+	for (const url of candidates) {
+		try {
+			const response = await fetch(url, {
+				cache: "no-store",
+				...init,
+			});
+
+			if (!response.ok) {
+				if (response.status === 401 || response.status === 403) {
+					throw new Error("Sesi login tidak valid atau sudah habis. Silakan login ulang.");
+				}
+				const text = await response.text().catch(() => "");
+				throw new Error(getErrorMessage(text, `${fallbackMessage} (HTTP ${response.status})`));
+			}
+
+			if (response.status === 204) {
+				return null;
+			}
+
+			const text = await response.text().catch(() => "");
+			if (!text) return null;
+
+			try {
+				return JSON.parse(text);
+			} catch {
+				return null;
+			}
+		} catch (error) {
+			if (error instanceof Error && error.name !== "TypeError") {
+				throw error;
+			}
+			lastNetworkError = error;
+		}
+	}
+
+	if (lastNetworkError instanceof Error) {
+		throw new Error(
+			"Tidak dapat terhubung ke API (network error). Pastikan backend aktif, URL NEXT_PUBLIC_API_BASE_URL benar, CORS mengizinkan origin frontend, dan sertifikat HTTPS localhost sudah trusted."
+		);
+	}
+
+	throw new Error(fallbackMessage);
+}
+
+async function requestWithPathFallback(
+	paths: string[],
+	init: RequestInit,
+	fallbackMessage: string
+) {
+	let lastError: unknown = null;
+
+	for (const path of paths) {
+		try {
+			return await request(path, init, fallbackMessage);
+		} catch (error) {
+			lastError = error;
+		}
+	}
+
+	if (lastError instanceof Error) {
+		throw lastError;
+	}
+
+	throw new Error(fallbackMessage);
+}
+
+function categoryPaths(base: "list" | "detail", id?: number) {
+	if (base === "list") {
+		return ["/api/categories", "/api/category"];
+	}
+
+	if (!id || id <= 0) {
+		return ["/api/categories/0", "/api/category/0"];
+	}
+
+	return [`/api/categories/${id}`, `/api/category/${id}`];
+}
 
 export function getAdminMediaSectionConfig(section: string) {
 	return adminMediaSectionConfigs.find((item) => item.section === section) ?? null;
 }
 
-export function getAdminMediaContentItems(section: Exclude<AdminMediaSection, "video">) {
-	return adminMediaContentDummyData[section];
+export function getRelevantFieldsByType(type: MediaType) {
+	return RELEVANT_FIELDS_BY_TYPE[type];
 }
 
-export function getAdminMediaVideoItems() {
-	return adminMediaVideoDummyData;
+export function getRequiredFieldsByType(type: MediaType) {
+	return REQUIRED_FIELDS_BY_TYPE[type];
 }
 
-export function getAdminMediaContentById(section: Exclude<AdminMediaSection, "video">, id: number) {
-	return adminMediaContentDummyData[section].find((item) => item.id === id) ?? null;
+export function getMediaDetail<TType extends MediaType>(
+	media: MediaResponse,
+	type?: TType
+): MediaDetailByType[TType] | MediaDetailByType[MediaType] | null {
+	const targetType = type ?? media.type;
+
+	switch (targetType) {
+		case "article":
+			return media.article ?? null;
+		case "video":
+			return media.video ?? null;
+		case "journal":
+			return media.journal ?? null;
+		case "bulletin":
+			return media.bulletin ?? null;
+		case "monograph":
+			return media.monograph ?? null;
+		default:
+			return null;
+	}
 }
 
-export function getAdminMediaVideoById(id: number) {
-	return adminMediaVideoDummyData.find((item) => item.id === id) ?? null;
+export function createDefaultMediaForm(type: MediaType, categoryId?: number): MediaFormInput {
+	return {
+		type,
+		title: "",
+		categoryId: categoryId ?? 0,
+		coverImage: "",
+		publishedAt: new Date().toISOString(),
+		author: "",
+		authorImage: "",
+		authorDescription: "",
+		tagline: "",
+		content: "",
+		youtubeUrl: "",
+		videoTheme: "",
+		videoDescription: "",
+		fileUrl: "",
+		titleDescription: "",
+		description: "",
+		image: "",
+		descriptionTitle: "",
+		writer: "",
+		synopsis: "",
+		isbn: "",
+	};
 }
 
-export function getAdminMediaCategories(section: Exclude<AdminMediaSection, "video">) {
-	return contentCategories[section];
+export function buildMediaFormFromResponse(media: MediaResponse): MediaFormInput {
+	const form = createDefaultMediaForm(media.type, media.categoryId);
+	form.title = media.title;
+	form.coverImage = media.coverImage;
+	form.publishedAt = media.publishedAt || new Date().toISOString();
+
+	const detail = getMediaDetail(media);
+	if (!detail) return form;
+
+	if (media.type === "article") {
+		form.author = media.article?.author ?? "";
+		form.authorImage = media.article?.authorImage ?? "";
+		form.authorDescription = media.article?.authorDescription ?? "";
+		form.tagline = media.article?.tagline ?? "";
+		form.content = media.article?.content ?? "";
+	}
+
+	if (media.type === "video") {
+		form.youtubeUrl = media.video?.youtubeUrl ?? "";
+		form.videoTheme = media.video?.theme ?? "";
+		form.videoDescription = media.video?.description ?? "";
+	}
+
+	if (media.type === "journal") {
+		form.fileUrl = media.journal?.fileUrl ?? "";
+	}
+
+	if (media.type === "bulletin") {
+		form.author = media.bulletin?.author ?? "";
+		form.titleDescription = media.bulletin?.titleDescription ?? "";
+		form.description = media.bulletin?.description ?? "";
+		form.fileUrl = media.bulletin?.fileUrl ?? "";
+	}
+
+	if (media.type === "monograph") {
+		form.author = media.monograph?.author ?? "";
+		form.image = media.monograph?.image ?? "";
+		form.descriptionTitle = media.monograph?.descriptionTitle ?? "";
+		form.writer = media.monograph?.writer ?? "";
+		form.synopsis = media.monograph?.synopsis ?? "";
+		form.isbn = media.monograph?.isbn ?? "";
+	}
+
+	return form;
+}
+
+export function buildMediaPayload(type: MediaType, formData: MediaFormInput): MediaRequest {
+	return {
+		type,
+		title: formData.title.trim(),
+		categoryId: toNumberSafe(formData.categoryId),
+		coverImage: formData.coverImage.trim(),
+		publishedAt: formData.publishedAt || new Date().toISOString(),
+		author: formData.author.trim(),
+		authorImage: formData.authorImage.trim(),
+		authorDescription: formData.authorDescription.trim(),
+		tagline: formData.tagline.trim(),
+		content: formData.content.trim(),
+		youtubeUrl: formData.youtubeUrl.trim(),
+		videoTheme: formData.videoTheme.trim(),
+		videoDescription: formData.videoDescription.trim(),
+		fileUrl: formData.fileUrl.trim(),
+		titleDescription: formData.titleDescription.trim(),
+		description: formData.description.trim(),
+		image: formData.image.trim(),
+		descriptionTitle: formData.descriptionTitle.trim(),
+		writer: formData.writer.trim(),
+		synopsis: formData.synopsis.trim(),
+		isbn: formData.isbn.trim(),
+	};
+}
+
+export function validateMediaForm(type: MediaType, formData: MediaFormInput) {
+	const errors: string[] = [];
+
+	for (const field of REQUIRED_FIELDS_BY_TYPE[type]) {
+		const value = formData[field as keyof MediaFormInput];
+		const isMissing =
+			field === "categoryId"
+				? toNumberSafe(value) <= 0
+				: !toStringSafe(value).trim();
+
+		if (isMissing) {
+			errors.push(`Field ${field} wajib diisi untuk tipe ${type}.`);
+		}
+	}
+
+	return errors;
+}
+
+export function filterCategoryMediasByType(category: CategoryResponse | null, type: MediaType) {
+	if (!category) return [];
+	return category.medias.filter((media) => media.type === type);
+}
+
+export function groupMediaByType(medias: MediaResponse[]) {
+	return medias.reduce<Record<MediaType, MediaResponse[]>>(
+		(acc, media) => {
+			acc[media.type].push(media);
+			return acc;
+		},
+		{ article: [], video: [], journal: [], bulletin: [], monograph: [] }
+	);
+}
+
+export function groupCategoryMediasByType(category: CategoryResponse | null) {
+	if (!category) {
+		return { article: [], video: [], journal: [], bulletin: [], monograph: [] };
+	}
+
+	return groupMediaByType(category.medias);
+}
+
+export function selectMediaByCategoryId(medias: MediaResponse[], categoryId: number) {
+	return medias.filter((media) => media.categoryId === categoryId);
+}
+
+export function selectMediaByType(medias: MediaResponse[], type: MediaType) {
+	return medias.filter((media) => media.type === type);
+}
+
+export function parseMediaListResponse(payload: unknown) {
+	return normalizeArray<unknown>(payload).map(parseMediaResponse);
+}
+
+export function parseCategoryListResponse(payload: unknown) {
+	return normalizeArray<unknown>(payload).map(parseCategoryResponse);
+}
+
+export async function getCategories() {
+	const json = await requestWithPathFallback(
+		categoryPaths("list"),
+		{ method: "GET", headers: getDefaultHeaders(false) },
+		"Gagal memuat data kategori media"
+	);
+	return parseCategoryListResponse(json);
+}
+
+export async function getCategoryById(id: number) {
+	const json = await requestWithPathFallback(
+		categoryPaths("detail", id),
+		{ method: "GET", headers: getDefaultHeaders(false) },
+		"Gagal memuat detail kategori"
+	);
+
+	if (!json) return null;
+	return parseCategoryResponse(json);
+}
+
+export async function createCategory(payload: { name: string }, endpointId?: number) {
+	const paths = Number.isFinite(endpointId)
+		? [`/api/categories/${endpointId}`, `/api/category/${endpointId}`]
+		: categoryPaths("list");
+
+	const json = await requestWithPathFallback(
+		paths,
+		{
+			method: "POST",
+			headers: getDefaultHeaders(true),
+			body: JSON.stringify({ name: payload.name.trim() }),
+		},
+		"Gagal membuat kategori"
+	);
+
+	if (!json) return null;
+	return parseCategoryResponse(json);
+}
+
+export async function updateCategory(id: number, payload: { name: string }) {
+	const json = await requestWithPathFallback(
+		categoryPaths("detail", id),
+		{
+			method: "PUT",
+			headers: getDefaultHeaders(true),
+			body: JSON.stringify({ name: payload.name.trim() }),
+		},
+		"Gagal memperbarui kategori"
+	);
+
+	if (!json) return null;
+	return parseCategoryResponse(json);
+}
+
+export async function deleteCategory(id: number) {
+	await requestWithPathFallback(
+		categoryPaths("detail", id),
+		{ method: "DELETE", headers: getDefaultHeaders(false) },
+		"Gagal menghapus kategori"
+	);
+}
+
+export async function getMedias(filters?: { type?: MediaType; categoryId?: number }) {
+	const params = new URLSearchParams();
+	if (filters?.type) params.set("type", filters.type);
+	if (filters?.categoryId && filters.categoryId > 0) {
+		params.set("categoryId", String(filters.categoryId));
+	}
+
+	const query = params.size > 0 ? `?${params.toString()}` : "";
+	const json = await request(
+		`/api/media${query}`,
+		{ method: "GET", headers: getDefaultHeaders(false) },
+		"Gagal memuat data media"
+	);
+
+	return parseMediaListResponse(json);
+}
+
+export async function getMediaById(id: number | string) {
+	const identifier = encodeURIComponent(String(id).trim());
+	if (!identifier) {
+		throw new Error("ID media tidak valid");
+	}
+
+	const json = await request(
+		`/api/media/${identifier}`,
+		{ method: "GET", headers: getDefaultHeaders(false) },
+		"Gagal memuat detail media"
+	);
+
+	if (!json) return null;
+	return parseMediaResponse(json);
+}
+
+export async function createMedia(payload: MediaRequest) {
+	const json = await request(
+		"/api/media",
+		{
+			method: "POST",
+			headers: getDefaultHeaders(true),
+			body: JSON.stringify(payload),
+		},
+		"Gagal membuat media"
+	);
+
+	if (!json) return null;
+	return parseMediaResponse(json);
+}
+
+export async function updateMedia(id: number | string, payload: MediaRequest) {
+	const identifier = encodeURIComponent(String(id).trim());
+	if (!identifier) {
+		throw new Error("ID media tidak valid");
+	}
+
+	const json = await request(
+		`/api/media/${identifier}`,
+		{
+			method: "PUT",
+			headers: getDefaultHeaders(true),
+			body: JSON.stringify(payload),
+		},
+		"Gagal memperbarui media"
+	);
+
+	if (!json) return null;
+	return parseMediaResponse(json);
+}
+
+export async function deleteMedia(id: number) {
+	await request(
+		`/api/media/${id}`,
+		{ method: "DELETE", headers: getDefaultHeaders(false) },
+		"Gagal menghapus media"
+	);
 }
 
 export function getTotalAdminMedia() {
-	const contentTotal = Object.values(adminMediaContentDummyData).reduce(
-		(total, items) => total + items.length,
-		0
-	);
-
-	return contentTotal + adminMediaVideoDummyData.length;
+	return 0;
 }
