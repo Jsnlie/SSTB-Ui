@@ -20,9 +20,9 @@ import {
   formatBeritaDate,
   parseBeritaListResponse,
 } from "../../../lib/berita";
+import { parseAdmissionListResponse } from "../../../lib/admin-admisi";
 import { getTotalAdminMedia } from "../../../lib/admin-media";
 import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
-import { getTotalAdmisiBiayaStudi } from "../../../lib/admin-admisi";
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
 
@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
     kegiatan: 0,
     media: getTotalAdminMedia(),
     ebook: getTotalAdminEbook(),
-    biayaStudi: getTotalAdmisiBiayaStudi(),
+    biayaStudi: 0,
   });
   const [beritaList, setBeritaList] = useState<BeritaItem[]>([]);
   const [kegiatanList, setKegiatanList] = useState<AcaraItem[]>([]);
@@ -215,18 +215,20 @@ export default function AdminDashboardPage() {
           ? { Authorization: `Bearer ${token}` }
           : {};
 
-        const [programStudiPayload, mataKuliahPayload, beritaPayload, kegiatanPayload] =
+        const [programStudiPayload, mataKuliahPayload, beritaPayload, kegiatanPayload, admissionPayload] =
           await Promise.all([
             fetchJson("/api/program-studi", "program studi", headers),
             fetchJson("/api/mata-kuliah", "mata kuliah", headers),
             fetchJson("/api/berita", "berita", headers),
             fetchJson("/api/Acara", "kegiatan", headers),
+            fetchJson("/api/admission", "biaya studi", headers),
           ]);
 
         const programStudi = extractArray(programStudiPayload);
         const mataKuliah = extractArray(mataKuliahPayload);
         const berita = parseBeritaListResponse(beritaPayload);
         const kegiatan = parseAcaraListResponse(kegiatanPayload);
+        const admission = parseAdmissionListResponse(admissionPayload);
 
         setCounts({
           programStudi: programStudi.length,
@@ -235,7 +237,7 @@ export default function AdminDashboardPage() {
           kegiatan: kegiatan.length,
           media: getTotalAdminMedia(),
           ebook: getTotalAdminEbook(),
-          biayaStudi: getTotalAdmisiBiayaStudi(),
+          biayaStudi: admission.length,
         });
         setBeritaList(berita);
         setKegiatanList(kegiatan);

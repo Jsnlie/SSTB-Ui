@@ -1,16 +1,45 @@
 "use client";
 
 import { ChevronDown, DollarSign, GraduationCap, FileText, CheckCircle2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 import { ScrollReveal } from "../../components/ScrollReveal";
-import { admisiBiayaStudiDummyData } from "../../lib/admin-admisi";
+import {
+  formatRupiah,
+  getErrorMessage,
+  parseAdmissionListResponse,
+  type AdmisiBiayaStudiItem,
+} from "../../lib/admin-admisi";
+import { apiUrl } from "../../lib/api";
+
+function toStringSafe(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "";
+  return String(value);
+}
+
+function toNumberSafe(value: unknown) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function extractArray(payload: any): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  if (Array.isArray(payload?.data?.items)) return payload.data.items;
+  return [];
+}
 
 export default function Admisi() {
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ nama: "", email: "", telp: "", prodi: "" });
+  const [tuitionFees, setTuitionFees] = useState<AdmisiBiayaStudiItem[]>([]);
+  const [tuitionLoading, setTuitionLoading] = useState(true);
+  const [tuitionError, setTuitionError] = useState("");
   const steps = [
     {
       number: 1,
@@ -39,7 +68,63 @@ export default function Admisi() {
     },
   ];
 
-  const tuitionFees = admisiBiayaStudiDummyData;
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchTuitionFees = async () => {
+      try {
+        setTuitionError("");
+        setTuitionLoading(true);
+
+        const [admissionRes, programStudiRes] = await Promise.all([
+          fetch(apiUrl("/api/admission"), { cache: "no-store" }),
+          fetch(apiUrl("/api/program-studi"), { cache: "no-store" }),
+        ]);
+
+        if (!admissionRes.ok) {
+          const text = await admissionRes.text().catch(() => "");
+          throw new Error(getErrorMessage(text, "Gagal memuat biaya studi"));
+        }
+
+        const admissionJson = await admissionRes.json();
+
+        const programNameById = new Map<number, string>();
+        if (programStudiRes.ok) {
+          const programStudiJson = await programStudiRes.json().catch(() => null);
+          const programStudiList = extractArray(programStudiJson);
+          for (const item of programStudiList) {
+            const id = toNumberSafe(item?.id);
+            const name = toStringSafe(item?.name);
+            if (id > 0 && name) {
+              programNameById.set(id, name);
+            }
+          }
+        }
+
+        if (cancelled) return;
+        const mapped = parseAdmissionListResponse(admissionJson, programNameById);
+        setTuitionFees(mapped);
+      } catch (err: unknown) {
+        if (cancelled) return;
+        setTuitionFees([]);
+        if (err instanceof Error) {
+          setTuitionError(err.message);
+        } else {
+          setTuitionError("Terjadi kesalahan saat memuat biaya studi");
+        }
+      } finally {
+        if (!cancelled) {
+          setTuitionLoading(false);
+        }
+      }
+    };
+
+    fetchTuitionFees();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const scholarships = [
     {
@@ -171,63 +256,59 @@ export default function Admisi() {
           <ScrollReveal>
             <div className="text-center mb-12">
             <h2 className="text-3xl text-[#002366] mb-4">Biaya Studi</h2>
-            <p className="text-gray-600">
-              Rincian biaya pendidikan untuk tahun akademik 2025/2026
-            </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {tuitionError && (
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center">
+              {tuitionError}
+            </div>
+          )}
+
+          {tuitionLoading ? (
+            <div className="flex items-center justify-center py-14">
+              <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+          <>
+
+          <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]">
             {tuitionFees.map((fee, idx) => (
               <ScrollReveal key={fee.id} delay={idx * 0.06} amount={0.18}>
                 <div
-                className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                className="h-full w-full max-w-[360px] mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <div className="bg-[#002366] px-4 py-3">
-                  <h3 className="text-white font-medium text-sm">
+                  <h3 className="text-white font-medium text-sm text-center">
                     {fee.program}
                   </h3>
                 </div>
                 <div className="px-4 py-3 space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Pendaftaran & Tes</span>
-                    <span className="text-gray-800">{fee.pendaftaranTes}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Administrasi/Smt</span>
-                    <span className="text-gray-800">
-                      {fee.administrasiPerSemester}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Biaya Kuliah/Smt</span>
-                    <span className="text-gray-800">
-                      {fee.biayaKuliahPerSemester}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Bimbingan TA</span>
-                    <span className="text-gray-800">{fee.bimbinganTA}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Wisuda</span>
-                    <span className="text-gray-800">{fee.wisuda}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Cuti Akademik/Smt</span>
-                    <span className="text-gray-800">{fee.cutiAkademik}</span>
-                  </div>
+                  {fee.admissionItems.length > 0 ? (
+                    fee.admissionItems.map((item, itemIdx) => (
+                      <div key={`${fee.id}-${item.id}-${itemIdx}`} className="flex justify-between gap-2">
+                        <span className="text-gray-600 truncate">{item.name}</span>
+                        <span className="text-gray-800 whitespace-nowrap">{formatRupiah(item.price)}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">Belum ada komponen biaya.</p>
+                  )}
                 </div>
                 <div className="bg-[#C41E3A]/10 border-t-2 border-[#C41E3A] px-4 py-3 flex justify-between items-center">
                   <span className="text-[#002366] font-bold text-sm">
                     Total
                   </span>
-                  <span className="text-[#C41E3A] font-bold">{fee.total}</span>
+                  <span className="text-[#C41E3A] font-bold">{formatRupiah(fee.total)}</span>
                 </div>
                 </div>
               </ScrollReveal>
             ))}
           </div>
+
+          {tuitionFees.length === 0 && (
+            <p className="mt-2 text-center text-sm text-gray-500">Belum ada data biaya studi tersedia.</p>
+          )}
 
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
@@ -236,6 +317,8 @@ export default function Admisi() {
             </p>
             <p>* Belum termasuk biaya buku, asrama, dan kebutuhan pribadi</p>
           </div>
+          </>
+          )}
         </div>
       </section>
 

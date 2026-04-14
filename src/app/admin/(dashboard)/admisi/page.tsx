@@ -1,14 +1,95 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import { AdmisiBiayaStudiItem, admisiBiayaStudiDummyData } from "../../../../lib/admin-admisi";
+import { apiUrl } from "../../../../lib/api";
+import {
+  AdmisiBiayaStudiItem,
+  formatRupiah,
+  getErrorMessage,
+  parseAdmissionListResponse,
+} from "../../../../lib/admin-admisi";
+
+function toStringSafe(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "";
+  return String(value);
+}
+
+function toNumberSafe(value: unknown) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function extractArray(payload: any): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  if (Array.isArray(payload?.data?.items)) return payload.data.items;
+  return [];
+}
 
 export default function AdmisiAdminPage() {
   const [search, setSearch] = useState("");
-  const [data, setData] = useState<AdmisiBiayaStudiItem[]>(admisiBiayaStudiDummyData);
+  const [data, setData] = useState<AdmisiBiayaStudiItem[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchData = async () => {
+    try {
+      setError("");
+      const token = localStorage.getItem("token");
+      const [admissionRes, programStudiRes] = await Promise.all([
+        fetch(apiUrl("/api/admission"), {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
+        }),
+        fetch(apiUrl("/api/program-studi"), {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
+        }),
+      ]);
+
+      if (!admissionRes.ok) {
+        const text = await admissionRes.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal memuat data biaya studi"));
+      }
+
+      const admissionJson = await admissionRes.json();
+      const programNameById = new Map<number, string>();
+
+      if (programStudiRes.ok) {
+        const programStudiJson = await programStudiRes.json().catch(() => null);
+        const programStudiList = extractArray(programStudiJson);
+        for (const item of programStudiList) {
+          const id = toNumberSafe(item?.id);
+          const name = toStringSafe(item?.name);
+          if (id > 0 && name) {
+            programNameById.set(id, name);
+          }
+        }
+      }
+
+      setData(parseAdmissionListResponse(admissionJson, programNameById));
+    } catch (err: unknown) {
+      setData([]);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat memuat data biaya studi");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const filtered = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -17,23 +98,57 @@ export default function AdmisiAdminPage() {
       if (!keyword) return true;
       return (
         item.program.toLowerCase().includes(keyword) ||
-        item.total.toLowerCase().includes(keyword) ||
-        item.pendaftaranTes.toLowerCase().includes(keyword)
+        item.year.toLowerCase().includes(keyword) ||
+        formatRupiah(item.total).toLowerCase().includes(keyword)
       );
     });
   }, [data, search]);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteId === null) return;
-    setData((prev) => prev.filter((item) => item.id !== deleteId));
-    setDeleteId(null);
+
+    setDeleting(true);
+    try {
+      setError("");
+      const token = localStorage.getItem("token");
+      const res = await fetch(apiUrl(`/api/admission/${deleteId}`), {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(getErrorMessage(text, "Gagal menghapus biaya studi"));
+      }
+
+      await fetchData();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Terjadi kesalahan saat menghapus biaya studi");
+      }
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Mode dummy data aktif. Fitur simpan ke server akan dihubungkan setelah API backend tersedia.
-      </div>
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="relative w-full sm:max-w-md">
@@ -58,17 +173,13 @@ export default function AdmisiAdminPage() {
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[1100px]">
+          <table className="w-full text-sm min-w-[980px]">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="text-left px-6 py-4 font-medium text-gray-600">No</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Program</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Pendaftaran & Tes</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Administrasi/Smt</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Biaya Kuliah/Smt</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Bimbingan TA</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Wisuda</th>
-                <th className="text-left px-6 py-4 font-medium text-gray-600">Cuti Akademik/Smt</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Tahun</th>
+                <th className="text-left px-6 py-4 font-medium text-gray-600">Komponen Biaya</th>
                 <th className="text-left px-6 py-4 font-medium text-gray-600">Total</th>
                 <th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
               </tr>
@@ -79,13 +190,25 @@ export default function AdmisiAdminPage() {
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
                   <td className="px-6 py-4 font-medium text-gray-800">{item.program}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.pendaftaranTes}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.administrasiPerSemester}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.biayaKuliahPerSemester}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.bimbinganTA}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.wisuda}</td>
-                  <td className="px-6 py-4 text-gray-600">{item.cutiAkademik}</td>
-                  <td className="px-6 py-4 text-[#C41E3A] font-semibold">{item.total}</td>
+                  <td className="px-6 py-4 text-gray-600">{item.year || "-"}</td>
+                  <td className="px-6 py-4 text-gray-600">
+                    <div className="flex flex-wrap gap-1.5 max-w-[360px]">
+                      {item.admissionItems.length > 0 ? (
+                        item.admissionItems.map((admissionItem) => (
+                          <span
+                            key={admissionItem.id || admissionItem.name}
+                            className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs"
+                            title={`${admissionItem.name}: ${formatRupiah(admissionItem.price)}`}
+                          >
+                            {admissionItem.name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-gray-400 text-xs">Belum ada komponen</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-[#C41E3A] font-semibold">{formatRupiah(item.total)}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1">
                       <Link
@@ -109,7 +232,7 @@ export default function AdmisiAdminPage() {
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
@@ -150,9 +273,10 @@ export default function AdmisiAdminPage() {
               </button>
               <button
                 onClick={handleDelete}
+                disabled={deleting}
                 className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
               >
-                Hapus
+                {deleting ? "Menghapus..." : "Hapus"}
               </button>
             </div>
           </div>
