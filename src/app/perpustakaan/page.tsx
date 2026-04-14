@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   Search,
@@ -13,10 +13,16 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
-import { books, categories } from "../../lib/perpustakaan";
+import {
+  LibraryBook,
+  getLibraryCategories,
+  parseLibraryListResponse,
+} from "../../lib/perpustakaan";
 import { ScrollReveal } from "../../components/ScrollReveal";
+import { apiUrl } from "../../lib/api";
+import { getErrorMessage } from "../../lib/response";
 
-type ListCategory = (typeof categories)[number];
+type ListCategory = string;
 
 const PAGE_SIZE = 6;
 
@@ -24,6 +30,41 @@ export default function PerpustakaanPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<ListCategory>("Semua Koleksi");
   const [currentPage, setCurrentPage] = useState(1);
+  const [books, setBooks] = useState<LibraryBook[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const categories = useMemo(() => getLibraryCategories(books), [books]);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        setError("");
+        const res = await fetch(apiUrl("/api/Library"), {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(getErrorMessage(text, "Gagal memuat data perpustakaan"));
+        }
+
+        const json = await res.json();
+        setBooks(parseLibraryListResponse(json));
+      } catch (err: unknown) {
+        setBooks([]);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Terjadi kesalahan saat memuat data perpustakaan");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   const filteredBooks = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -40,7 +81,7 @@ export default function PerpustakaanPage() {
 
       return categoryMatch && searchMatch;
     });
-  }, [category, query]);
+  }, [books, category, query]);
 
   const totalPages = Math.max(1, Math.ceil(filteredBooks.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -117,6 +158,12 @@ export default function PerpustakaanPage() {
 
       <ScrollReveal>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-5 flex flex-col md:flex-row gap-3 md:gap-4 md:items-center">
           <div className="relative flex-1">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -131,17 +178,9 @@ export default function PerpustakaanPage() {
             />
           </div>
 
-          <button
-            type="button"
-            className="h-12 px-5 rounded-lg border border-gray-200 text-gray-700 inline-flex items-center justify-center gap-2"
-          >
-            <SlidersHorizontal size={16} />
-            Filters
-          </button>
-
           <div className="h-12 px-5 rounded-lg bg-[#002366] text-white inline-flex items-center justify-center gap-2">
             <Library size={16} />
-            {filteredBooks.length} Ebook
+            {loading ? "Memuat..." : `${filteredBooks.length} Ebook`}
           </div>
         </div>
 
@@ -168,7 +207,11 @@ export default function PerpustakaanPage() {
       </ScrollReveal>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-        {paginatedBooks.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center rounded-xl border border-gray-200 bg-white py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#002366] border-t-transparent" />
+          </div>
+        ) : paginatedBooks.length === 0 ? (
           <ScrollReveal>
           <div className="bg-white rounded-xl p-10 text-center border border-dashed border-gray-300 text-gray-500">
             Ebook tidak ditemukan. Coba kata kunci lain.
@@ -200,7 +243,7 @@ export default function PerpustakaanPage() {
                     <p className="inline-flex items-center gap-1">
                       <User size={12} /> {book.author}
                     </p>
-                    <p className="inline-flex items-center gap-1">
+                    <p className="inline-flex items-center gap-1 ml-2">
                       <Calendar size={12} /> {new Date(book.releaseDate).getFullYear()}
                     </p>
                   </div>

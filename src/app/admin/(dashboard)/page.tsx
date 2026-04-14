@@ -23,7 +23,7 @@ import {
 } from "../../../lib/berita";
 import { parseAdmissionListResponse } from "../../../lib/admin-admisi";
 import { getTotalAdminMedia } from "../../../lib/admin-media";
-import { getTotalAdminEbook } from "../../../lib/admin-perpustakaan";
+import { parseAdminEbookListResponse } from "../../../lib/admin-perpustakaan";
 import { getErrorMessage, normalizeArray } from "../../../lib/response";
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
@@ -123,7 +123,7 @@ export default function AdminDashboardPage() {
     berita: 0,
     kegiatan: 0,
     media: getTotalAdminMedia(),
-    ebook: getTotalAdminEbook(),
+    ebook: 0,
     biayaStudi: 0,
   });
   const [beritaList, setBeritaList] = useState<BeritaItem[]>([]);
@@ -169,13 +169,14 @@ export default function AdminDashboardPage() {
           ? { Authorization: `Bearer ${token}` }
           : {};
 
-        const [programStudiPayload, mataKuliahPayload, beritaPayload, kegiatanPayload, admissionPayload] =
+        const [programStudiPayload, mataKuliahPayload, beritaPayload, kegiatanPayload, admissionPayload, ebookPayload] =
           await Promise.all([
             fetchJson("/api/program-studi", "program studi", headers),
             fetchJson("/api/mata-kuliah", "mata kuliah", headers),
             fetchJson("/api/berita", "berita", headers),
             fetchJson("/api/Acara", "kegiatan", headers),
             fetchJson("/api/admission", "biaya studi", headers),
+            fetchJson("/api/Library", "ebook", headers),
           ]);
 
         const programStudi = normalizeArray<any>(programStudiPayload);
@@ -183,6 +184,7 @@ export default function AdminDashboardPage() {
         const berita = parseBeritaListResponse(beritaPayload);
         const kegiatan = parseAcaraListResponse(kegiatanPayload);
         const admission = parseAdmissionListResponse(admissionPayload);
+        const ebook = parseAdminEbookListResponse(ebookPayload);
 
         setCounts({
           programStudi: programStudi.length,
@@ -190,7 +192,7 @@ export default function AdminDashboardPage() {
           berita: berita.length,
           kegiatan: kegiatan.length,
           media: getTotalAdminMedia(),
-          ebook: getTotalAdminEbook(),
+          ebook: ebook.length,
           biayaStudi: admission.length,
         });
         setBeritaList(berita);

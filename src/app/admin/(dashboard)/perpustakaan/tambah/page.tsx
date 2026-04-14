@@ -1,26 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import { adminEbookCategories } from "../../../../../lib/admin-perpustakaan";
+import {
+  AdminEbookItem,
+  adminEbookDefaultCategories,
+	buildAdminEbookFormData,
+  getAdminEbookCategories,
+  parseAdminEbookListResponse,
+} from "../../../../../lib/admin-perpustakaan";
+import { apiUrl } from "../../../../../lib/api";
+import { getErrorMessage } from "../../../../../lib/response";
 
 export default function TambahEbookPage() {
 	const router = useRouter();
+	const MAX_COVER_SIZE = 2 * 1024 * 1024;
+	const MAX_PDF_SIZE = 10 * 1024 * 1024;
 	const [loading, setLoading] = useState(false);
+	const [fetchingCategories, setFetchingCategories] = useState(true);
 	const [error, setError] = useState("");
+	const [records, setRecords] = useState<AdminEbookItem[]>([]);
 	const [coverFile, setCoverFile] = useState<File | null>(null);
 	const [pdfFile, setPdfFile] = useState<File | null>(null);
 	const [form, setForm] = useState({
 		title: "",
 		author: "",
-		category: adminEbookCategories[0] ?? "Teologi",
+		category: adminEbookDefaultCategories[0] ?? "Teologi",
 		isbn: "",
 		releaseDate: new Date().toISOString().slice(0, 10),
 		description: "",
-		status: "Published",
 	});
+
+	const categories = useMemo(() => getAdminEbookCategories(records), [records]);
+
+	useEffect(() => {
+		const fetchCategories = async () => {
+			try {
+				setError("");
+				const token = localStorage.getItem("token");
+				const res = await fetch(apiUrl("/api/Library"), {
+					headers: token ? { Authorization: `Bearer ${token}` } : {},
+					cache: "no-store",
+				});
+
+				if (!res.ok) {
+					const text = await res.text().catch(() => "");
+					throw new Error(getErrorMessage(text, "Gagal memuat kategori ebook"));
+				}
+
+				const json = await res.json();
+				setRecords(parseAdminEbookListResponse(json));
+			} catch (err: unknown) {
+				setRecords([]);
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError("Terjadi kesalahan saat memuat kategori ebook");
+				}
+			} finally {
+				setFetchingCategories(false);
+			}
+		};
+
+		fetchCategories();
+	}, []);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -29,14 +74,28 @@ export default function TambahEbookPage() {
 	};
 
 	const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCoverFile(e.target.files?.[0] ?? null);
+		const file = e.target.files?.[0] || null;
+		if (file && file.size > MAX_COVER_SIZE) {
+			setError("Ukuran cover maksimal 2MB");
+			return;
+		}
+
+		setError("");
+		setCoverFile(file);
 	};
 
 	const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setPdfFile(e.target.files?.[0] ?? null);
+		const file = e.target.files?.[0] || null;
+		if (file && file.size > MAX_PDF_SIZE) {
+			setError("Ukuran PDF maksimal 10MB");
+			return;
+		}
+
+		setError("");
+		setPdfFile(file);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!form.title.trim() || !form.author.trim() || !form.isbn.trim()) {
@@ -44,11 +103,44 @@ export default function TambahEbookPage() {
 			return;
 		}
 
+		if (!coverFile || !pdfFile) {
+			setError("File cover dan PDF ebook wajib dipilih");
+			return;
+		}
+
 		setError("");
 		setLoading(true);
 
-		// Sementara backend belum tersedia, submit hanya simulasi.
-		router.push("/admin/perpustakaan");
+		try {
+			const token = localStorage.getItem("token");
+			const formData = buildAdminEbookFormData(form, {
+				coverFile,
+				pdfFile,
+			});
+
+			const res = await fetch(apiUrl("/api/Library"), {
+				method: "POST",
+				headers: {
+					...(token ? { Authorization: `Bearer ${token}` } : {}),
+				},
+				body: formData,
+			});
+
+			if (!res.ok) {
+				const text = await res.text().catch(() => "");
+				throw new Error(getErrorMessage(text, "Gagal menambahkan ebook"));
+			}
+
+			router.push("/admin/perpustakaan");
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError("Terjadi kesalahan saat menambahkan ebook");
+			}
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -63,13 +155,16 @@ export default function TambahEbookPage() {
 
 			<div className="bg-white rounded-xl border border-gray-200 p-6">
 				<h2 className="text-lg font-semibold text-gray-800 mb-2">Tambah Ebook Baru</h2>
-				<p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6">
-					Form ini menggunakan dummy data sementara menunggu API backend.
-				</p>
 
 				{error && (
 					<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
 						{error}
+					</div>
+				)}
+
+				{fetchingCategories && (
+					<div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+						Memuat kategori ebook...
 					</div>
 				)}
 
@@ -114,7 +209,7 @@ export default function TambahEbookPage() {
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-1.5">Kategori</label>
 							<select
@@ -123,7 +218,7 @@ export default function TambahEbookPage() {
 								onChange={handleChange}
 								className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
 							>
-								{adminEbookCategories.map((item) => (
+								{categories.map((item) => (
 									<option key={item} value={item}>
 										{item}
 									</option>
@@ -139,18 +234,6 @@ export default function TambahEbookPage() {
 								onChange={handleChange}
 								className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none"
 							/>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
-							<select
-								name="status"
-								value={form.status}
-								onChange={handleChange}
-								className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
-							>
-								<option value="Published">Published</option>
-								<option value="Draft">Draft</option>
-							</select>
 						</div>
 					</div>
 
@@ -237,7 +320,7 @@ export default function TambahEbookPage() {
 					<div className="flex gap-3 pt-4">
 						<button
 							type="submit"
-							disabled={loading}
+							disabled={loading || fetchingCategories}
 							className="inline-flex items-center gap-2 bg-[#1E3A8A] text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1e3a8a]/90 transition-colors disabled:opacity-70"
 						>
 							{loading ? (

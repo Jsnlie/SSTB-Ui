@@ -265,30 +265,28 @@ export default function Admisi() {
           ) : (
           <>
 
-          <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]">
+          <div className="grid items-stretch gap-4 [grid-template-columns:repeat(auto-fit,minmax(250px,1fr))]">
             {tuitionFees.map((fee, idx) => (
-              <ScrollReveal key={fee.id} delay={idx * 0.06} amount={0.18}>
-                <div
-                className="h-full w-full max-w-[360px] mx-auto bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
-              >
+              <ScrollReveal key={fee.id} delay={idx * 0.06} amount={0.18} className="h-full">
+                <div className="flex h-full w-full max-w-[360px] mx-auto flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-shadow hover:shadow-lg">
                 <div className="bg-[#002366] px-4 py-3">
                   <h3 className="text-white font-medium text-sm text-center">
                     {fee.program}
                   </h3>
                 </div>
-                <div className="px-4 py-3 space-y-2 text-sm">
+                <div className="flex-1 px-4 py-3 space-y-2 text-sm">
                   {fee.admissionItems.length > 0 ? (
                     fee.admissionItems.map((item, itemIdx) => (
-                      <div key={`${fee.id}-${item.id}-${itemIdx}`} className="flex justify-between gap-2">
-                        <span className="text-gray-600 truncate">{item.name}</span>
-                        <span className="text-gray-800 whitespace-nowrap">{formatRupiah(item.price)}</span>
+                      <div key={`${fee.id}-${item.id}-${itemIdx}`} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                        <span className="min-w-0 truncate text-gray-600">{item.name}</span>
+                        <span className="whitespace-nowrap text-gray-800">{formatRupiah(item.price)}</span>
                       </div>
                     ))
                   ) : (
                     <p className="text-gray-500 text-sm">Belum ada komponen biaya.</p>
                   )}
                 </div>
-                <div className="bg-[#C41E3A]/10 border-t-2 border-[#C41E3A] px-4 py-3 flex justify-between items-center">
+                <div className="mt-auto flex items-center justify-between border-t-2 border-[#C41E3A] bg-[#C41E3A]/10 px-4 py-3">
                   <span className="text-[#002366] font-bold text-sm">
                     Total
                   </span>

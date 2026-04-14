@@ -1,19 +1,58 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import {
 	AdminEbookItem,
-	adminEbookCategories,
-	adminEbookDummyData,
+	getAdminEbookCategories,
+	parseAdminEbookListResponse,
 } from "../../../../lib/admin-perpustakaan";
+import { apiUrl } from "../../../../lib/api";
+import { getErrorMessage } from "../../../../lib/response";
 
 export default function PerpustakaanAdminPage() {
 	const [search, setSearch] = useState("");
 	const [filterCategory, setFilterCategory] = useState("");
 	const [deleteId, setDeleteId] = useState<number | null>(null);
-	const [data, setData] = useState<AdminEbookItem[]>(adminEbookDummyData);
+	const [data, setData] = useState<AdminEbookItem[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [deleting, setDeleting] = useState(false);
+	const [error, setError] = useState("");
+
+	const categories = useMemo(() => getAdminEbookCategories(data), [data]);
+
+	const fetchData = async () => {
+		try {
+			setError("");
+			const token = localStorage.getItem("token");
+			const res = await fetch(apiUrl("/api/Library"), {
+				headers: token ? { Authorization: `Bearer ${token}` } : {},
+				cache: "no-store",
+			});
+
+			if (!res.ok) {
+				const text = await res.text().catch(() => "");
+				throw new Error(getErrorMessage(text, "Gagal memuat data perpustakaan"));
+			}
+
+			const json = await res.json();
+			setData(parseAdminEbookListResponse(json));
+		} catch (err: unknown) {
+			setData([]);
+			if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError("Terjadi kesalahan saat memuat data perpustakaan");
+			}
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
 
 	const filtered = useMemo(() => {
 		const keyword = search.trim().toLowerCase();
@@ -28,17 +67,51 @@ export default function PerpustakaanAdminPage() {
 		});
 	}, [data, filterCategory, search]);
 
-	const handleDelete = () => {
+	const handleDelete = async () => {
 		if (deleteId === null) return;
-		setData((prev) => prev.filter((item) => item.id !== deleteId));
-		setDeleteId(null);
+
+		setDeleting(true);
+		try {
+			setError("");
+			const token = localStorage.getItem("token");
+			const res = await fetch(apiUrl(`/api/Library/${deleteId}`), {
+				method: "DELETE",
+				headers: token ? { Authorization: `Bearer ${token}` } : {},
+			});
+
+			if (!res.ok) {
+				const text = await res.text().catch(() => "");
+				throw new Error(getErrorMessage(text, "Gagal menghapus ebook"));
+			}
+
+			await fetchData();
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError("Terjadi kesalahan saat menghapus ebook");
+			}
+		} finally {
+			setDeleting(false);
+			setDeleteId(null);
+		}
 	};
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center py-20">
+				<div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-6">
-			<div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-				Mode dummy data aktif. Fitur simpan ke server akan dihubungkan setelah API backend tersedia.
-			</div>
+			{error && (
+				<div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+					{error}
+				</div>
+			)}
 
 			<div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
 				<div className="flex gap-3 flex-1 w-full sm:w-auto">
@@ -58,7 +131,7 @@ export default function PerpustakaanAdminPage() {
 						className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent outline-none bg-white"
 					>
 						<option value="">Semua Kategori</option>
-						{adminEbookCategories.map((category) => (
+						{categories.map((category) => (
 							<option key={category} value={category}>
 								{category}
 							</option>
@@ -85,7 +158,6 @@ export default function PerpustakaanAdminPage() {
 								<th className="text-left px-6 py-4 font-medium text-gray-600">Penulis</th>
 								<th className="text-left px-6 py-4 font-medium text-gray-600">Kategori</th>
 								<th className="text-left px-6 py-4 font-medium text-gray-600">Tanggal Rilis</th>
-								<th className="text-left px-6 py-4 font-medium text-gray-600">Status</th>
 								<th className="text-center px-6 py-4 font-medium text-gray-600">Aksi</th>
 							</tr>
 						</thead>
@@ -102,17 +174,6 @@ export default function PerpustakaanAdminPage() {
 									</td>
 									<td className="px-6 py-4 text-gray-600">
 										{new Date(item.releaseDate).toLocaleDateString("id-ID")}
-									</td>
-									<td className="px-6 py-4">
-										<span
-											className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-												item.status === "Published"
-													? "bg-emerald-50 text-emerald-700"
-													: "bg-amber-50 text-amber-700"
-											}`}
-										>
-											{item.status}
-										</span>
 									</td>
 									<td className="px-6 py-4">
 										<div className="flex items-center justify-center gap-1">
@@ -137,7 +198,7 @@ export default function PerpustakaanAdminPage() {
 
 							{filtered.length === 0 && (
 								<tr>
-									<td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+									<td colSpan={6} className="px-6 py-12 text-center text-gray-400">
 										Tidak ada data ditemukan
 									</td>
 								</tr>
@@ -178,9 +239,10 @@ export default function PerpustakaanAdminPage() {
 							</button>
 							<button
 								onClick={handleDelete}
+								disabled={deleting}
 								className="px-4 py-2 bg-[#DC2626] text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
 							>
-								Hapus
+								{deleting ? "Menghapus..." : "Hapus"}
 							</button>
 						</div>
 					</div>
