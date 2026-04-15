@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Film,
   Play,
   Tag,
   User,
@@ -141,7 +142,11 @@ export default function MediaDetailPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
                   <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
-                    <User size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                    {isVideo ? (
+                      <Film size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                    ) : (
+                      <User size={15} className="mt-0.5 shrink-0 text-[#002366]" />
+                    )}
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wide text-gray-500">
                         {isMonograph ? "Penulis" : isVideo ? "Tema" : "Author"}
@@ -167,7 +172,7 @@ export default function MediaDetailPage() {
                       <p className="font-medium text-gray-800 break-words">{formatReleaseDate(media.releaseDate)}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0">
+                  <div className={`flex items-start gap-3 rounded-lg bg-gray-50 px-3 py-2 min-w-0 ${(!isMonograph || !media.writer) ? "col-span-1 sm:col-span-2" : ""}`}>
                     <Tag size={15} className="mt-0.5 shrink-0 text-[#002366]" />
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-wide text-gray-500">Kategori</p>

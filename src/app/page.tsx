@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-[730px] bg-gradient-to-r from-[#002366] to-[#003080]">
+      <section className="relative h-[730px] bg-gradient-to-r from-[#002366] to-[#003080] overflow-hidden">
         <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#C41E3A]/20 blur-3xl"></div>
         <div className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-white/10 blur-3xl"></div>
         <div className="absolute inset-0 bg-black/30"></div>

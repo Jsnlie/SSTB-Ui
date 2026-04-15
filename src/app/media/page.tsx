@@ -172,18 +172,39 @@ export default function MediaLibraryPage() {
             <div className="w-8 h-8 border-4 border-[#1E3A8A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : showFeaturedAllLayout ? (
-           <div className="flex flex-col lg:flex-row gap-6">
-             {/* Left Column */}
-             <div className="w-full lg:w-1/3 flex flex-col gap-6">
-               {featuredByType.article && <ScrollReveal><MediaCard item={featuredByType.article} /></ScrollReveal>}
-               {featuredByType.journal && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.journal} /></ScrollReveal>}
+           <div className="flex flex-col gap-12">
+             <div className="flex flex-col lg:flex-row gap-6">
+               {/* Left Column */}
+               <div className="w-full lg:w-1/3 flex flex-col gap-6">
+                 {featuredByType.article && <ScrollReveal><MediaCard item={featuredByType.article} /></ScrollReveal>}
+                 {featuredByType.journal && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.journal} /></ScrollReveal>}
+               </div>
+               {/* Right Column */}
+               <div className="w-full lg:w-2/3 flex flex-col gap-6">
+                 {featuredByType.video && <ScrollReveal><MediaCard item={featuredByType.video} /></ScrollReveal>}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {featuredByType.monograph && <ScrollReveal><MediaCard item={featuredByType.monograph} /></ScrollReveal>}
+                   {featuredByType.bulletin && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.bulletin} /></ScrollReveal>}
+                 </div>
+               </div>
              </div>
-             {/* Right Column */}
-             <div className="w-full lg:w-2/3 flex flex-col gap-6">
-               {featuredByType.video && <ScrollReveal><MediaCard item={featuredByType.video} /></ScrollReveal>}
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {featuredByType.monograph && <ScrollReveal><MediaCard item={featuredByType.monograph} /></ScrollReveal>}
-                 {featuredByType.bulletin && <ScrollReveal delay={0.06}><MediaCard item={featuredByType.bulletin} /></ScrollReveal>}
+
+             <div className="space-y-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 {filteredItems
+                   .filter(
+                     (item) =>
+                       item.id !== featuredByType.article?.id &&
+                       item.id !== featuredByType.journal?.id &&
+                       item.id !== featuredByType.video?.id &&
+                       item.id !== featuredByType.monograph?.id &&
+                       item.id !== featuredByType.bulletin?.id
+                   )
+                   .map((item, index) => (
+                     <div key={item.id} className={item.type === "Video" ? "col-span-1 lg:col-span-2" : ""}>
+                       <ScrollReveal delay={(index % 6) * 0.06} amount={0.18}><MediaCard item={item} /></ScrollReveal>
+                     </div>
+                   ))}
                </div>
              </div>
            </div>
@@ -243,11 +264,6 @@ function MediaCard({ item }: { item: MediaItem }) {
                  <h3 className="text-3xl md:text-3xl font-bold font-sans tracking-tight">{item.title}</h3>
               </div>
             </div>
-            {item.description && item.description !== "Video belum memiliki deskripsi." && (
-              <p className="text-gray-300 max-w-2xl text-[16px] leading-relaxed opacity-90 block pt-2 ml-[4.5rem]">
-                {item.description}
-              </p>
-            )}
           </div>
         </Card>
       </Link>
@@ -274,12 +290,9 @@ function MediaCard({ item }: { item: MediaItem }) {
            <span className="inline-block w-fit px-2 py-1 text-xs rounded-full bg-[#eef2ff] text-[#002366] mb-2">
               {item.type}
             </span>
-          <h3 className="text-xl font-bold text-[#061538] mb-2 line-clamp-2 [font-family:Georgia,_Times_New_Roman,_serif]">
+          <h3 className="text-xl font-bold text-[#061538] mb-4 line-clamp-3 [font-family:Georgia,_Times_New_Roman,_serif]">
             {item.title}
           </h3>
-          <p className="mb-5 text-sm leading-relaxed text-gray-600 line-clamp-2">
-            {item.description}
-          </p>
 
           <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
             {/* <span className="inline-flex items-center gap-1.5">

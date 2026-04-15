@@ -30,6 +30,7 @@ interface MediaCore {
 	publishedAt: string;
 	author?: string;
 	description?: string;
+        shortDescription?: string;
 	isbn?: string;
 }
 
@@ -207,7 +208,7 @@ const REQUIRED_FIELDS_BY_TYPE: Record<MediaType, readonly string[]> = {
 	article: ["title", "categoryId", "content", "author"],
 	video: ["title", "categoryId", "youtubeUrl"],
 	journal: ["title", "categoryId", "fileUrl"],
-	bulletin: ["title", "categoryId", "author", "titleDescription", "description", "fileUrl"],
+	bulletin: ["title", "categoryId", "author", "fileUrl"],
 	monograph: ["title", "categoryId", "author", "image", "descriptionTitle", "writer", "synopsis", "isbn"],
 };
 
