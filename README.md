@@ -1,11 +1,26 @@
+# Sekolah Tinggi Teologi Bandung — Website Redesign
 
-  # Theological Seminary Website UI
+Proyek redesign frontend website Sekolah Tinggi Teologi Bandung dengan tampilan yang lebih modern dan responsif.
 
-  This is a code bundle for Theological Seminary Website UI. The original project is available at https://www.figma.com/design/aTLIHQdLN3XOjfRuE2n7JA/Theological-Seminary-Website-UI.
+---
 
-  ## Running the code
+## Fitur
 
-  Run `npm i` to install the dependencies.
+- **Home** — Halaman utama dengan informasi ringkas institusi
+- **Tentang Kami** — Jajaran tentang sejarah Kampus
+- **Kehidupan Kampus** — Gambaran aktivitas dan suasana kampus
+- **Program Studi** — Informasi program akademik yang tersedia
+- **Perpustakaan** — Informasi dan akses layanan perpustakaan
+- **Kegiatan** — Agenda dan kegiatan kampus
+- **Berita** — Berita dan pengumuman terkini
+- **Media** — Artikel, video, jurnal yang dapat di akses user
+- **Admisi** — Informasi pendaftaran dan penerimaan mahasiswa baru
+- **Kontak Kami** — Formulir kontak dan informasi lokasi kampus
+- **CMS** — Panel admin untuk mengelola konten (CRUD)
 
-  Run `npm run dev` to start the development server.
-  
+---
+
+## Tech Stack FrontEnd
+
+- **Next.js** — Framework React untuk routing dan rendering
+- **Tailwind CSS** — Styling dan desain responsif
